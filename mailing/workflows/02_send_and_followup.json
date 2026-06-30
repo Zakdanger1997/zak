@@ -1,0 +1,214 @@
+{
+  "name": "02 - Send Emails & Follow-up Loop",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 9 * * 1-5" }]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger (9 AM Mon-Fri)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM contacts WHERE status = 'new' AND email IS NOT NULL ORDER BY created_at ASC LIMIT 50;",
+        "options": {}
+      },
+      "id": "get-new-contacts",
+      "name": "Get New Contacts",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 180],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM contacts WHERE status = 'emailed' AND replied = false AND last_email_sent_at < NOW() - INTERVAL '3 days' AND follow_up_count = 1 ORDER BY last_email_sent_at ASC LIMIT 50;",
+        "options": {}
+      },
+      "id": "get-followup1",
+      "name": "Get Follow-up 1 (Day 3)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 340],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM contacts WHERE status = 'emailed' AND replied = false AND last_email_sent_at < NOW() - INTERVAL '7 days' AND follow_up_count = 2 ORDER BY last_email_sent_at ASC LIMIT 50;",
+        "options": {}
+      },
+      "id": "get-followup2",
+      "name": "Get Follow-up 2 (Day 7)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 500],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM contacts WHERE status = 'emailed' AND replied = false AND last_email_sent_at < NOW() - INTERVAL '14 days' AND follow_up_count = 3 ORDER BY last_email_sent_at ASC LIMIT 50;",
+        "options": {}
+      },
+      "id": "get-followup3",
+      "name": "Get Follow-up 3 (Day 14)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 660],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tag each contact with which email to send\nconst results = [];\nconst source = $input.context.node.name;\n\nfor (const item of $input.all()) {\n  let emailType = 'initial';\n  if (source.includes('Follow-up 1')) emailType = 'followup1';\n  else if (source.includes('Follow-up 2')) emailType = 'followup2';\n  else if (source.includes('Follow-up 3')) emailType = 'followup3';\n  \n  results.push({ json: { ...item.json, emailType } });\n}\n\nreturn results;"
+      },
+      "id": "tag-initial",
+      "name": "Tag Initial",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nfor (const item of $input.all()) {\n  results.push({ json: { ...item.json, emailType: 'followup1' } });\n}\nreturn results;"
+      },
+      "id": "tag-fu1",
+      "name": "Tag Follow-up 1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 340]
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nfor (const item of $input.all()) {\n  results.push({ json: { ...item.json, emailType: 'followup2' } });\n}\nreturn results;"
+      },
+      "id": "tag-fu2",
+      "name": "Tag Follow-up 2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nfor (const item of $input.all()) {\n  results.push({ json: { ...item.json, emailType: 'followup3' } });\n}\nreturn results;"
+      },
+      "id": "tag-fu3",
+      "name": "Tag Follow-up 3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 660]
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch",
+        "output": "input1"
+      },
+      "id": "merge-all",
+      "name": "Merge All Batches",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [940, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build subject and body based on emailType\nconst results = [];\n\nfor (const item of $input.all()) {\n  const c = item.json;\n  const name = c.first_name || 'there';\n  const company = c.company || 'your company';\n  let subject = '';\n  let body = '';\n\n  if (c.emailType === 'initial') {\n    subject = `Partnership Opportunity – ${company}`;\n    body = `Hi ${name},\\n\\nI hope this message finds you well. My name is [YOUR NAME] and I represent [YOUR COMPANY].\\n\\nI came across ${company} and believe there's a great opportunity to collaborate on [VALUE PROPOSITION].\\n\\nWould you be open to a quick 15-minute call this week to explore how we might work together?\\n\\nLooking forward to connecting.\\n\\nBest regards,\\n[YOUR NAME]\\n[YOUR TITLE]\\n[YOUR PHONE]`;\n  } else if (c.emailType === 'followup1') {\n    subject = `Following up – ${company}`;\n    body = `Hi ${name},\\n\\nI wanted to follow up on my previous email. I understand you're busy, so I'll keep this brief.\\n\\nI genuinely think there's value in a quick conversation about [VALUE PROPOSITION].\\n\\nDo you have 15 minutes this week?\\n\\nBest,\\n[YOUR NAME]`;\n  } else if (c.emailType === 'followup2') {\n    subject = `Last check-in – ${company}`;\n    body = `Hi ${name},\\n\\nI've reached out a couple of times and haven't heard back — I completely understand if now isn't the right time.\\n\\nIf you're interested in exploring how [YOUR COMPANY] can help ${company}, I'd love to connect. If not, no worries at all.\\n\\nEither way, wish you and the team at ${company} all the best!\\n\\nBest,\\n[YOUR NAME]`;\n  } else if (c.emailType === 'followup3') {\n    subject = `Closing the loop – ${company}`;\n    body = `Hi ${name},\\n\\nThis will be my last follow-up. If there's ever a time that [VALUE PROPOSITION] becomes relevant, please don't hesitate to reach out.\\n\\nWishing you continued success!\\n\\nWarm regards,\\n[YOUR NAME]`;\n  }\n\n  results.push({ json: { ...c, emailSubject: subject, emailBody: body } });\n}\n\nreturn results;"
+      },
+      "id": "build-email",
+      "name": "Build Email Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1160, 420]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SENDER_EMAIL }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.emailSubject }}",
+        "emailType": "text",
+        "message": "={{ $json.emailBody }}",
+        "options": {
+          "replyTo": "={{ $vars.SENDER_EMAIL }}"
+        }
+      },
+      "id": "send-email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1380, 420],
+      "credentials": {
+        "gmailOAuth2": { "id": "gmail-cred", "name": "Gmail Outreach" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE contacts SET status = 'emailed', last_email_sent_at = NOW(), follow_up_count = follow_up_count + 1, updated_at = NOW() WHERE email = '{{ $json.email }}';",
+        "options": {}
+      },
+      "id": "update-status",
+      "name": "Update Contact Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1600, 420],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE contacts SET status = 'no_response', needs_call = true, updated_at = NOW() WHERE status = 'emailed' AND replied = false AND follow_up_count >= 4 AND last_email_sent_at < NOW() - INTERVAL '21 days';",
+        "options": {}
+      },
+      "id": "mark-no-response",
+      "name": "Mark No Response → Needs Call",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1820, 420],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (9 AM Mon-Fri)": {
+      "main": [
+        [
+          { "node": "Get New Contacts", "type": "main", "index": 0 },
+          { "node": "Get Follow-up 1 (Day 3)", "type": "main", "index": 0 },
+          { "node": "Get Follow-up 2 (Day 7)", "type": "main", "index": 0 },
+          { "node": "Get Follow-up 3 (Day 14)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Get New Contacts": { "main": [[{ "node": "Tag Initial", "type": "main", "index": 0 }]] },
+    "Get Follow-up 1 (Day 3)": { "main": [[{ "node": "Tag Follow-up 1", "type": "main", "index": 0 }]] },
+    "Get Follow-up 2 (Day 7)": { "main": [[{ "node": "Tag Follow-up 2", "type": "main", "index": 0 }]] },
+    "Get Follow-up 3 (Day 14)": { "main": [[{ "node": "Tag Follow-up 3", "type": "main", "index": 0 }]] },
+    "Tag Initial": { "main": [[{ "node": "Merge All Batches", "type": "main", "index": 0 }]] },
+    "Tag Follow-up 1": { "main": [[{ "node": "Merge All Batches", "type": "main", "index": 1 }]] },
+    "Tag Follow-up 2": { "main": [[{ "node": "Merge All Batches", "type": "main", "index": 2 }]] },
+    "Tag Follow-up 3": { "main": [[{ "node": "Merge All Batches", "type": "main", "index": 3 }]] },
+    "Merge All Batches": { "main": [[{ "node": "Build Email Content", "type": "main", "index": 0 }]] },
+    "Build Email Content": { "main": [[{ "node": "Send Email", "type": "main", "index": 0 }]] },
+    "Send Email": { "main": [[{ "node": "Update Contact Status", "type": "main", "index": 0 }]] },
+    "Update Contact Status": { "main": [[{ "node": "Mark No Response → Needs Call", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["mailing", "email", "followup"]
+}

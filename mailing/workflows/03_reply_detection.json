@@ -1,0 +1,144 @@
+{
+  "name": "03 - Reply Detection & Notify",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [{ "mode": "everyX", "value": 15, "unit": "minutes" }]
+        },
+        "filters": {
+          "labelIds": ["INBOX"],
+          "q": "is:unread"
+        },
+        "format": "resolved",
+        "dataPropertyAttachmentsPrefixName": "attachment_",
+        "options": {
+          "downloadAttachments": false
+        }
+      },
+      "id": "gmail-trigger",
+      "name": "Gmail Trigger (Poll Inbox)",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "credentials": {
+        "gmailOAuth2": { "id": "gmail-cred", "name": "Gmail Outreach" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract sender email from reply\nconst email = $json;\nconst fromRaw = email.From || email.from || '';\n\n// Parse email address from 'Name <email@domain.com>' format\nconst emailMatch = fromRaw.match(/<([^>]+)>/) || fromRaw.match(/([\\w.+-]+@[\\w-]+\\.[\\w.]+)/);\nconst senderEmail = emailMatch ? emailMatch[1].toLowerCase().trim() : fromRaw.toLowerCase().trim();\n\n// Check if it's a reply (has Re: in subject or threadId exists)\nconst subject = email.Subject || email.subject || '';\nconst isReply = subject.toLowerCase().startsWith('re:') || !!email.threadId;\n\nreturn [{ json: { ...email, senderEmail, isReply, subject } }];"
+      },
+      "id": "extract-sender",
+      "name": "Extract Sender Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [{ "leftValue": "={{ $json.isReply }}", "rightValue": true, "operator": { "type": "boolean", "operation": "true" } }]
+        },
+        "combineOperation": "all"
+      },
+      "id": "is-reply-check",
+      "name": "Is It a Reply?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM contacts WHERE LOWER(email) = LOWER('{{ $json.senderEmail }}') LIMIT 1;",
+        "options": {}
+      },
+      "id": "find-contact",
+      "name": "Find Contact in DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [900, 220],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [{ "leftValue": "={{ $json.email }}", "rightValue": "", "operator": { "type": "string", "operation": "notEmpty" } }]
+        }
+      },
+      "id": "contact-found-check",
+      "name": "Contact Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1120, 220]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE contacts SET replied = true, status = 'replied', replied_at = NOW(), needs_call = true, updated_at = NOW() WHERE LOWER(email) = LOWER('{{ $json.email }}');",
+        "options": {}
+      },
+      "id": "update-replied",
+      "name": "Mark as Replied + Needs Call",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [1340, 140],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SENDER_EMAIL }}",
+        "toEmail": "={{ $vars.NOTIFY_EMAIL }}",
+        "subject": "🔔 Reply Received from {{ $json.first_name }} {{ $json.last_name }} – {{ $json.company }}",
+        "emailType": "html",
+        "message": "<h2>📬 New Reply from a Contact!</h2>\n<table border='1' cellpadding='8' cellspacing='0' style='border-collapse:collapse;'>\n  <tr><td><b>Name</b></td><td>{{ $json.first_name }} {{ $json.last_name }}</td></tr>\n  <tr><td><b>Company</b></td><td>{{ $json.company }}</td></tr>\n  <tr><td><b>Email</b></td><td>{{ $json.email }}</td></tr>\n  <tr><td><b>Title</b></td><td>{{ $json.title }}</td></tr>\n  <tr><td><b>Phone</b></td><td>{{ $json.phone }}</td></tr>\n</table>\n<br/>\n<p>⚠️ <b>Action needed:</b> This contact has been flagged as <b>Needs Call</b> in your checklist.</p>\n<p><a href='{{ $vars.DASHBOARD_URL }}'>👉 Open Dashboard</a></p>",
+        "options": {}
+      },
+      "id": "notify-user",
+      "name": "Notify You by Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [1560, 140],
+      "credentials": {
+        "gmailOAuth2": { "id": "gmail-cred", "name": "Gmail Outreach" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log unknown reply — contact not in DB\nconst email = $json;\nconsole.log('Reply from unknown contact:', email.senderEmail);\nreturn [{ json: { skipped: true, reason: 'Contact not in database', senderEmail: email.senderEmail } }];"
+      },
+      "id": "log-unknown",
+      "name": "Log Unknown Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 320]
+    }
+  ],
+  "connections": {
+    "Gmail Trigger (Poll Inbox)": { "main": [[{ "node": "Extract Sender Email", "type": "main", "index": 0 }]] },
+    "Extract Sender Email": { "main": [[{ "node": "Is It a Reply?", "type": "main", "index": 0 }]] },
+    "Is It a Reply?": {
+      "main": [
+        [{ "node": "Find Contact in DB", "type": "main", "index": 0 }],
+        []
+      ]
+    },
+    "Find Contact in DB": { "main": [[{ "node": "Contact Found?", "type": "main", "index": 0 }]] },
+    "Contact Found?": {
+      "main": [
+        [{ "node": "Mark as Replied + Needs Call", "type": "main", "index": 0 }],
+        [{ "node": "Log Unknown Reply", "type": "main", "index": 0 }]
+      ]
+    },
+    "Mark as Replied + Needs Call": { "main": [[{ "node": "Notify You by Email", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["mailing", "reply", "notification"]
+}

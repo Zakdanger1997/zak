@@ -1,0 +1,105 @@
+{
+  "name": "04 - Daily Status Checklist",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 8 * * 1-5" }]
+        }
+      },
+      "id": "schedule-daily",
+      "name": "Daily 8 AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  status,\n  COUNT(*) as count\nFROM contacts \nGROUP BY status\nORDER BY count DESC;",
+        "options": {}
+      },
+      "id": "get-summary",
+      "name": "Get Status Summary",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 200],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  first_name, last_name, email, company, title, phone,\n  status, follow_up_count, replied, needs_call, call_done,\n  last_email_sent_at, replied_at, notes\nFROM contacts \nWHERE needs_call = true AND call_done = false\nORDER BY replied_at ASC NULLS LAST, last_email_sent_at ASC;",
+        "options": {}
+      },
+      "id": "get-needs-call",
+      "name": "Get Contacts Needing Call",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 360],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  first_name, last_name, email, company, status, follow_up_count, last_email_sent_at\nFROM contacts \nWHERE status IN ('new', 'emailed') AND replied = false\nORDER BY last_email_sent_at ASC NULLS FIRST\nLIMIT 20;",
+        "options": {}
+      },
+      "id": "get-pending",
+      "name": "Get Pending Contacts",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [460, 520],
+      "credentials": {
+        "postgres": { "id": "postgres-cred", "name": "Mailing DB" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\n\n// Summary stats\nconst summaryRows = $('Get Status Summary').all().map(i => i.json);\nconst needsCallRows = $('Get Contacts Needing Call').all().map(i => i.json);\nconst pendingRows = $('Get Pending Contacts').all().map(i => i.json);\n\n// Build summary table rows\nconst summaryHtml = summaryRows.map(r => {\n  const icon = {\n    new: '🆕', emailed: '📧', replied: '💬', no_response: '🔇', \n    call_done: '✅', closed: '🏁'\n  }[r.status] || '❓';\n  return `<tr><td>${icon} ${r.status}</td><td><b>${r.count}</b></td></tr>`;\n}).join('');\n\n// Build call checklist\nconst callListHtml = needsCallRows.length === 0 \n  ? '<p style=\"color:green\">✅ No calls pending!</p>'\n  : needsCallRows.map(c => {\n      const statusBadge = c.replied \n        ? `<span style=\"background:#d4edda;color:#155724;padding:2px 6px;border-radius:3px\">REPLIED</span>` \n        : `<span style=\"background:#fff3cd;color:#856404;padding:2px 6px;border-radius:3px\">NO RESPONSE</span>`;\n      return `\n        <tr>\n          <td>☐</td>\n          <td><b>${c.first_name} ${c.last_name}</b><br/><small>${c.title || ''}</small></td>\n          <td>${c.company}</td>\n          <td><a href=\"mailto:${c.email}\">${c.email}</a></td>\n          <td>${c.phone || '-'}</td>\n          <td>${statusBadge}</td>\n          <td>${c.replied_at ? new Date(c.replied_at).toLocaleDateString() : '-'}</td>\n        </tr>`;\n    }).join('');\n\n// Build pending table\nconst pendingHtml = pendingRows.length === 0\n  ? '<p>No pending contacts.</p>'\n  : pendingRows.map(c => {\n      const daysSince = c.last_email_sent_at \n        ? Math.floor((Date.now() - new Date(c.last_email_sent_at)) / 86400000)\n        : null;\n      return `\n        <tr>\n          <td>${c.first_name} ${c.last_name}</td>\n          <td>${c.company}</td>\n          <td>${c.status}</td>\n          <td>${c.follow_up_count}/3</td>\n          <td>${daysSince !== null ? daysSince + ' days ago' : 'Not sent'}</td>\n        </tr>`;\n    }).join('');\n\nconst html = `\n<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { font-family: Arial, sans-serif; color: #333; max-width: 900px; margin: 0 auto; }\n  h1 { color: #1a73e8; }\n  h2 { color: #444; border-bottom: 2px solid #eee; padding-bottom: 6px; }\n  table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }\n  th { background: #1a73e8; color: white; padding: 8px 12px; text-align: left; }\n  td { padding: 8px 12px; border-bottom: 1px solid #eee; }\n  tr:hover { background: #f9f9f9; }\n  .badge-green { background:#d4edda; color:#155724; padding:3px 8px; border-radius:4px; font-size:12px; }\n  .badge-yellow { background:#fff3cd; color:#856404; padding:3px 8px; border-radius:4px; font-size:12px; }\n</style>\n</head>\n<body>\n<h1>📋 Daily Outreach Report — ${today}</h1>\n\n<h2>📊 Overall Status</h2>\n<table>\n  <tr><th>Status</th><th>Count</th></tr>\n  ${summaryHtml}\n</table>\n\n<h2>📞 Calls Checklist — Needs Your Attention (${needsCallRows.length})</h2>\n<table>\n  <tr><th>Done?</th><th>Contact</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th><th>Replied</th></tr>\n  ${callListHtml}\n</table>\n\n<h2>⏳ Pending — Awaiting Reply (${pendingRows.length})</h2>\n<table>\n  <tr><th>Contact</th><th>Company</th><th>Status</th><th>Follow-ups</th><th>Last Email</th></tr>\n  ${pendingHtml}\n</table>\n\n<hr/>\n<p style=\"color:#888; font-size:12px;\">Automated daily report from your Mailing Outreach System</p>\n</body>\n</html>`;\n\nreturn [{ json: { html, subject: `📋 Daily Outreach Checklist — ${new Date().toLocaleDateString()} | ${needsCallRows.length} calls pending` } }];"
+      },
+      "id": "build-report",
+      "name": "Build HTML Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 360]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $vars.SENDER_EMAIL }}",
+        "toEmail": "={{ $vars.NOTIFY_EMAIL }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "send-report",
+      "name": "Send Daily Report to You",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [940, 360],
+      "credentials": {
+        "gmailOAuth2": { "id": "gmail-cred", "name": "Gmail Outreach" }
+      }
+    }
+  ],
+  "connections": {
+    "Daily 8 AM Trigger": {
+      "main": [[
+        { "node": "Get Status Summary", "type": "main", "index": 0 },
+        { "node": "Get Contacts Needing Call", "type": "main", "index": 0 },
+        { "node": "Get Pending Contacts", "type": "main", "index": 0 }
+      ]]
+    },
+    "Get Status Summary": { "main": [[{ "node": "Build HTML Report", "type": "main", "index": 0 }]] },
+    "Get Contacts Needing Call": { "main": [[{ "node": "Build HTML Report", "type": "main", "index": 0 }]] },
+    "Get Pending Contacts": { "main": [[{ "node": "Build HTML Report", "type": "main", "index": 0 }]] },
+    "Build HTML Report": { "main": [[{ "node": "Send Daily Report to You", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["mailing", "checklist", "report"]
+}

@@ -1,0 +1,110 @@
+{
+  "name": "01 - Import Contacts",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger-manual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "operation": "fromFile",
+        "fileFieldName": "file",
+        "options": {
+          "headerRow": true,
+          "delimiter": ","
+        }
+      },
+      "id": "read-csv",
+      "name": "Read CSV File",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const contacts = [];\n\nfor (const item of $input.all()) {\n  const row = item.json;\n\n  // Normalize fields from Apollo or TraceParts export\n  const contact = {\n    first_name: row['First Name'] || row['first_name'] || row['FirstName'] || '',\n    last_name: row['Last Name'] || row['last_name'] || row['LastName'] || '',\n    email: row['Email'] || row['email'] || row['Email Address'] || '',\n    company: row['Company'] || row['company'] || row['Account Name'] || '',\n    title: row['Title'] || row['title'] || row['Job Title'] || '',\n    phone: row['Phone'] || row['phone'] || row['Mobile Phone'] || '',\n    source: row['Source'] || 'manual',\n    status: 'new',\n    follow_up_count: 0,\n    created_at: new Date().toISOString(),\n    last_email_sent_at: null,\n    replied: false,\n    needs_call: false,\n    call_done: false,\n    notes: ''\n  };\n\n  // Skip rows without email\n  if (!contact.email || !contact.email.includes('@')) continue;\n\n  contacts.push({ json: contact });\n}\n\nreturn contacts;"
+      },
+      "id": "normalize-contacts",
+      "name": "Normalize Contact Fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "contacts",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "first_name": "={{ $json.first_name }}",
+            "last_name": "={{ $json.last_name }}",
+            "email": "={{ $json.email }}",
+            "company": "={{ $json.company }}",
+            "title": "={{ $json.title }}",
+            "phone": "={{ $json.phone }}",
+            "source": "={{ $json.source }}",
+            "status": "={{ $json.status }}",
+            "follow_up_count": "={{ $json.follow_up_count }}",
+            "created_at": "={{ $json.created_at }}",
+            "replied": "={{ $json.replied }}",
+            "needs_call": "={{ $json.needs_call }}",
+            "call_done": "={{ $json.call_done }}",
+            "notes": "={{ $json.notes }}"
+          },
+          "schema": []
+        },
+        "conflictColumns": ["email"],
+        "updateFields": {
+          "values": {
+            "company": "={{ $json.company }}",
+            "title": "={{ $json.title }}",
+            "phone": "={{ $json.phone }}"
+          }
+        }
+      },
+      "id": "upsert-postgres",
+      "name": "Save to Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [900, 300],
+      "credentials": {
+        "postgres": {
+          "id": "postgres-cred",
+          "name": "Mailing DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const total = $input.all().length;\nreturn [{ json: { message: `✅ Import complete. ${total} contacts saved to database.`, count: total } }];"
+      },
+      "id": "summary",
+      "name": "Import Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "Read CSV File", "type": "main", "index": 0 }]] },
+    "Read CSV File": { "main": [[{ "node": "Normalize Contact Fields", "type": "main", "index": 0 }]] },
+    "Normalize Contact Fields": { "main": [[{ "node": "Save to Database", "type": "main", "index": 0 }]] },
+    "Save to Database": { "main": [[{ "node": "Import Summary", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["mailing", "import"]
+}
