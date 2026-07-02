@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EUROTRANS — Fédération Européenne de la Transmission de Puissance</title>
 <meta name="description" content="EUROTRANS représente les intérêts de l'industrie européenne de la transmission de puissance : plus de 600 entreprises, 160 000 emplois et 40 milliards d'euros de production annuelle.">
+<link rel="icon" href="assets/favicon.ico">
 <style>
   :root{
     --bleu:#0b3d6e;
@@ -31,7 +32,8 @@
   header{background:var(--blanc);position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.08);}
   .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;max-width:1140px;margin:0 auto;}
   .logo{display:flex;align-items:center;gap:12px;}
-  .logo-embleme{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,var(--bleu),var(--bleu-clair));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.15rem;letter-spacing:-1px;}
+  .logo-embleme{width:46px;height:46px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .logo-embleme img{width:100%;height:100%;object-fit:contain;}
   .logo-texte strong{display:block;color:var(--bleu);font-size:1.25rem;letter-spacing:.5px;}
   .logo-texte span{font-size:.72rem;color:var(--texte-doux);text-transform:uppercase;letter-spacing:1px;}
   nav ul{display:flex;list-style:none;gap:26px;flex-wrap:wrap;}
@@ -86,7 +88,9 @@
   .actualites{background:var(--gris);}
   .article{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06);transition:.25s;}
   .article:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(0,0,0,.12);}
-  .article-image{height:150px;background:linear-gradient(135deg,var(--bleu-clair),var(--bleu));display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-size:2.4rem;}
+  .article-image{height:170px;background:linear-gradient(135deg,var(--bleu-clair),var(--bleu));overflow:hidden;}
+  .article-image img{width:100%;height:100%;object-fit:cover;transition:.3s;}
+  .article:hover .article-image img{transform:scale(1.05);}
   .article-corps{padding:22px;}
   .article-corps time{font-size:.78rem;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
   .article-corps h3{font-size:1.02rem;color:var(--bleu);margin:8px 0 10px;}
@@ -153,7 +157,7 @@
 <header>
   <div class="nav">
     <a href="#" class="logo">
-      <div class="logo-embleme">ET</div>
+      <div class="logo-embleme"><img src="assets/favicon.ico" alt="Logo EUROTRANS"></div>
       <div class="logo-texte">
         <strong>EUROTRANS</strong>
         <span>Transmission de puissance européenne</span>
@@ -261,38 +265,38 @@
     </div>
     <div class="cartes">
       <article class="article">
-        <div class="article-image">📅</div>
+        <div class="article-image"><img src="assets/news-board-meeting.webp" alt="Réunion du conseil EUROTRANS à l'Université de Newcastle"></div>
         <div class="article-corps">
-          <time>Juin 2026</time>
-          <h3>Réunion du conseil d'administration</h3>
-          <p>Les représentants des associations membres se sont réunis pour définir les orientations stratégiques de la fédération.</p>
+          <time>15.06.2026</time>
+          <h3>Conseil d'administration à l'Université de Newcastle</h3>
+          <p>Le conseil EUROTRANS s'est réuni au Royaume-Uni à l'invitation de la British Gear Association, dans un cadre remarquablement organisé.</p>
           <a href="#" class="lire-plus">Lire la suite →</a>
         </div>
       </article>
       <article class="article">
-        <div class="article-image">🎓</div>
+        <div class="article-image"><img src="assets/news-training.webp" alt="Formation EUROTRANS sur les engrenages en Suisse"></div>
         <div class="article-corps">
-          <time>Mai 2026</time>
-          <h3>Formation en technologie des engrenages à Zurich</h3>
-          <p>L'Académie EUROTRANS propose un nouveau cycle de cours spécialisés en Suisse, ouvert aux ingénieurs du secteur.</p>
+          <time>12.01.2026</time>
+          <h3>Formation « Gear Training » en Suisse — inscriptions ouvertes</h3>
+          <p>L'Académie EUROTRANS organise une formation spécialisée en technologie des engrenages les 26 et 27 février 2026 en Suisse.</p>
           <a href="#" class="lire-plus">Lire la suite →</a>
         </div>
       </article>
       <article class="article">
-        <div class="article-image">🤝</div>
+        <div class="article-image"><img src="assets/news-webinar.webp" alt="Webinaire EUROTRANS sur le commerce transatlantique"></div>
         <div class="article-corps">
-          <time>Avril 2026</time>
-          <h3>Webinaire : partenariat commercial transatlantique</h3>
-          <p>Un échange en ligne consacré aux relations commerciales entre l'Europe et l'Amérique du Nord dans le secteur de la transmission.</p>
+          <time>2025</time>
+          <h3>Webinaire : le partenariat commercial transatlantique</h3>
+          <p>Un échange en ligne avec nos partenaires nord-américains consacré aux relations commerciales dans le secteur de la transmission.</p>
           <a href="#" class="lire-plus">Lire la suite →</a>
         </div>
       </article>
       <article class="article">
-        <div class="article-image">🏭</div>
+        <div class="article-image"><img src="assets/news-hannover.webp" alt="EUROTRANS à la Foire de Hanovre 2025"></div>
         <div class="article-corps">
-          <time>Avril 2026</time>
+          <time>2025</time>
           <h3>EUROTRANS à la Foire de Hanovre</h3>
-          <p>La fédération était présente au grand rendez-vous mondial de l'industrie pour promouvoir le savoir-faire européen.</p>
+          <p>La fédération était présente au grand rendez-vous mondial de l'industrie pour promouvoir le savoir-faire européen de la transmission.</p>
           <a href="#" class="lire-plus">Lire la suite →</a>
         </div>
       </article>
@@ -308,6 +312,7 @@
       <div class="trait"></div>
       <p>Huit associations nationales unies au sein d'une même fédération européenne.</p>
     </div>
+    <img src="assets/members-map.jpg" alt="Carte des associations membres EUROTRANS en Europe" style="max-width:560px;margin:0 auto 40px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.1);">
     <div class="membres-grille">
       <a href="#" class="membre"><span class="drapeau">🇧🇪</span><div><strong>Agoria</strong><span>Belgique</span></div></a>
       <a href="#" class="membre"><span class="drapeau">🇫🇷</span><div><strong>Artema</strong><span>France</span></div></a>
