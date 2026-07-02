@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EUROTRANS — Fédération Européenne de la Transmission de Puissance</title>
+<meta name="description" content="EUROTRANS représente les intérêts de l'industrie européenne de la transmission de puissance : plus de 600 entreprises, 160 000 emplois et 40 milliards d'euros de production annuelle.">
+<style>
+  :root{
+    --bleu:#0b3d6e;
+    --bleu-fonce:#072a4d;
+    --bleu-clair:#1565a8;
+    --accent:#e8a020;
+    --gris:#f4f6f8;
+    --texte:#2b3440;
+    --texte-doux:#5b6672;
+    --blanc:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;color:var(--texte);line-height:1.6;background:var(--blanc);}
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  .conteneur{max-width:1140px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Bandeau supérieur ---------- */
+  .bandeau-haut{background:var(--bleu-fonce);color:#cdd9e5;font-size:.82rem;padding:6px 0;}
+  .bandeau-haut .conteneur{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+  /* ---------- En-tête / navigation ---------- */
+  header{background:var(--blanc);position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.08);}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;max-width:1140px;margin:0 auto;}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-embleme{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,var(--bleu),var(--bleu-clair));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.15rem;letter-spacing:-1px;}
+  .logo-texte strong{display:block;color:var(--bleu);font-size:1.25rem;letter-spacing:.5px;}
+  .logo-texte span{font-size:.72rem;color:var(--texte-doux);text-transform:uppercase;letter-spacing:1px;}
+  nav ul{display:flex;list-style:none;gap:26px;flex-wrap:wrap;}
+  nav a{font-size:.92rem;font-weight:600;color:var(--texte);padding:6px 0;border-bottom:2px solid transparent;transition:.2s;}
+  nav a:hover{color:var(--bleu-clair);border-bottom-color:var(--accent);}
+
+  /* ---------- Héros ---------- */
+  .heros{background:linear-gradient(rgba(7,42,77,.85),rgba(11,61,110,.75)),
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600"><rect fill="%23123a60" width="1200" height="600"/><g fill="none" stroke="%231d5a94" stroke-width="2"><circle cx="900" cy="300" r="180"/><circle cx="900" cy="300" r="120"/><circle cx="620" cy="180" r="90"/><circle cx="620" cy="180" r="55"/><circle cx="300" cy="420" r="140"/><circle cx="300" cy="420" r="90"/></g></svg>') center/cover;
+    color:#fff;padding:110px 0 90px;}
+  .heros h1{font-size:2.6rem;line-height:1.2;max-width:720px;}
+  .heros p{margin:22px 0 34px;font-size:1.15rem;max-width:640px;color:#dbe6f0;}
+  .btn{display:inline-block;padding:14px 32px;border-radius:6px;font-weight:700;font-size:.95rem;transition:.2s;}
+  .btn-principal{background:var(--accent);color:#20242a;}
+  .btn-principal:hover{background:#f5b23c;}
+  .btn-secondaire{border:2px solid #fff;color:#fff;margin-left:14px;}
+  .btn-secondaire:hover{background:#fff;color:var(--bleu);}
+
+  /* ---------- Chiffres clés ---------- */
+  .chiffres{background:var(--bleu);color:#fff;padding:38px 0;}
+  .chiffres .conteneur{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:center;}
+  .chiffre strong{display:block;font-size:2.2rem;color:var(--accent);}
+  .chiffre span{font-size:.9rem;color:#cdd9e5;}
+
+  /* ---------- Sections génériques ---------- */
+  section{padding:80px 0;}
+  .titre-section{text-align:center;margin-bottom:50px;}
+  .titre-section h2{font-size:2rem;color:var(--bleu);}
+  .titre-section p{color:var(--texte-doux);max-width:620px;margin:12px auto 0;}
+  .trait{width:60px;height:4px;background:var(--accent);margin:14px auto 0;border-radius:2px;}
+
+  /* ---------- À propos ---------- */
+  .a-propos{background:var(--gris);}
+  .a-propos-grille{display:grid;grid-template-columns:1.1fr 1fr;gap:50px;align-items:center;}
+  .a-propos h3{color:var(--bleu);margin-bottom:14px;font-size:1.3rem;}
+  .a-propos p{margin-bottom:14px;color:var(--texte-doux);}
+  .carte-direction{background:#fff;border-radius:10px;padding:28px;box-shadow:0 6px 24px rgba(0,0,0,.07);}
+  .carte-direction h4{color:var(--bleu);margin-bottom:16px;font-size:1.05rem;text-transform:uppercase;letter-spacing:1px;}
+  .carte-direction li{list-style:none;padding:10px 0;border-bottom:1px solid #eef1f4;font-size:.95rem;}
+  .carte-direction li:last-child{border-bottom:none;}
+  .carte-direction li span{display:block;color:var(--texte-doux);font-size:.85rem;}
+
+  /* ---------- Activités ---------- */
+  .cartes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px;}
+  .carte{background:#fff;border:1px solid #e6eaef;border-radius:10px;padding:34px 28px;transition:.25s;}
+  .carte:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(11,61,110,.12);border-color:transparent;}
+  .carte .icone{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--bleu),var(--bleu-clair));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:18px;}
+  .carte h3{color:var(--bleu);font-size:1.1rem;margin-bottom:10px;}
+  .carte p{font-size:.92rem;color:var(--texte-doux);}
+
+  /* ---------- Actualités ---------- */
+  .actualites{background:var(--gris);}
+  .article{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06);transition:.25s;}
+  .article:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(0,0,0,.12);}
+  .article-image{height:150px;background:linear-gradient(135deg,var(--bleu-clair),var(--bleu));display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-size:2.4rem;}
+  .article-corps{padding:22px;}
+  .article-corps time{font-size:.78rem;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+  .article-corps h3{font-size:1.02rem;color:var(--bleu);margin:8px 0 10px;}
+  .article-corps p{font-size:.88rem;color:var(--texte-doux);}
+  .lire-plus{display:inline-block;margin-top:12px;font-size:.85rem;font-weight:700;color:var(--bleu-clair);}
+  .lire-plus:hover{color:var(--accent);}
+
+  /* ---------- Membres ---------- */
+  .membres-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;}
+  .membre{display:flex;align-items:center;gap:14px;background:var(--gris);border-radius:10px;padding:18px 20px;transition:.2s;}
+  .membre:hover{background:#e9eff5;}
+  .drapeau{font-size:1.8rem;}
+  .membre strong{display:block;color:var(--bleu);font-size:1rem;}
+  .membre span{font-size:.82rem;color:var(--texte-doux);}
+
+  /* ---------- Appel à l'action ---------- */
+  .cta{background:linear-gradient(135deg,var(--bleu-fonce),var(--bleu-clair));color:#fff;text-align:center;}
+  .cta h2{font-size:1.9rem;margin-bottom:14px;}
+  .cta p{color:#dbe6f0;max-width:560px;margin:0 auto 30px;}
+
+  /* ---------- Contact ---------- */
+  .contact-grille{display:grid;grid-template-columns:1fr 1fr;gap:50px;}
+  .contact-info h3{color:var(--bleu);margin-bottom:18px;}
+  .contact-info p{color:var(--texte-doux);margin-bottom:20px;}
+  .ligne-contact{display:flex;gap:14px;margin-bottom:16px;align-items:flex-start;}
+  .ligne-contact .puce{width:42px;height:42px;flex-shrink:0;border-radius:10px;background:var(--gris);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+  form .champ{margin-bottom:16px;}
+  label{display:block;font-size:.85rem;font-weight:700;margin-bottom:6px;color:var(--bleu);}
+  input,textarea{width:100%;padding:12px 14px;border:1px solid #d7dde4;border-radius:6px;font-size:.95rem;font-family:inherit;}
+  input:focus,textarea:focus{outline:none;border-color:var(--bleu-clair);}
+  .btn-envoyer{background:var(--bleu);color:#fff;border:none;cursor:pointer;width:100%;}
+  .btn-envoyer:hover{background:var(--bleu-clair);}
+
+  /* ---------- Pied de page ---------- */
+  footer{background:var(--bleu-fonce);color:#9fb2c4;padding:56px 0 0;}
+  .pied-grille{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;}
+  footer h4{color:#fff;font-size:.95rem;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;}
+  footer li{list-style:none;margin-bottom:10px;font-size:.88rem;}
+  footer a:hover{color:var(--accent);}
+  .pied-bas{border-top:1px solid rgba(255,255,255,.12);padding:18px 0;font-size:.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+  /* ---------- Adaptation mobile ---------- */
+  @media(max-width:860px){
+    .nav{flex-direction:column;gap:14px;}
+    nav ul{justify-content:center;gap:16px;}
+    .heros h1{font-size:1.9rem;}
+    .a-propos-grille,.contact-grille{grid-template-columns:1fr;}
+    .pied-grille{grid-template-columns:1fr 1fr;}
+    .btn-secondaire{margin-left:0;margin-top:12px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Bandeau supérieur -->
+<div class="bandeau-haut">
+  <div class="conteneur">
+    <span>📍 Secrétariat général — Francfort-sur-le-Main, Allemagne</span>
+    <span>✉️ contact@euro-trans.org &nbsp;|&nbsp; in LinkedIn</span>
+  </div>
+</div>
+
+<!-- En-tête -->
+<header>
+  <div class="nav">
+    <a href="#" class="logo">
+      <div class="logo-embleme">ET</div>
+      <div class="logo-texte">
+        <strong>EUROTRANS</strong>
+        <span>Transmission de puissance européenne</span>
+      </div>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="#accueil">Accueil</a></li>
+        <li><a href="#a-propos">À propos</a></li>
+        <li><a href="#membres">Associations membres</a></li>
+        <li><a href="#activites">Projets</a></li>
+        <li><a href="#activites">Académie</a></li>
+        <li><a href="#actualites">Actualités</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- Héros -->
+<section class="heros" id="accueil">
+  <div class="conteneur">
+    <h1>La voix de l'industrie européenne de la transmission de puissance</h1>
+    <p>EUROTRANS fédère huit associations nationales et représente les fabricants européens d'engrenages, de réducteurs et d'éléments de transmission — un secteur leader mondial en innovation et en savoir-faire.</p>
+    <a href="#a-propos" class="btn btn-principal">Découvrir la fédération</a>
+    <a href="#contact" class="btn btn-secondaire">Nous contacter</a>
+  </div>
+</section>
+
+<!-- Chiffres clés -->
+<div class="chiffres">
+  <div class="conteneur">
+    <div class="chiffre"><strong>8</strong><span>Associations membres en Europe</span></div>
+    <div class="chiffre"><strong>600+</strong><span>Entreprises représentées</span></div>
+    <div class="chiffre"><strong>160 000</strong><span>Emplois dans le secteur</span></div>
+    <div class="chiffre"><strong>40 Md€</strong><span>Production annuelle</span></div>
+  </div>
+</div>
+
+<!-- À propos -->
+<section class="a-propos" id="a-propos">
+  <div class="conteneur">
+    <div class="titre-section">
+      <h2>À propos d'EUROTRANS</h2>
+      <div class="trait"></div>
+    </div>
+    <div class="a-propos-grille">
+      <div>
+        <h3>Une fédération au service de toute une industrie</h3>
+        <p>EUROTRANS défend les intérêts de l'industrie européenne de la transmission de puissance auprès des institutions, des marchés internationaux et des partenaires industriels. La fédération regroupe les associations professionnelles de huit pays européens.</p>
+        <p>Grâce à ses projets techniques et économiques, à son académie de formation et à son réseau international, EUROTRANS renforce la compétitivité d'un secteur où l'Europe occupe la première place mondiale.</p>
+        <p>Le secrétariat général est assuré par la VDMA (Fédération allemande de la construction mécanique) à Francfort.</p>
+      </div>
+      <div class="carte-direction">
+        <h4>Direction</h4>
+        <ul>
+          <li><strong>André Thuswaldner</strong><span>Président — NOVAGEAR, Suisse</span></li>
+          <li><strong>Lorenzo Cattini</strong><span>Vice-président — CATTINI e FIGLIO, Italie</span></li>
+          <li><strong>Dirk A. Decker</strong><span>Secrétariat général — VDMA, Francfort</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Activités -->
+<section id="activites">
+  <div class="conteneur">
+    <div class="titre-section">
+      <h2>Nos domaines d'action</h2>
+      <div class="trait"></div>
+      <p>Quatre piliers au service des entreprises européennes de la transmission de puissance.</p>
+    </div>
+    <div class="cartes">
+      <div class="carte">
+        <div class="icone">⚙️</div>
+        <h3>Projets techniques &amp; économiques</h3>
+        <p>Études sectorielles, travaux de normalisation et initiatives communes pour anticiper les évolutions technologiques et de marché.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">🎓</div>
+        <h3>Académie</h3>
+        <p>Formations et séminaires spécialisés en technologie des engrenages, animés par des experts reconnus du secteur.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">🌍</div>
+        <h3>Réseau international</h3>
+        <p>Partenariats mondiaux et coopération commerciale pour ouvrir de nouvelles perspectives aux entreprises membres.</p>
+      </div>
+      <div class="carte">
+        <div class="icone">📢</div>
+        <h3>Représentation du secteur</h3>
+        <p>Prises de position sur l'importance de l'industrie des équipementiers et sur les relations commerciales transatlantiques.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Actualités -->
+<section class="actualites" id="actualites">
+  <div class="conteneur">
+    <div class="titre-section">
+      <h2>Dernières actualités</h2>
+      <div class="trait"></div>
+    </div>
+    <div class="cartes">
+      <article class="article">
+        <div class="article-image">📅</div>
+        <div class="article-corps">
+          <time>Juin 2026</time>
+          <h3>Réunion du conseil d'administration</h3>
+          <p>Les représentants des associations membres se sont réunis pour définir les orientations stratégiques de la fédération.</p>
+          <a href="#" class="lire-plus">Lire la suite →</a>
+        </div>
+      </article>
+      <article class="article">
+        <div class="article-image">🎓</div>
+        <div class="article-corps">
+          <time>Mai 2026</time>
+          <h3>Formation en technologie des engrenages à Zurich</h3>
+          <p>L'Académie EUROTRANS propose un nouveau cycle de cours spécialisés en Suisse, ouvert aux ingénieurs du secteur.</p>
+          <a href="#" class="lire-plus">Lire la suite →</a>
+        </div>
+      </article>
+      <article class="article">
+        <div class="article-image">🤝</div>
+        <div class="article-corps">
+          <time>Avril 2026</time>
+          <h3>Webinaire : partenariat commercial transatlantique</h3>
+          <p>Un échange en ligne consacré aux relations commerciales entre l'Europe et l'Amérique du Nord dans le secteur de la transmission.</p>
+          <a href="#" class="lire-plus">Lire la suite →</a>
+        </div>
+      </article>
+      <article class="article">
+        <div class="article-image">🏭</div>
+        <div class="article-corps">
+          <time>Avril 2026</time>
+          <h3>EUROTRANS à la Foire de Hanovre</h3>
+          <p>La fédération était présente au grand rendez-vous mondial de l'industrie pour promouvoir le savoir-faire européen.</p>
+          <a href="#" class="lire-plus">Lire la suite →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Associations membres -->
+<section id="membres">
+  <div class="conteneur">
+    <div class="titre-section">
+      <h2>Associations membres</h2>
+      <div class="trait"></div>
+      <p>Huit associations nationales unies au sein d'une même fédération européenne.</p>
+    </div>
+    <div class="membres-grille">
+      <a href="#" class="membre"><span class="drapeau">🇧🇪</span><div><strong>Agoria</strong><span>Belgique</span></div></a>
+      <a href="#" class="membre"><span class="drapeau">🇫🇷</span><div><strong>Artema</strong><span>France</span></div></a>
+      <a href="#" class="membre"><span class="drapeau">🇮🇹</span><div><strong>Assiot</strong><span>Italie</span></div></a>
+      <a href="#" class="membre"><span class="drapeau">🇬🇧</span><div><strong>BGA</strong><span>Royaume-Uni</span></div></a>
+      <a href="#" class="membre"><span class="drapeau">🇹🇷</span><div><strong>MIB</strong><span>Turquie</span></div></a>
+      <a href="#" class="membre"><span class="drapeau">🇨🇭</span><div><strong>Swissmem</strong><span>Suisse</span></div></a>
+      <a href="#" class="membre"><span class="drapeau">🇫🇮</span><div><strong>Teknologiateollisuus</strong><span>Finlande</span></div></a>
+      <a href="#" class="membre"><span class="drapeau">🇩🇪</span><div><strong>VDMA</strong><span>Allemagne</span></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- Appel à l'action -->
+<section class="cta">
+  <div class="conteneur">
+    <h2>Rejoignez le réseau européen de la transmission de puissance</h2>
+    <p>Formations, projets sectoriels, coopération internationale : découvrez ce qu'EUROTRANS peut apporter à votre entreprise.</p>
+    <a href="#contact" class="btn btn-principal">Prendre contact</a>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="conteneur">
+    <div class="titre-section">
+      <h2>Contact</h2>
+      <div class="trait"></div>
+    </div>
+    <div class="contact-grille">
+      <div class="contact-info">
+        <h3>Écrivez-nous</h3>
+        <p>Une question sur la fédération, l'académie ou nos projets ? Notre secrétariat vous répondra dans les meilleurs délais.</p>
+        <div class="ligne-contact"><div class="puce">📍</div><div><strong>Adresse</strong><br>Secrétariat général EUROTRANS c/o VDMA, Francfort-sur-le-Main, Allemagne</div></div>
+        <div class="ligne-contact"><div class="puce">✉️</div><div><strong>E-mail</strong><br>contact@euro-trans.org</div></div>
+        <div class="ligne-contact"><div class="puce">💼</div><div><strong>LinkedIn</strong><br>EUROTRANS — European Power Transmission</div></div>
+      </div>
+      <form onsubmit="alert('Merci ! Votre message a bien été envoyé.');return false;">
+        <div class="champ"><label for="nom">Nom complet</label><input id="nom" type="text" placeholder="Votre nom" required></div>
+        <div class="champ"><label for="email">Adresse e-mail</label><input id="email" type="email" placeholder="vous@entreprise.com" required></div>
+        <div class="champ"><label for="message">Message</label><textarea id="message" rows="5" placeholder="Votre message…" required></textarea></div>
+        <button type="submit" class="btn btn-envoyer">Envoyer le message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Pied de page -->
+<footer>
+  <div class="conteneur">
+    <div class="pied-grille">
+      <div>
+        <h4>EUROTRANS</h4>
+        <p style="font-size:.88rem;">La fédération européenne de l'industrie de la transmission de puissance : 8 associations nationales, plus de 600 entreprises et 160 000 emplois à travers l'Europe.</p>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#accueil">Accueil</a></li>
+          <li><a href="#a-propos">À propos</a></li>
+          <li><a href="#membres">Associations membres</a></li>
+          <li><a href="#actualites">Actualités</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Activités</h4>
+        <ul>
+          <li><a href="#activites">Projets</a></li>
+          <li><a href="#activites">Académie</a></li>
+          <li><a href="#activites">Réseau international</a></li>
+          <li><a href="#contact">Carrières</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Informations légales</h4>
+        <ul>
+          <li><a href="#">Politique de confidentialité</a></li>
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">Avertissement</a></li>
+          <li><a href="#">Droits d'auteur</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pied-bas">
+      <span>© 2026 EUROTRANS — Tous droits réservés.</span>
+      <span>Fédération européenne de la transmission de puissance</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
