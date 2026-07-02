@@ -351,16 +351,17 @@
 
   <details>
     <summary>How this is calculated</summary>
-    <div class="formula-block">Rope pull:        F = (Q · g) / (z · η)
+    <div class="formula-block">Rope pull:        F = (Q · g) / z
 Drum speed:       n_drum = (v_hook · z) / (π · D_drum)
-Drum torque:      T_drum = F · D_drum / 2
+Drum torque:      T_drum = (Q · g · r) / z,  r = D_drum / 2
 Motor power:      P = (Q · g · v_hook) / (60,000 · η)
 Motor torque:     T_motor = 9550 · P / n_motor
 Gearbox ratio:    i = n_motor / n_drum
 
 Q = load (kg)     g = 9.81 m/s²    z = number of falls
 v_hook = hoisting (hook) speed (m/min)    D_drum = drum diameter (m)
-η = overall mechanism efficiency (reeving + gearbox + bearings)
+r = drum radius (m) = D_drum / 2  (e.g. r = (d[mm] / 2) · 0.001)
+η = overall mechanism efficiency (reeving + gearbox + bearings) — applied to motor power sizing only
 n_motor = motor speed (rpm)    P = motor power (kW)</div>
     <p class="note">
       Drum diameter is taken as the rope pitch diameter (drum barrel to rope centerline);
@@ -443,13 +444,14 @@ n_motor = motor speed (rpm)    P = motor power (kW)</div>
     }
 
     // Rope pull at drum (N)
-    const F_N = (Q * G) / (z * eta);
+    const F_N = (Q * G) / z;
 
     // Drum speed (rpm)
     const n_drum = (v_hook * z) / (Math.PI * D);
 
-    // Drum torque (Nm)
-    const T_drum = F_N * (D / 2);
+    // Drum torque (Nm): T = (Q * g * r) / falls, r = drum radius in m (D already converted to m)
+    const r = D / 2;
+    const T_drum = (Q * G * r) / z;
 
     // Motor power (kW)
     const P_kw = (Q * G * v_hook) / (60000 * eta);
