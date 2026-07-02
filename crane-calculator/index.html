@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crane Hoist Drive Calculator</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --result-bg: #0f172a;
+    --result-text: #f8fafc;
+    --result-accent: #60a5fa;
+    --warn-bg: #fffbeb;
+    --warn-border: #fde68a;
+    --warn-text: #92400e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px 16px 64px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .subtitle { color: var(--text-muted); font-size: 14px; margin: 0; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .card h2 {
+    font-size: 15px;
+    margin: 0 0 16px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  input[type="number"], select {
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    font-family: inherit;
+  }
+  input[type="number"] {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  select { flex: 0 0 auto; cursor: pointer; }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+
+  .results { display: grid; gap: 10px; }
+  .result-item {
+    background: var(--result-bg);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .result-item .label {
+    color: #cbd5e1;
+    font-size: 13px;
+  }
+  .result-item .value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .result-item .value {
+    color: var(--result-text);
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .result-item select {
+    background: #1e293b;
+    color: var(--result-accent);
+    border: 1px solid #334155;
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+  .result-item.primary { background: var(--accent); }
+  .result-item.primary .label { color: #dbeafe; }
+  .result-item.primary select { background: #1d4ed8; border-color: #3b82f6; color: #fff; }
+
+  .suggested {
+    font-size: 12px;
+    color: #93c5fd;
+    margin-top: 2px;
+  }
+
+  details {
+    margin-top: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  details[open] summary { margin-bottom: 12px; }
+  .formula-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px;
+    margin: 8px 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .note {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 8px 0 0;
+  }
+  .warn {
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    color: var(--warn-text);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+  .adv-toggle {
+    font-size: 13px;
+    color: var(--accent);
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .adv-fields { display: none; }
+  .adv-fields.open { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Crane Hoist Drive Calculator</h1>
+    <p class="subtitle">Preliminary sizing for hoist motor power, gearbox ratio, and torque from load, drum size, hoisting speed, and reeving.</p>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Inputs</h2>
+
+      <div class="field">
+        <label>Load (SWL)</label>
+        <div class="input-row">
+          <input type="number" id="load" value="10" min="0" step="any">
+          <select id="loadUnit">
+            <option value="t" selected>t (metric ton)</option>
+            <option value="kg">kg</option>
+            <option value="lb">lb</option>
+            <option value="ust">US ton (2000 lb)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Drum diameter <span class="hint">(barrel, to rope centerline)</span></label>
+        <div class="input-row">
+          <input type="number" id="drum" value="400" min="0" step="any">
+          <select id="drumUnit">
+            <option value="mm" selected>mm</option>
+            <option value="cm">cm</option>
+            <option value="m">m</option>
+            <option value="in">in</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Hoisting speed <span class="hint">(hook / load speed)</span></label>
+        <div class="input-row">
+          <input type="number" id="speed" value="8" min="0" step="any">
+          <select id="speedUnit">
+            <option value="m/min" selected>m/min</option>
+            <option value="m/s">m/s</option>
+            <option value="ft/min">ft/min</option>
+            <option value="ft/s">ft/s</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Number of falls <span class="hint">(reeving / parts of line)</span></label>
+        <div class="input-row">
+          <input type="number" id="falls" value="4" min="1" step="1">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Motor speed</label>
+        <div class="input-row">
+          <input type="number" id="motorSpeed" value="1450" min="1" step="any">
+          <select id="motorSpeedPreset">
+            <option value="">rpm (custom)</option>
+            <option value="2900">2-pole 50Hz — 2900</option>
+            <option value="1450" selected>4-pole 50Hz — 1450</option>
+            <option value="970">6-pole 50Hz — 970</option>
+            <option value="725">8-pole 50Hz — 725</option>
+            <option value="3450">2-pole 60Hz — 3450</option>
+            <option value="1750">4-pole 60Hz — 1750</option>
+            <option value="1160">6-pole 60Hz — 1160</option>
+            <option value="870">8-pole 60Hz — 870</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="adv-toggle" id="advToggle">⚙ Advanced: overall mechanism efficiency ▾</div>
+      <div class="adv-fields" id="advFields">
+        <div class="field">
+          <label>Overall efficiency (η) <span class="hint">reeving + gearbox + bearings, 0–1</span></label>
+          <div class="input-row">
+            <input type="number" id="eff" value="0.85" min="0.1" max="1" step="0.01">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Results</h2>
+      <div class="results">
+
+        <div class="result-item primary">
+          <div>
+            <div class="label">Required motor power</div>
+            <div class="suggested" id="motorSuggested"></div>
+          </div>
+          <div class="value-row">
+            <span class="value" id="outPower">–</span>
+            <select id="powerUnit">
+              <option value="kW" selected>kW</option>
+              <option value="hp">hp</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="result-item">
+          <div class="label">Gearbox ratio (motor : drum)</div>
+          <div class="value-row">
+            <span class="value" id="outRatio">–</span>
+          </div>
+        </div>
+
+        <div class="result-item">
+          <div class="label">Motor shaft torque</div>
+          <div class="value-row">
+            <span class="value" id="outMotorTorque">–</span>
+            <select id="motorTorqueUnit">
+              <option value="Nm" selected>N·m</option>
+              <option value="kgfm">kgf·m</option>
+              <option value="lbft">lb·ft</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="result-item">
+          <div class="label">Drum (gearbox output) torque</div>
+          <div class="value-row">
+            <span class="value" id="outDrumTorque">–</span>
+            <select id="drumTorqueUnit">
+              <option value="Nm" selected>N·m</option>
+              <option value="kgfm">kgf·m</option>
+              <option value="lbft">lb·ft</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="result-item">
+          <div class="label">Drum speed</div>
+          <div class="value-row">
+            <span class="value" id="outDrumSpeed">–</span>
+            <span class="label">rpm</span>
+          </div>
+        </div>
+
+        <div class="result-item">
+          <div class="label">Rope pull (line tension at drum)</div>
+          <div class="value-row">
+            <span class="value" id="outRopePull">–</span>
+            <select id="ropePullUnit">
+              <option value="kN" selected>kN</option>
+              <option value="kgf">kgf</option>
+              <option value="lbf">lbf</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>How this is calculated</summary>
+    <div class="formula-block">Rope pull:        F = (Q · g) / (z · η)
+Drum speed:       n_drum = (v_hook · z) / (π · D_drum)
+Drum torque:      T_drum = F · D_drum / 2
+Motor power:      P = (Q · g · v_hook) / (60,000 · η)
+Motor torque:     T_motor = 9550 · P / n_motor
+Gearbox ratio:    i = n_motor / n_drum
+
+Q = load (kg)     g = 9.81 m/s²    z = number of falls
+v_hook = hoisting (hook) speed (m/min)    D_drum = drum diameter (m)
+η = overall mechanism efficiency (reeving + gearbox + bearings)
+n_motor = motor speed (rpm)    P = motor power (kW)</div>
+    <p class="note">
+      Drum diameter is taken as the rope pitch diameter (drum barrel to rope centerline);
+      for a precise design add the rope diameter to the barrel diameter before entering it here.
+      "Required motor power" is rounded up to the nearest standard IEC motor frame size as a suggestion —
+      always re-check against the manufacturer's duty/class rating (FEM/ISO 4301) and starting torque needs.
+    </p>
+  </details>
+
+  <div class="warn">
+    <strong>Engineering note:</strong> This tool gives a preliminary estimate for hoist drive sizing only.
+    It does not account for duty class / load spectrum (FEM 9.511, ISO 4301), acceleration torque, starting
+    duty cycle, motor thermal class, or safety factors required by crane design codes. Final motor and
+    gearbox selection must be verified by a qualified engineer against the applicable standards.
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+
+  // --- unit conversion tables (canonical SI: kg, m, m/min) ---
+  const toKg = { t: 1000, kg: 1, lb: 0.45359237, ust: 907.18474 };
+  const toM = { mm: 0.001, cm: 0.01, m: 1, in: 0.0254 };
+  const toMPerMin = { 'm/min': 1, 'm/s': 60, 'ft/min': 0.3048, 'ft/s': 0.3048 * 60 };
+
+  const kWtoHp = 1.3410220896;
+  const NmToKgfm = 1 / 9.80665;
+  const NmToLbft = 0.737562149;
+  const kNtoKgf = 1000 / 9.80665;
+  const kNtoLbf = 1000 / 4.4482216153;
+
+  const G = 9.80665;
+
+  // Standard IEC motor power sizes (kW)
+  const stdMotors = [0.12, 0.18, 0.25, 0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5,
+    11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315, 355, 400];
+
+  function nextStdMotor(pKw) {
+    for (const m of stdMotors) if (m >= pKw) return m;
+    return stdMotors[stdMotors.length - 1];
+  }
+
+  function fmt(n, digits) {
+    if (!isFinite(n)) return '–';
+    return n.toLocaleString(undefined, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
+  }
+
+  function advToggle() {
+    const box = $('advFields');
+    const open = box.classList.toggle('open');
+    $('advToggle').textContent = (open ? '⚙ Advanced: overall mechanism efficiency ▴' : '⚙ Advanced: overall mechanism efficiency ▾');
+  }
+  $('advToggle').addEventListener('click', advToggle);
+
+  $('motorSpeedPreset').addEventListener('change', (e) => {
+    if (e.target.value) $('motorSpeed').value = e.target.value;
+    calculate();
+  });
+
+  function calculate() {
+    const Q_raw = parseFloat($('load').value);
+    const D_raw = parseFloat($('drum').value);
+    const v_raw = parseFloat($('speed').value);
+    const z = parseFloat($('falls').value);
+    const n_motor = parseFloat($('motorSpeed').value);
+    const eta = parseFloat($('eff').value);
+
+    const Q = Q_raw * (toKg[$('loadUnit').value] || 1);           // kg
+    const D = D_raw * (toM[$('drumUnit').value] || 1);            // m
+    const v_hook = v_raw * (toMPerMin[$('speedUnit').value] || 1); // m/min
+
+    const valid = [Q, D, v_hook, z, n_motor, eta].every(x => isFinite(x) && x > 0) && D > 0;
+
+    if (!valid) {
+      ['outPower', 'outRatio', 'outMotorTorque', 'outDrumTorque', 'outDrumSpeed', 'outRopePull']
+        .forEach(id => $(id).textContent = '–');
+      $('motorSuggested').textContent = '';
+      return;
+    }
+
+    // Rope pull at drum (N)
+    const F_N = (Q * G) / (z * eta);
+
+    // Drum speed (rpm)
+    const n_drum = (v_hook * z) / (Math.PI * D);
+
+    // Drum torque (Nm)
+    const T_drum = F_N * (D / 2);
+
+    // Motor power (kW)
+    const P_kw = (Q * G * v_hook) / (60000 * eta);
+
+    // Motor torque (Nm)
+    const T_motor = 9550 * P_kw / n_motor;
+
+    // Gearbox ratio
+    const ratio = n_motor / n_drum;
+
+    // --- render, respecting selected output units ---
+    const powerUnit = $('powerUnit').value;
+    $('outPower').textContent = powerUnit === 'hp' ? fmt(P_kw * kWtoHp, 2) : fmt(P_kw, 2);
+    const stdKw = nextStdMotor(P_kw);
+    const stdDisplay = powerUnit === 'hp' ? (stdKw * kWtoHp).toFixed(1) + ' hp' : stdKw + ' kW';
+    $('motorSuggested').textContent = 'Suggested standard motor: ' + stdDisplay;
+
+    $('outRatio').textContent = fmt(ratio, 2) + ' : 1';
+
+    const motorTorqueUnit = $('motorTorqueUnit').value;
+    $('outMotorTorque').textContent = fmt(
+      motorTorqueUnit === 'kgfm' ? T_motor * NmToKgfm : motorTorqueUnit === 'lbft' ? T_motor * NmToLbft : T_motor,
+      motorTorqueUnit === 'Nm' ? 1 : 2
+    );
+
+    const drumTorqueUnit = $('drumTorqueUnit').value;
+    $('outDrumTorque').textContent = fmt(
+      drumTorqueUnit === 'kgfm' ? T_drum * NmToKgfm : drumTorqueUnit === 'lbft' ? T_drum * NmToLbft : T_drum,
+      drumTorqueUnit === 'Nm' ? 1 : 2
+    );
+
+    $('outDrumSpeed').textContent = fmt(n_drum, 2);
+
+    const ropePullUnit = $('ropePullUnit').value;
+    const F_kN = F_N / 1000;
+    $('outRopePull').textContent = fmt(
+      ropePullUnit === 'kgf' ? F_kN * kNtoKgf : ropePullUnit === 'lbf' ? F_kN * kNtoLbf : F_kN,
+      ropePullUnit === 'kN' ? 3 : 1
+    );
+  }
+
+  document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', calculate);
+    el.addEventListener('change', calculate);
+  });
+
+  calculate();
+})();
+</script>
+</body>
+</html>
