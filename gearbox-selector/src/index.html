@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr" class="hero-open">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#14171b">
+<title>İ-MAK Redüktör Seçici — 3B</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="hero3d">
+  <canvas id="c"></canvas>
+  <div class="ui">
+    <div class="htop">
+      <span class="hlogo"><img src="LOGO_DATA_URI_HERE" alt="I-MAK"></span>
+      <span class="hbrand">Redüktör Seçici</span>
+      <span class="hlang"><button id="lt" class="on">TR</button><button id="le">EN</button></span>
+    </div>
+    <div class="hspace"></div>
+    <div class="hero">
+      <h1>İ-MAK <span class="r">3B</span><br>Redüktör</h1>
+      <div id="tagline"></div>
+      <button class="hbtn" id="btnOpen"></button>
+    </div>
+  </div>
+  <div id="hint"></div>
+</div>
+<div id="marker"></div>
+<header class="top"><div class="wrap topbar">
+  <div class="brand"><span class="logo-badge"><img src="LOGO_DATA_URI_HERE" alt="I-MAK"></span><span class="brand-title">Redüktör Seçici</span></div>
+  <div class="headright">
+    <button class="homebtn" id="btnHome" title="3B">◱ 3B</button>
+    <div class="langtog"><button id="btnLangTr" class="on">TR</button><button id="btnLangEn">EN</button></div>
+    <div class="tagline" id="tagline2"></div>
+  </div>
+</div></header>
+<main class="wrap">
+  <div class="apppick"><label class="f"><span class="lab" id="lblApp">Uygulama</span><select id="appSel"></select></label></div>
+  <section class="apppage">
+    <div class="apphead">
+      <div><div class="appgroup" id="appGroup"></div><h1 class="apptitle" id="appTitle"></h1></div>
+      <div class="series"><span id="appSeries"></span></div>
+    </div>
+    <div class="dfrow">
+      <div class="box diagbox"><div class="boxk" id="lblDiagram">Şema</div><div class="dia" id="dia"></div></div>
+      <div class="box formbox"><div class="boxk" id="lblFormula">Formül</div><div class="formulaBox" id="formulaBox"></div></div>
+    </div>
+    <div class="box"><div class="boxk" id="lblInputs">Girdiler</div><div class="inputs" id="inputs"></div></div>
+    <div class="box"><div class="boxk" id="lblSteps">Hesap adımları</div><div class="steps" id="steps"></div></div>
+    <div class="box resultbox"><div class="boxk" id="lblResult">Sonuç</div>
+      <div class="metrics">
+        <div class="m red"><div class="k" id="lblMn">Gerekli nominal moment</div><div class="v" id="rMn">—</div></div>
+        <div class="m"><div class="k" id="lblMT">Çıkış momenti</div><div class="v" id="rMT">—</div></div>
+        <div class="m"><div class="k" id="lblN">Çıkış devri</div><div class="v" id="rn">—</div></div>
+        <div class="m"><div class="k" id="lblI">Tahvil</div><div class="v" id="ri">—</div></div>
+        <div class="m"><div class="k" id="lblP">Motor gücü</div><div class="v" id="rP">—</div></div>
+        <div class="m"><div class="k" id="lblSf">Servis faktörü</div><div class="v" id="rSf">—</div></div>
+      </div>
+      <div class="rec"><div class="k" id="lblRec">Önerilen İ-MAK ürünü</div><div class="recline" id="recLine"></div></div>
+    </div>
+  </section>
+  <p class="disclaimer" id="disc"></p>
+</main>
+<div class="actionbar"><div class="inner">
+  <button class="btn primary" id="copyBtn"></button>
+  <button class="btn" id="printBtn"></button>
+  <button class="btn ghost" id="resetBtn"></button>
+</div></div>
+<!-- Offline build inlines these four in order (see build.py): -->
+<script src="three.min.js"></script>
+<script src="OrbitControls.js"></script>
+<script src="hero-3d.js"></script>
+<script src="selector-engine.js"></script>
+</body>
+</html>
