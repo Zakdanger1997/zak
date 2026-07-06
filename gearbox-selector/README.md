@@ -1,55 +1,71 @@
-# I-MAK Gearbox Selector
+# İ-MAK Redüktör Seçici / I-MAK Gearbox Selector
 
-A field tool that sizes an I-MAK gearbox for a given application. It works fully
-offline (single self-contained HTML file, no internet needed) and now assigns a
-**specific sizing formula to every application**.
+Uygulamaya özel redüktör seçim aracı. Her uygulamanın **kendi sayfası, kendi şeması
+ve kendi formülü** vardır — tıpkı İ-MAK Ar-Ge Teknik Eğitim Sunumu'ndaki gibi.
+Tamamen çevrimdışı çalışır (tek dosya, internet gerektirmez). Türkçe/İngilizce
+geçişlidir.
 
-## Files
+*A per-application gearbox selection tool. Each application has its **own page, own
+diagram and own formula** — just like the I-MAK R&D training deck. Fully offline
+(single file), with a Turkish/English toggle.*
 
-| File | Use |
-|------|-----|
-| `imak-gearbox-selector-windows.html` | **Windows / desktop** version — wide two-column workspace |
-| `imak-gearbox-selector-phone.html` | **Phone** version — single column, large touch targets, no input zoom |
-| `IMAK-Gearbox-Formulas.xlsx` | Every formula, service factor, variable & default — review and edit here |
+## Dosyalar / Files
 
-Both HTML files share the **same calculation engine**, so results are identical;
-only the layout differs. Just double-click a file to open it in any browser.
+| Dosya / File | Açıklama / Use |
+|---|---|
+| `imak-reduktor-secici-windows.html` | **Windows / masaüstü** — geniş yerleşim / wide desktop layout |
+| `imak-reduktor-secici-phone.html` | **Telefon / phone** — tek sütun, büyük dokunma alanları / single column, large touch targets |
+| `IMAK-Reduktor-Formuller.xlsx` | Tüm formüller (TR/EN) — inceleyin ve düzenleyin / all formulas, review & edit |
 
-## What was fixed
+Bir dosyayı çift tıklayın; herhangi bir tarayıcıda açılır. / Double-click a file to
+open it in any browser.
 
-Previously 9 applications had **no formula** and fell back to manual entry. Every
-application now has its own process calculator:
+## Ne değişti / What changed
 
-| Application | Formula added |
-|-------------|---------------|
-| Escalator / moving walk | `P = (1+k)·(pax/3600)·mp·g·H/1000` |
-| Crane — slewing drive | `T₂ = J·α + Tf`, `J = m·r²` |
-| Passenger lift / elevator | `P = Q·(1−b)·g·v/1000` |
-| Rotary kiln / drying drum | `T₂ = (1+k)·m·g·(D/2)·e` |
-| Extruder — plastic / rubber | `P = SME·Q`, `T₂ = 9550·P/n` |
-| Sifter / plansifter drive | `P = k·m·r²·ω³/1000` |
-| Vibrating screen / shaker | `P = k·m·A²·ω³/1000` |
-| Rotary table / turntable | `T₂ = J·α + Tf`, `J = 0.5·m·r²` |
+Önceki sürüm her uygulama için **aynı sayfayı** kullanıyordu. Bu sürümde her uygulama
+**ayrı bir sayfadır**: kendi şeması, kendi formülü ve İ-MAK sunumundaki gibi adım
+adım **canlı örnek hesap**. / The previous version used the **same page** for every
+application. Now each application is its **own page**: its diagram, its formula, and
+a **live step-by-step worked calculation** like the I-MAK deck.
 
-The existing belt, screw, bucket-elevator, hoist, travel, agitator, pump, fan and
-grinding/crushing formulas were kept and verified.
+### İ-MAK formülleri (sunumdan) / I-MAK formulas (from the deck)
 
-## How a selection is computed
+| Uygulama / Application | Formül / Formula |
+|---|---|
+| Bantlı konveyör (yatay/eğimli) / Belt (horizontal/inclined) | `Mᴛ = k·(cosα+sinα)·m·g·r` · `n = 9,55·v/r` |
+| Vinç kaldırma / Crane hoist | `Mᴛ = m·g·r` · `n = 9,55·v/r` |
+| Palangalı kaldırma / Pulley hoist | `Mᴛ = m·g·r/z` · `n = 9,55·v·z/r` |
+| Yürütme / Travel | `Mᴛ = [Q·f + μ·Q·(d/2)]·g` · `v = π·D·n/60000` |
+| Helezon konveyör / Screw conveyor | `Pₘ = Qₜₒₚ·v/(60·75·1,36·η)` |
+| Karıştırıcı (kanat) / Agitator (blade) | `Mₖ = (Ød/2)·b·kᵢ·ρ·10`, kanatların toplamı / summed |
 
-1. **Process data** → the application's formula returns output power `P_out` (kW)
-   or output torque `T₂` (N·m) and output speed `n₂`.
-2. `T₂ = 9550·P_out/n₂`  (or `P_out = T₂·n₂/9550`).
-3. Service factor `SF = base(duty) + load adjustment` (min 1.00).
-4. **Required nominal torque `Tn = T₂ × SF`** — pick an I-MAK unit with catalogue
-   `Tn ≥` this value.
-5. Motor `= P_out / η`, rounded up to the next IEC standard kW.
+> Doğrulama / Validation: uygulama, sunumdaki örnekleri birebir üretir — ör. vinç
+> kaldırma 2 t / Ø300 mm / 10 m/dk → **Mᴛ = 2943 Nm, n = 10,6 d/dk, motor 4 kW**
+> (sunum s. 24). / The app reproduces the deck's worked examples exactly — e.g. crane
+> hoist 2 t / Ø300 mm / 10 m/min → **2943 Nm, 10.6 rpm, 4 kW** (deck p. 24).
 
-## Editing the formulas
+### Web araştırmasıyla eklenenler / Added from web research (distinct formula each)
 
-Open `IMAK-Gearbox-Formulas.xlsx` — the *Variables & defaults* and *Formula
-library* sheets document every equation and default. Change what you need and send
-it back, and both app versions can be regenerated to match.
+Kovalı elevatör, zincirli konveyör, titreşimli besleyici, döner (slewing) tahrik,
+asansör, karıştırıcı (güç sayısı Np), döner fırın, ekstruder, valsli/çekiçli/**bilyalı
+(Bond)** değirmen, elek/plansifter, pelet değirmeni, kırıcı, titreşimli elek, döner
+tabla, santrifüj/pistonlu pompa, santrifüj fan.
 
-> Process-mode results are **field estimates**. Always confirm the final choice
-> against the I-MAK catalogue (nominal torque, ratio, overhung-load & thermal
-> rating). Cranes, hoists and lifts also need FEM/ISO duty-class and braking review.
+## Hesap akışı / How it computes
+
+1. Formül → çıkış momenti `Mᴛ` (Nm) veya çıkış gücü `Pₒ` (kW) + çıkış devri `n`.
+2. `Mᴛ = 9550·Pₒ/n`  veya / or  `Pₒ = Mᴛ·n/9550`.
+3. Motor gücü `Pₘ = Pₒ/η` → bir üst IEC güç. / next IEC size.
+4. **Gerekli nominal moment `Mₙ = Mᴛ·Sf`** — katalog nominal momenti ≥ bu değer olan
+   İ-MAK redüktörünü seçin. / choose an I-MAK unit with catalogue nominal moment ≥ this.
+
+## Formülleri düzenleme / Editing the formulas
+
+`IMAK-Reduktor-Formuller.xlsx` içindeki *Değişkenler* ve *Örnek Hesap* sayfaları her
+denklemi ve varsayılanı belgeler. Değiştirip geri gönderin; her iki sürümü yeniden
+üretebilirim. / Edit the *Variables* / *Worked example* sheets and send it back; both
+app versions can be regenerated to match.
+
+> Süreç sonuçları **saha tahminidir**; nihai seçimi İ-MAK kataloğu (nominal moment,
+> tahvil, radyal yük, termik güç) ile doğrulayın. / Process results are **field
+> estimates**; confirm against the I-MAK catalogue.
