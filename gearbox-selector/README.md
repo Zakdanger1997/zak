@@ -13,6 +13,7 @@ diagram and own formula** — just like the I-MAK R&D training deck. Fully offli
 
 | Dosya / File | Açıklama / Use |
 |---|---|
+| `imak-reduktor-secici-3d.html` | **HEPSİ BİR ARADA / ALL-IN-ONE** — 3B açılış + tüm seçici tek dosyada; buton sayfa içinde geçer (ayrı dosya gerekmez) / 3D intro + full selector in one file; the button switches in-page (no separate files needed) |
 | `imak-reduktor-3d.html` | **3B açılış / 3D hero** — interaktif dönen redüktör (Three.js gömülü, çevrimdışı); uygulamalara bağlanır / interactive rotating gearbox (Three.js embedded, offline); links into the apps |
 | `imak-reduktor-secici-windows.html` | **Windows / masaüstü** — geniş yerleşim / wide desktop layout |
 | `imak-reduktor-secici-phone.html` | **Telefon / phone** — tek sütun, büyük dokunma alanları / single column, large touch targets |
