@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İ-MAK Pricing Calculator</title>
+<style>
+  :root{--bg:#0f1720;--card:#17212b;--line:#26333f;--txt:#e7edf3;--mut:#8fa3b5;
+        --acc:#2e9be6;--acc2:#1f6fb2;--good:#2ecc71;--warn:#e6a23c;--rad:10px}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  header{background:linear-gradient(90deg,#12313f,#0f1720);padding:16px 22px;border-bottom:1px solid var(--line);
+         display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{font-size:18px;margin:0;letter-spacing:.3px}
+  header .tag{color:var(--mut);font-size:12px}
+  .wrap{max-width:1080px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:1fr 400px;gap:16px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--rad);padding:16px}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin:0 0 12px}
+  label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+  input,select,button{font:inherit;color:var(--txt);background:#0e161e;border:1px solid var(--line);
+        border-radius:8px;padding:9px 10px;width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--acc)}
+  .row{display:flex;gap:10px}.row>*{flex:1}
+  .chk{display:flex;align-items:center;gap:8px;margin:7px 0}
+  .chk input{width:auto}
+  .chk label{margin:0;color:var(--txt);font-size:13px}
+  button.go{background:var(--acc);border-color:var(--acc2);font-weight:600;cursor:pointer;margin-top:14px}
+  button.go:hover{background:var(--acc2)}
+  .hint{font-size:11px;color:var(--mut);margin-top:4px}
+  #results{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px}
+  .u{padding:7px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:12.5px}
+  .u:hover{background:#10202b}.u.sel{background:#123143}
+  .u b{color:var(--acc)} .u span{color:var(--mut)}
+  table{width:100%;border-collapse:collapse}
+  td{padding:6px 4px;border-bottom:1px solid var(--line)}
+  td.r{text-align:right;font-variant-numeric:tabular-nums}
+  .tot td{border-top:2px solid var(--acc);border-bottom:none;font-size:17px;font-weight:700;padding-top:10px}
+  .sub td{color:var(--mut)}
+  .pill{display:inline-block;background:#0e161e;border:1px solid var(--line);border-radius:20px;
+        padding:2px 10px;font-size:11px;color:var(--mut);margin-right:6px}
+  .muted{color:var(--mut);font-size:12px}
+  @media print{header,.controls,.hint,button{display:none}body{background:#fff;color:#000}
+    .wrap{grid-template-columns:1fr}.card{border:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>İ-MAK&nbsp;Pricing Calculator</h1>
+  <span class="tag">gearbox + motor + brake + options → margin → term → total &nbsp;·&nbsp; data 2026-01</span>
+</header>
+
+<div class="wrap">
+  <!-- ------------------------------------------------ controls -->
+  <div class="card controls">
+    <h2>1 · Select unit</h2>
+    <div class="row">
+      <div><label>Currency</label>
+        <select id="cur"><option>TL</option><option>EUR</option><option>USD</option></select></div>
+      <div><label>Series</label><select id="series"></select></div>
+    </div>
+    <label>Search unit (type / power)</label>
+    <input id="q" placeholder="e.g. İRM 82  or  0,55">
+    <div id="results"></div>
+    <div class="hint" id="selinfo">No unit selected.</div>
+
+    <h2 style="margin-top:18px">2 · Configuration</h2>
+    <div class="row">
+      <div><label>Mounting</label><select id="mount"><option value="ft">Foot</option><option value="fl">Flange</option></select></div>
+      <div><label>Payment term</label><select id="term"></select></div>
+    </div>
+    <div class="chk"><input type="checkbox" id="brake"><label for="brake">Add brake (EMF)</label>
+      <input type="number" id="btq" placeholder="output torque Nm" style="max-width:150px"></div>
+    <div class="hint">Brake sizes by output torque (Nm) — read it from the catalogue for now.</div>
+
+    <label style="margin-top:10px">Options</label>
+    <div id="opts"></div>
+
+    <h2 style="margin-top:18px">3 · Pricing</h2>
+    <div class="row">
+      <div><label>Customer / tier</label><select id="tier"></select></div>
+      <div><label>Margin mode</label><select id="mmode"><option value="discount">Discount off list</option><option value="markup">Cost + markup</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Rate %</label><input type="number" id="mrate" value="0" step="0.5"></div>
+      <div><label style="margin-top:10px"></label><div class="chk"><input type="checkbox" id="vat"><label for="vat">Add VAT (20%)</label></div></div>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------ quote -->
+  <div class="card">
+    <h2>Quote</h2>
+    <div id="quote"><p class="muted">Select a unit to build a quote.</p></div>
+    <button class="go" onclick="window.print()" id="printbtn" style="display:none">🖨 Print / Save PDF</button>
+    <p class="hint">List prices from official İ-MAK / GAMAK / EMF lists (2026-01). Verify before issuing a binding quote.</p>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+// ---------- config (mirror of engine/config.json; edit here for the web app) ----------
+const CFG={
+  terms:{TL:{cash:0,"30d":3.98,"60d":8.13,"90d":12.45},USD:{cash:0,"30d":0.75,"60d":1.50},EUR:{cash:0}},
+  tiers:{LIST:{mode:"discount",rate:0},"DEALER_A":{mode:"discount",rate:25},"OEM_B":{mode:"markup",rate:18}},
+  vat:20,
+  brakeVariant:"MOTORA MONTAJLI",
+  options:[
+    {id:"special_output_shaft",label:"Special output shaft (+6%)",pct:6,base:"unit"},
+    {id:"special_input_shaft", label:"Special input shaft (+6%)", pct:6,base:"unit"},
+    {id:"foot_and_flange_IRAF",label:"Foot+flange İRAF (+5% flange)",pct:5,base:"flange"},
+    {id:"atex_mamk",           label:"ATEX certificate (+10%)",   pct:10,base:"unit"},
+    {id:"special_hollow_shaft",label:"Special hollow shaft (+5%)", pct:5,base:"unit"},
+    {id:"special_extruder_shaft",label:"Special extruder shaft (+10%)",pct:10,base:"unit"}
+  ]
+};
+const D=window.IMAK_DATA, $=s=>document.querySelector(s);
+let SEL=null;
+
+// ---------- init controls ----------
+(function(){
+  const cur=$("#cur");
+  // series list
+  function fillSeries(){
+    const c=cur.value, set=[...new Set(D.geared.filter(g=>g.c===c).map(g=>g.s))].sort();
+    $("#series").innerHTML='<option value="">All series</option>'+set.map(s=>`<option>${s}</option>`).join("");
+  }
+  fillSeries();
+  // terms
+  function fillTerms(){const t=CFG.terms[cur.value]||{cash:0};
+    $("#term").innerHTML=Object.keys(t).map(k=>`<option value="${k}">${k} (+${t[k]}%)</option>`).join("");}
+  fillTerms();
+  // tiers
+  $("#tier").innerHTML=Object.keys(CFG.tiers).map(k=>`<option>${k}</option>`).join("");
+  // options
+  $("#opts").innerHTML=CFG.options.map(o=>
+    `<div class="chk"><input type="checkbox" id="op_${o.id}" data-opt="${o.id}"><label for="op_${o.id}">${o.label}</label></div>`).join("");
+  // events
+  cur.addEventListener("change",()=>{fillSeries();fillTerms();search();render();});
+  ["#series","#q"].forEach(s=>$(s).addEventListener("input",search));
+  ["#mount","#term","#tier","#mmode","#mrate","#vat","#brake","#btq"].forEach(s=>$(s).addEventListener("input",()=>{
+    if(s==="#tier"){const t=CFG.tiers[$("#tier").value];if(t){$("#mmode").value=t.mode;$("#mrate").value=t.rate;}}
+    render();}));
+  $("#opts").addEventListener("change",render);
+  search();
+})();
+
+// ---------- search ----------
+function search(){
+  const c=$("#cur").value, s=$("#series").value, q=$("#q").value.trim().toLowerCase();
+  let rows=D.geared.filter(g=>g.c===c);
+  if(s) rows=rows.filter(g=>g.s===s);
+  if(q) rows=rows.filter(g=>(g.t+" "+g.kw+" "+g.rpm).toLowerCase().includes(q));
+  rows=rows.slice(0,300);
+  $("#results").innerHTML=rows.map((g,i)=>
+    `<div class="u" data-i="${D.geared.indexOf(g)}"><b>${g.t}</b> <span>· ${g.kw}kW · out ${g.rpm} · ft ${fmt(g.ft)} / fl ${fmt(g.fl)}</span></div>`).join("")
+    || '<div class="u"><span>no matches</span></div>';
+  $("#results").querySelectorAll(".u[data-i]").forEach(el=>el.onclick=()=>{
+    SEL=D.geared[+el.dataset.i];
+    $("#results").querySelectorAll(".u").forEach(x=>x.classList.remove("sel"));el.classList.add("sel");
+    $("#selinfo").innerHTML=`Selected: <b style="color:var(--acc)">${SEL.t}</b> · ${SEL.kw}kW`;render();});
+}
+
+// ---------- brake match ----------
+function findBrake(tq,cur){
+  const c=cur==="USD"?"TL":cur; // brakes priced TL (YBF) / EUR (DEX)
+  const cand=D.brakes.filter(b=>b.c===c && b.tq>=tq && (b.v||"").toUpperCase().includes(CFG.brakeVariant));
+  cand.sort((a,b)=>a.tq-b.tq); return cand[0]||null;
+}
+
+// ---------- render quote ----------
+function fmt(n){return n==null?"—":n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function render(){
+  if(!SEL){$("#quote").innerHTML='<p class="muted">Select a unit to build a quote.</p>';$("#printbtn").style.display="none";return;}
+  const cur=$("#cur").value, mount=$("#mount").value;
+  const base=mount==="ft"?SEL.ft:SEL.fl;
+  const lines=[];
+  if(base==null){$("#quote").innerHTML=`<p class="muted">This unit has no ${mount==='ft'?'foot':'flange'} price (Standart/–). Try the other mounting.</p>`;return;}
+  lines.push(["<b>"+SEL.t+"</b> ("+(mount==="ft"?"foot":"flange")+")",base]);
+  // brake
+  if($("#brake").checked){
+    const tq=parseFloat($("#btq").value)||0;
+    const b=tq?findBrake(tq,cur):null;
+    if(b) lines.push([`Brake ${b.code} · ${b.tqr}Nm`,b.p]);
+    else lines.push([`Brake — enter torque (Nm)`,0]);
+  }
+  // options
+  const flange=SEL.fl!=null?SEL.fl:base;
+  const bases={unit:base,flange:flange,motor:base};
+  CFG.options.forEach(o=>{const el=$("#op_"+o.id);if(el&&el.checked){
+    const amt=(bases[o.base]||base)*o.pct/100;lines.push([`${o.label}`,amt]);}});
+  const listSub=lines.reduce((s,l)=>s+l[1],0);
+  // margin
+  const mode=$("#mmode").value, rate=parseFloat($("#mrate").value)||0;
+  const afterM=mode==="discount"?listSub*(1-rate/100):listSub*(1+rate/100);
+  // term
+  const term=$("#term").value, tr=(CFG.terms[cur]||{})[term]||0;
+  const afterT=afterM*(1+tr/100);
+  // vat
+  const vat=$("#vat").checked?CFG.vat:0, total=afterT*(1+vat/100);
+
+  $("#quote").innerHTML=`
+   <div style="margin-bottom:8px">
+     <span class="pill">${cur}</span><span class="pill">${mount==="ft"?"foot":"flange"}</span>
+     <span class="pill">${mode} ${rate}%</span><span class="pill">term ${term} +${tr}%</span>${vat?'<span class="pill">+VAT</span>':''}
+   </div>
+   <table>
+     ${lines.map(l=>`<tr><td>${l[0]}</td><td class="r">${fmt(l[1])}</td></tr>`).join("")}
+     <tr class="sub"><td>List subtotal</td><td class="r">${fmt(listSub)}</td></tr>
+     <tr class="sub"><td>After ${mode} ${rate}%</td><td class="r">${fmt(afterM)}</td></tr>
+     <tr class="sub"><td>After term ${term} (+${tr}%)</td><td class="r">${fmt(afterT)}</td></tr>
+     ${vat?`<tr class="sub"><td>VAT +${vat}%</td><td class="r">${fmt(total-afterT)}</td></tr>`:''}
+     <tr class="tot"><td>TOTAL</td><td class="r">${fmt(total)} ${cur}</td></tr>
+   </table>`;
+  $("#printbtn").style.display="block";
+}
+</script>
+</body>
+</html>
