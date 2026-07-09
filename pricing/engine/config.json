@@ -1,0 +1,45 @@
+{
+  "_comment": "I-MAK pricing engine configuration. All rates are ADJUSTABLE — edit and re-run. Defaults are neutral (0% margin) so output equals list price until you set your real rules.",
+
+  "default_currency": "TL",
+  "supported_currencies": ["TL", "EUR", "USD"],
+
+  "margin": {
+    "mode": "discount",
+    "_mode_options": "discount = list price is customer reference, subtract discount_pct; markup = list price is cost, add markup_pct",
+    "discount_pct": 0.0,
+    "markup_pct": 0.0,
+    "_note": "Override per customer/volume in customer_tiers below."
+  },
+
+  "customer_tiers": {
+    "_comment": "Optional per-customer overrides of margin. Example only.",
+    "LIST": {"mode": "discount", "discount_pct": 0.0},
+    "DEALER_A": {"mode": "discount", "discount_pct": 25.0},
+    "OEM_B": {"mode": "markup", "markup_pct": 18.0}
+  },
+
+  "payment_terms": {
+    "_comment": "Surcharge % added for deferred payment. From GAMAK bulletin 2026-01; confirm I-MAK's own terms.",
+    "TL":  {"cash": 0.0, "30d": 3.98, "60d": 8.13, "90d": 12.45},
+    "USD": {"cash": 0.0, "30d": 0.75, "60d": 1.50},
+    "EUR": {"cash": 0.0}
+  },
+
+  "option_rules": {
+    "_comment": "%-based adders from I-MAK catalogue notes. pct applied to the referenced base; flat added net.",
+    "special_output_shaft":  {"pct": 6.0,  "base": "unit",   "note": "Cikis Milli ozel olcu"},
+    "special_input_shaft":   {"pct": 6.0,  "base": "unit",   "note": "Giris Milli ozel olcu"},
+    "foot_and_flange_IRAF":  {"pct": 5.0,  "base": "flange", "note": "Ayakli-Flansli"},
+    "rear_motor_output":     {"pct": 15.0, "base": "motor",  "note": "Motor arkasindan cikis mili"},
+    "customer_brake_fit":    {"pct": 10.0, "base": "brake",  "note": "Fren musteri gonderirse baglanti ucreti"},
+    "atex_mamk":             {"pct": 10.0, "base": "unit",   "note": "MA/MK Atex certificate"},
+    "special_hollow_shaft":  {"pct": 5.0,  "base": "unit",   "note": "MA/MK special hollow shaft"},
+    "special_extruder_shaft":{"pct": 10.0, "base": "unit",   "note": "MA/MK special extruder shaft"},
+    "synthetic_oil_-40C":    {"flat_per_litre": {"EUR": 20.0}, "note": "Add 20 EUR/L net"}
+  },
+
+  "brake_default_variant": "MOTORA MONTAJLI",
+  "vat_pct": 20.0,
+  "vat_included_in_list": false
+}
