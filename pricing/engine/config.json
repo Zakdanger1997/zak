@@ -1,0 +1,56 @@
+{
+  "_comment": "I-MAK pricing engine configuration. All rates are ADJUSTABLE — edit and re-run. Defaults are neutral (0% margin) so output equals list price until you set your real rules.",
+
+  "default_currency": "TL",
+  "supported_currencies": ["TL", "EUR", "USD"],
+
+  "margin": {
+    "mode": "discount",
+    "_mode_options": "discount = list price is customer reference, subtract discount_pct; markup = list price is cost, add markup_pct",
+    "discount_pct": 0.0,
+    "markup_pct": 0.0,
+    "_note": "Override per customer/volume in customer_tiers below."
+  },
+
+  "customer_tiers": {
+    "_comment": "I-MAK list-price discounts by customer type (confirmed 2026-07).",
+    "LIST": {"mode": "discount", "discount_pct": 0.0},
+    "DEALER": {"mode": "discount", "discount_pct": 37.0},
+    "OEM": {"mode": "discount", "discount_pct": 35.0}
+  },
+
+  "supplier_discounts": {
+    "_comment": "What WE pay suppliers = supplier list x (1 - discount). Cost side.",
+    "AEMOT": {"discount_pct": 25.0, "note": "motor supplier - 25% off all units & options"},
+    "GAMAK": {"discount_pct": 0.0,  "note": "set when known"}
+  },
+
+  "payment_terms": {
+    "_comment": "Surcharge % added for deferred payment. From GAMAK bulletin 2026-01; confirm I-MAK's own terms.",
+    "TL":  {"cash": 0.0, "30d": 3.98, "60d": 8.13, "90d": 12.45},
+    "USD": {"cash": 0.0, "30d": 0.75, "60d": 1.50},
+    "EUR": {"cash": 0.0}
+  },
+
+  "option_rules": {
+    "_comment": "Full option set from I-MAK price list (26.01.2026) notes. pct applied to referenced base; oils are net EUR/litre added after margin.",
+    "special_output_shaft":  {"pct": 6.0,  "base": "unit",   "note": "Cikis Milli ozel olcu"},
+    "special_input_shaft":   {"pct": 6.0,  "base": "unit",   "note": "Giris Milli ozel olcu"},
+    "foot_and_flange_IRAF":  {"pct": 5.0,  "base": "flange", "note": "Ayakli-Flansli IRAF"},
+    "atex":                  {"pct": 15.0, "base": "unit",   "note": "Atex Belgesi"},
+    "special_worm_bore":     {"pct": 10.0, "base": "unit",   "note": "Kovan ozel olcu (motorsuz)"},
+    "rear_motor_output":     {"pct": 15.0, "base": "motor",  "note": "Motor arkasindan cikis mili"},
+    "customer_motor_b5b14":  {"pct": 3.0,  "base": "unit",   "note": "Musteri motoru B5/B14 montaj (motorsuz)"},
+    "customer_motor_direct": {"pct": 6.0,  "base": "unit",   "note": "Musteri motoru direk akuple (motorsuz)"},
+    "dc_servo_hydromotor":   {"pct": 25.0, "base": "unit",   "note": "DC/Hidromotor/Servomotor baglantisi"},
+    "epoxy_paint":           {"pct": 3.0,  "base": "unit",   "note": "Epoxi boya"},
+    "customer_brake_fit":    {"pct": 10.0, "base": "brake",  "note": "Fren musteri gonderirse baglanti ucreti"},
+    "synthetic_oil":         {"flat_per_litre": {"EUR": 15.0}, "note": "Sentetik yag - net EUR/L"},
+    "synthetic_oil_-40C":    {"flat_per_litre": {"EUR": 20.0}, "note": "Sentetik yag -40C - net EUR/L"},
+    "food_grade_oil":        {"flat_per_litre": {"EUR": 20.0}, "note": "Gida yag - net EUR/L"}
+  },
+
+  "brake_default_variant": "MOTORA MONTAJLI",
+  "vat_pct": 20.0,
+  "vat_included_in_list": false
+}

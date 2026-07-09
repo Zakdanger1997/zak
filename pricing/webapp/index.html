@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İ-MAK · Pricing Terminal</title>
+<style>
+  :root{
+    --bg:#080d13; --bg2:#0c141d; --panel:#0f1925; --panel2:#122032;
+    --line:#1e3244; --line2:#2a4a63; --txt:#dbe7f0; --mut:#7e97ac; --dim:#4d6274;
+    --acc:#25d0d0; --acc2:#0e8f9c; --blue:#3b9dff; --good:#37d67a; --warn:#f2b544; --bad:#ff6b6b;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --rad:8px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font:14px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--txt);
+    background:
+      radial-gradient(1200px 500px at 85% -10%,rgba(37,208,208,.08),transparent 60%),
+      linear-gradient(180deg,#0a1119,#080d13 40%);
+    background-attachment:fixed;min-height:100vh}
+  .grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+    background-image:linear-gradient(rgba(37,208,208,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(37,208,208,.045) 1px,transparent 1px);
+    background-size:44px 44px;mask-image:linear-gradient(180deg,#000,transparent 70%)}
+  /* header */
+  header{position:relative;z-index:2;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    padding:14px 24px;border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(18,32,50,.9),rgba(8,13,19,.6));backdrop-filter:blur(6px)}
+  .logo{display:flex;align-items:center;gap:11px}
+  .logo .mark{width:34px;height:34px;border-radius:9px;background:conic-gradient(from 210deg,var(--acc),var(--blue),var(--acc));
+    display:grid;place-items:center;font-weight:800;color:#04222a;box-shadow:0 0 22px rgba(37,208,208,.35)}
+  .logo b{font-size:16px;letter-spacing:.5px}
+  .logo small{display:block;color:var(--acc);font:600 10px/1 var(--mono);letter-spacing:2px;margin-top:2px}
+  .hstat{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .stat{font:600 11px/1 var(--mono);color:var(--mut);background:rgba(18,32,50,.6);border:1px solid var(--line);
+    padding:6px 10px;border-radius:20px;display:flex;gap:7px;align-items:center}
+  .stat i{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good)}
+  .stat b{color:var(--txt)}
+  /* layout */
+  .wrap{position:relative;z-index:2;max-width:1240px;margin:20px auto;padding:0 18px;
+    display:grid;grid-template-columns:1fr 430px;gap:18px}
+  @media(max-width:960px){.wrap{grid-template-columns:1fr}}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);
+    border-radius:12px;overflow:hidden}
+  .phead{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);
+    background:rgba(18,32,50,.4)}
+  .phead .n{font:700 11px/1 var(--mono);color:#04222a;background:var(--acc);border-radius:6px;padding:4px 7px}
+  .phead h2{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);margin:0}
+  .pbody{padding:16px}
+  label{display:block;font:600 10px/1 var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin:12px 0 6px}
+  input,select{font:inherit;color:var(--txt);background:#0a121b;border:1px solid var(--line);border-radius:8px;padding:10px 11px;width:100%}
+  input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(37,208,208,.12)}
+  input::placeholder{color:var(--dim)}
+  .row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+  /* segmented */
+  .seg{display:flex;background:#0a121b;border:1px solid var(--line);border-radius:8px;padding:3px;gap:3px}
+  .seg button{flex:1;font:600 12px/1 var(--mono);color:var(--mut);background:transparent;border:0;padding:8px 6px;border-radius:6px;cursor:pointer;transition:.12s}
+  .seg button.on{background:linear-gradient(180deg,var(--acc),var(--acc2));color:#04222a;box-shadow:0 2px 10px rgba(37,208,208,.3)}
+  /* results */
+  #results{margin-top:8px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:#0a121b}
+  #results::-webkit-scrollbar{width:9px}#results::-webkit-scrollbar-thumb{background:var(--line2);border-radius:9px}
+  .u{padding:9px 12px;border-bottom:1px solid rgba(30,50,68,.6);cursor:pointer}
+  .u:hover{background:rgba(37,208,208,.06)}.u.sel{background:rgba(37,208,208,.12);box-shadow:inset 3px 0 0 var(--acc)}
+  .u .code{font:600 13px var(--mono);color:var(--acc)}
+  .u .meta{font:11px var(--mono);color:var(--mut);margin-top:2px}
+  .u .meta b{color:var(--txt)}
+  .empty{padding:14px;color:var(--dim);font:12px var(--mono)}
+  .chk{display:flex;align-items:center;gap:9px;margin:8px 0}
+  .chk input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc)}
+  .chk label{margin:0;font:400 13px/1.3 system-ui;color:var(--txt);text-transform:none;letter-spacing:0}
+  .optgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px}
+  /* quote panel */
+  .qpanel{position:sticky;top:18px}
+  .qhead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(18,32,50,.5)}
+  .qhead h2{margin:0;font:700 12px/1 var(--mono);letter-spacing:1.5px;color:var(--acc);text-transform:uppercase}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px 4px}
+  .chip{font:600 10px/1 var(--mono);letter-spacing:.5px;color:var(--mut);background:#0a121b;border:1px solid var(--line);border-radius:20px;padding:5px 9px}
+  .chip.acc{color:var(--acc);border-color:var(--acc2)}
+  .qlines{padding:6px 16px}
+  .ql{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(30,50,68,.5);font-size:13px}
+  .ql .amt{font:600 13px var(--mono);color:var(--txt);white-space:nowrap}
+  .ql.sub{color:var(--mut)}.ql.sub .amt{color:var(--mut)}
+  .ql .lbl b{color:var(--acc)}
+  .ql.neg .amt{color:var(--good)}
+  .waterfall{display:flex;height:8px;border-radius:5px;overflow:hidden;margin:12px 16px;background:#0a121b;border:1px solid var(--line)}
+  .waterfall i{height:100%}
+  .grand{margin:8px 16px 4px;padding:14px 16px;border-radius:10px;background:linear-gradient(120deg,rgba(37,208,208,.14),rgba(59,157,255,.08));border:1px solid var(--acc2)}
+  .grand .lab{font:600 10px/1 var(--mono);letter-spacing:2px;color:var(--acc);text-transform:uppercase}
+  .grand .val{font:800 30px/1.1 var(--mono);color:#fff;margin-top:4px;letter-spacing:.5px}
+  .grand .val span{font-size:15px;color:var(--acc);margin-left:4px}
+  .cost{margin:12px 16px;padding:12px 14px;border:1px dashed var(--line2);border-radius:10px;background:rgba(10,18,27,.6)}
+  .cost .h{font:600 10px/1 var(--mono);letter-spacing:1.5px;color:var(--warn);text-transform:uppercase;margin-bottom:8px;display:flex;justify-content:space-between}
+  .cost .cl{display:flex;justify-content:space-between;font:12px var(--mono);color:var(--mut);padding:3px 0}
+  .cost .cl b{color:var(--txt)}
+  .cost .mgn{color:var(--good)}
+  .btnrow{display:flex;gap:8px;padding:14px 16px}
+  .btn{flex:1;font:600 13px system-ui;color:#04222a;background:var(--acc);border:0;border-radius:9px;padding:11px;cursor:pointer;transition:.12s}
+  .btn:hover{filter:brightness(1.1)}.btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  .foot{padding:0 16px 16px;font:11px var(--mono);color:var(--dim)}
+  .placeholder{padding:40px 16px;text-align:center;color:var(--dim);font:13px var(--mono)}
+  .placeholder .big{font-size:34px;opacity:.4;margin-bottom:10px}
+  @media print{.grid-bg,header .hstat,.controls,.btnrow,.foot{display:none}
+    body{background:#fff;color:#000}.wrap{grid-template-columns:1fr;display:block}
+    .panel{border:1px solid #ccc}.grand .val{color:#000}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="logo">
+    <div class="mark">İM</div>
+    <div><b>İ-MAK PRICING TERMINAL</b><small>GEARDRIVE QUOTE ENGINE</small></div>
+  </div>
+  <div class="hstat">
+    <a href="applications.html" class="stat" style="text-decoration:none;color:var(--acc)"><i style="background:var(--acc)"></i>APPS</a>
+    <a href="xref.html" class="stat" style="text-decoration:none;color:var(--acc)"><i style="background:var(--acc)"></i>CROSS-REF →</a>
+    <div class="stat"><i></i>DB <b id="s_rows">—</b></div>
+    <div class="stat"><i style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></i>LIST <b>2026-01</b></div>
+    <div class="stat"><i style="background:var(--warn);box-shadow:0 0 8px var(--warn)"></i>FX <b>native TL/€/$</b></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- ===================== configurator ===================== -->
+  <div class="panel controls">
+    <div class="phead"><span class="n">01</span><h2>Unit selection</h2></div>
+    <div class="pbody">
+      <div class="row">
+        <div><label>Currency</label>
+          <div class="seg" id="cur"><button data-v="TL" class="on">TL ₺</button><button data-v="EUR">EUR €</button><button data-v="USD">USD $</button></div>
+        </div>
+        <div><label>Series</label><select id="series"></select></div>
+      </div>
+      <label>Selection mode</label>
+      <div class="seg" id="smode"><button data-v="model" class="on">By model</button><button data-v="torque">By torque ⚙</button></div>
+      <div id="byModel">
+        <label>Search — model code or power</label>
+        <input id="q" placeholder="İRM 82   ·   0,55 kW   ·   İRKM 103 …" autocomplete="off">
+      </div>
+      <div id="byTorque" style="display:none">
+        <div class="row">
+          <div><label>Required output torque</label><input id="reqTq" type="number" placeholder="Nm"></div>
+          <div><label>Output speed (±20%)</label><input id="reqRpm" type="number" placeholder="rpm · optional"></div>
+        </div>
+        <label>Min. service factor</label><input id="reqSf" type="number" value="1.0" step="0.1">
+      </div>
+      <div id="results"><div class="empty">type to search 1,753 units per currency…</div></div>
+    </div>
+
+    <div class="phead"><span class="n">02</span><h2>Configuration</h2></div>
+    <div class="pbody">
+      <div class="row">
+        <div><label>Mounting</label>
+          <div class="seg" id="mount"><button data-v="ft" class="on">Foot</button><button data-v="fl">Flange</button></div></div>
+        <div><label>Payment term</label><select id="term"></select></div>
+      </div>
+      <div class="chk" style="margin-top:12px"><input type="checkbox" id="brake"><label for="brake">Add brake (EMF) — output torque</label>
+        <input type="number" id="btq" placeholder="Nm" style="max-width:110px"></div>
+      <label>Options (from price list)</label>
+      <div class="optgrid" id="opts"></div>
+      <label>Lubricant surcharge (net €/L)</label>
+      <div class="optgrid" id="oils"></div>
+      <div class="row">
+        <div><label>Oil litres</label><input id="oilL" type="number" value="1" step="0.5"></div>
+        <div><label>€ rate (surcharge FX)</label><input id="eurRate" type="number" value="35" step="0.5"></div>
+      </div>
+    </div>
+
+    <div class="phead"><span class="n">03</span><h2>Commercial</h2></div>
+    <div class="pbody">
+      <div class="row">
+        <div><label>Customer tier</label><select id="tier"></select></div>
+        <div><label>Margin</label>
+          <div class="seg" id="mmode"><button data-v="discount" class="on">Discount</button><button data-v="markup">Markup</button></div></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div><label>Rate %</label><input type="number" id="mrate" value="0" step="0.5"></div>
+        <div><label>VAT</label><div class="seg" id="vatseg"><button data-v="0" class="on">Excl.</button><button data-v="20">+20%</button></div></div>
+      </div>
+      <div class="chk" style="margin-top:12px"><input type="checkbox" id="costview"><label for="costview">Show cost &amp; margin (AEMOT/GAMAK motor cost)</label></div>
+    </div>
+  </div>
+
+  <!-- ===================== quote ===================== -->
+  <div class="panel qpanel">
+    <div class="qhead"><h2>◇ Quotation</h2><span id="q_id" class="chip">—</span></div>
+    <div id="quote">
+      <div class="placeholder"><div class="big">⎇</div>Select a unit to generate a quote.</div>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const CFG={
+  terms:{TL:{cash:0,"30d":3.98,"60d":8.13,"90d":12.45},USD:{cash:0,"30d":0.75,"60d":1.50},EUR:{cash:0}},
+  tiers:{LIST:{mode:"discount",rate:0},DEALER:{mode:"discount",rate:37},OEM:{mode:"discount",rate:35}},
+  supplierDiscount:{AEMOT:25,GAMAK:0},
+  brakeVariant:"MOTORA MONTAJLI",
+  options:[
+    {id:"out_shaft",   label:"Special output shaft +6%",pct:6,base:"unit"},
+    {id:"in_shaft",    label:"Special input shaft +6%", pct:6,base:"unit"},
+    {id:"iraf",        label:"Foot+flange İRAF +5%",    pct:5,base:"flange"},
+    {id:"atex",        label:"ATEX certificate +15%",   pct:15,base:"unit"},
+    {id:"bore",        label:"Special worm bore +10%",  pct:10,base:"unit"},
+    {id:"rear_out",    label:"Rear motor output +15%",  pct:15,base:"unit"},
+    {id:"cust_mot_b5", label:"Customer motor B5/B14 +3%",pct:3,base:"unit"},
+    {id:"cust_mot_dir",label:"Customer motor direct +6%",pct:6,base:"unit"},
+    {id:"dc_servo",    label:"DC/Servo/Hydromotor +25%",pct:25,base:"unit"},
+    {id:"epoxy",       label:"Epoxy paint +3%",         pct:3,base:"unit"},
+    {id:"cust_brake",  label:"Customer brake fit +10%", pct:10,base:"brake"}
+  ],
+  oils:[
+    {id:"oil_synth",  label:"Synthetic oil (+15 €/L)",  eurL:15},
+    {id:"oil_synth40",label:"Synthetic oil −40°C (+20 €/L)",eurL:20},
+    {id:"oil_food",   label:"Food-grade oil (+20 €/L)", eurL:20}
+  ],
+  eurTL:35, eurUSD:1.08
+};
+const D=window.IMAK_DATA,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ST={cur:"TL",mount:"ft",mmode:"discount",vat:0,smode:"model"};
+let SEL=null;
+
+function segInit(id,key,cb){$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  $$('#'+id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');ST[key]=b.dataset.v;cb&&cb();});}
+
+(function init(){
+  $('#s_rows').textContent=(D.geared.length+D.brakes.length+D.motors.length+(D.aemot?D.aemot.length:0)).toLocaleString();
+  fillSeries();fillTerms();
+  $('#tier').innerHTML=Object.keys(CFG.tiers).map(k=>`<option>${k}</option>`).join("");
+  $('#opts').innerHTML=CFG.options.map(o=>`<div class="chk"><input type="checkbox" id="op_${o.id}" data-opt="${o.id}"><label for="op_${o.id}">${o.label}</label></div>`).join("");
+  $('#oils').innerHTML=CFG.oils.map(o=>`<div class="chk"><input type="checkbox" id="oil_${o.id}"><label for="oil_${o.id}">${o.label}</label></div>`).join("");
+  segInit('cur','cur',()=>{fillSeries();fillTerms();search();render();});
+  segInit('mount','mount',render);
+  segInit('mmode','mmode',render);
+  segInit('vatseg','vat',render);
+  segInit('smode','smode',switchMode);
+  $('#series').addEventListener('change',search);
+  $('#q').addEventListener('input',search);
+  ['#reqTq','#reqRpm','#reqSf'].forEach(s=>$(s).addEventListener('input',search));
+  ['#term','#tier','#mrate','#brake','#btq','#costview'].forEach(s=>$(s).addEventListener('input',()=>{
+    if(s==='#tier'){const t=CFG.tiers[$('#tier').value];if(t){ST.mmode=t.mode;$('#mrate').value=t.rate;
+      $$('#mmode button').forEach(x=>x.classList.toggle('on',x.dataset.v===t.mode));}}
+    render();}));
+  $('#opts').addEventListener('change',render);
+  $('#oils').addEventListener('change',render);
+  ['#oilL','#eurRate'].forEach(s=>$(s).addEventListener('input',render));
+})();
+
+function fillSeries(){const set=[...new Set(D.geared.filter(g=>g.c===ST.cur).map(g=>g.s))].sort();
+  $('#series').innerHTML='<option value="">ALL SERIES</option>'+set.map(s=>`<option>${s}</option>`).join("");}
+function fillTerms(){const t=CFG.terms[ST.cur]||{cash:0};
+  $('#term').innerHTML=Object.keys(t).map(k=>`<option value="${k}">${k.toUpperCase()} +${t[k]}%</option>`).join("");}
+
+function fmt(n){return n==null?"—":n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function sym(c){return c==="TL"?"₺":c==="EUR"?"€":"$";}
+
+function switchMode(){const t=ST.smode==="torque";
+  $('#byTorque').style.display=t?"block":"none";$('#byModel').style.display=t?"none":"block";search();}
+
+// rated output torque for a unit = max catalogue M2 among ratings sharing its size_key
+function ratedTorque(sk){if(!sk)return null;let mx=0;
+  D.ratings.forEach(r=>{if(r.sk===sk&&r.t>mx)mx=r.t;});return mx||null;}
+const SERIES_MAP={"İR":["İRM"],"İRK":["İRKM"],"YP":["YPM"],"İRS":["İRSM","SM","İRSDM"]};
+function priceForSk(sk,motorHint,series){
+  const fam=SERIES_MAP[series]||null;
+  let cands=D.geared.filter(g=>g.c===ST.cur&&g.sk===sk&&(g.ft!=null||g.fl!=null)&&(!fam||fam.includes(g.s)));
+  if(!cands.length) cands=D.geared.filter(g=>g.c===ST.cur&&g.sk===sk&&(g.ft!=null||g.fl!=null)); // fallback any series
+  const frame=(motorHint||"").match(/\b(56|63|71|80|90|100|112|132|160|180|200|225|250|280|315|355)\b/);
+  if(frame){const fm=cands.filter(g=>g.t.includes(frame[1]+" ")||g.t.includes("/ "+frame[1]));
+    if(fm.length){fm.sort((a,b)=>(a.ft||a.fl||1e9)-(b.ft||b.fl||1e9));return fm[0];}}
+  cands.sort((a,b)=>(a.ft||a.fl||1e9)-(b.ft||b.fl||1e9));return cands[0]||null;}
+
+function selectUnit(u){SEL=u;
+  const rt=ratedTorque(u.sk);
+  if(rt&&!$('#btq').value){$('#btq').value=Math.round(rt);}   // auto-suggest brake torque
+  render();}
+
+function search(){
+  const el=$('#results');
+  if(ST.smode==="torque"){return torqueSearch(el);}
+  const s=$('#series').value,q=$('#q').value.trim().toLowerCase();
+  let rows=D.geared.filter(g=>g.c===ST.cur);
+  if(s)rows=rows.filter(g=>g.s===s);
+  if(q)rows=rows.filter(g=>(g.t+" "+g.kw+" "+g.rpm).toLowerCase().includes(q));
+  if(!rows.length){el.innerHTML='<div class="empty">no matching units</div>';return;}
+  el.innerHTML=rows.slice(0,250).map(g=>{const i=D.geared.indexOf(g);
+    return `<div class="u" data-i="${i}"><div class="code">${g.t}</div>
+      <div class="meta"><b>${g.kw}</b>kW · out <b>${g.rpm}</b> · ft <b>${fmt(g.ft)}</b> / fl <b>${fmt(g.fl)}</b> ${sym(g.c)}</div></div>`}).join("");
+  el.querySelectorAll('.u').forEach(u=>u.onclick=()=>{
+    el.querySelectorAll('.u').forEach(x=>x.classList.remove('sel'));u.classList.add('sel');selectUnit(D.geared[+u.dataset.i]);});
+}
+
+function torqueSearch(el){
+  const req=parseFloat($('#reqTq').value)||0, rpm=parseFloat($('#reqRpm').value)||0, sf=parseFloat($('#reqSf').value)||0;
+  const ser=$('#series').value;
+  if(!req){el.innerHTML='<div class="empty">enter required output torque (Nm)…</div>';return;}
+  let rows=D.ratings.filter(r=>r.t>=req && (!sf||!r.sf||r.sf>=sf) && (!ser||r.s===ser));
+  if(rpm)rows=rows.filter(r=>r.n&&Math.abs(r.n-rpm)<=rpm*0.20);
+  // best fit: smallest torque that still covers req (least oversized), then highest Sf
+  rows.sort((a,b)=>(a.t-b.t)||((b.sf||0)-(a.sf||0)));
+  rows=rows.slice(0,120);
+  if(!rows.length){el.innerHTML='<div class="empty">no unit meets that torque/speed/Sf</div>';return;}
+  el.innerHTML=rows.map((r,idx)=>{
+    const motor=(r.m.split('/')[1]||'').trim();
+    const pr=priceForSk(r.sk,motor,r.s);
+    return `<div class="u" data-idx="${idx}"><div class="code">${r.m}</div>
+      <div class="meta"><b>${fmt(r.t)}</b>Nm · i=<b>${r.i}</b> · n₂ <b>${r.n??'—'}</b>rpm · Sf <b>${r.sf??'—'}</b>${pr?` · ~<b>${fmt(pr.ft||pr.fl)}</b> ${sym(ST.cur)}`:` · <span style="color:var(--dim)">no price link</span>`}</div></div>`;
+  }).join("");
+  el.querySelectorAll('.u').forEach((u,i)=>u.onclick=()=>{
+    el.querySelectorAll('.u').forEach(x=>x.classList.remove('sel'));u.classList.add('sel');
+    const r=rows[i], motor=(r.m.split('/')[1]||'').trim(), pr=priceForSk(r.sk,motor,r.s);
+    if(pr){$('#btq').value=Math.round(r.t);$('#brake').checked=false;selectUnit(pr);}
+    else{el.insertAdjacentHTML('afterbegin','<div class="empty">this unit has no price-list link — select by model</div>');}
+  });
+}
+
+// motor spec from type_full e.g. "İRM 82 İR 63 / 71 M4a" -> {frame:71,pole:4}
+function motorSpec(t){const m=(t||"").split('/').pop();const fr=m.match(/\b(56|63|71|80|90|100|112|132|160|180|200|225|250|280|315|355)\b/);
+  const pl=m.match(/M?\s?([2468])[A-Za-z]?\b/);return{frame:fr?fr[1]:null,pole:pl?pl[1]:null};}
+const FRAME_RE=/\b(56|63|71|80|90|100|112|132|160|180|200|225|250|280|315|355)\b/;
+function moFrame(t){const m=(t||"").match(FRAME_RE);return m?m[1]:null;}
+function moPole(t){const m=(t||"").match(/([2468])[A-Za-z]?\s*$/);return m?m[1]:null;}
+function matchMotor(kw,spec,supplier){
+  let list=supplier==="AEMOT"?(D.aemot||[]):D.motors;
+  // real catalogue motors only: exclude spares/exproof adders/special families & implausible prices
+  list=list.filter(mo=>mo.p>=1000 && !/GG|GTX|ATX|COM|C\.|KM4/.test(mo.t||""));
+  const kwok=mo=>Math.abs(parseFloat(mo.kw)-parseFloat(kw))<1e-6;
+  const atKw=list.filter(kwok);
+  if(!atKw.length) return null;
+  const prefer=cands=>{ // mainstream family first, then lowest price
+    const rank=t=>/M22D|AGM|AAP|ABP/.test(t)?0:1;
+    return cands.sort((a,b)=>rank(a.t)-rank(b.t)||a.p-b.p)[0];};
+  let c=atKw.filter(mo=>spec.frame&&moFrame(mo.t)===spec.frame&&(!spec.pole||!moPole(mo.t)||moPole(mo.t)===spec.pole));
+  if(c.length) return {...prefer(c),fit:"exact"};
+  c=atKw.filter(mo=>!spec.pole||!moPole(mo.t)||moPole(mo.t)===spec.pole);   // relax frame
+  if(c.length) return {...prefer(c),fit:"≈ frame"};
+  return {...prefer(atKw),fit:"≈"};
+}
+
+function findBrake(tq){const c=ST.cur==="USD"?"TL":ST.cur;
+  const cand=D.brakes.filter(b=>b.c===c&&b.tq>=tq&&(b.v||"").toUpperCase().includes(CFG.brakeVariant));
+  cand.sort((a,b)=>a.tq-b.tq);return cand[0]||null;}
+
+function render(){
+  const box=$('#quote');
+  if(!SEL){box.innerHTML='<div class="placeholder"><div class="big">⎇</div>Select a unit to generate a quote.</div>';$('#q_id').textContent="—";return;}
+  const cur=ST.cur,base=ST.mount==="ft"?SEL.ft:SEL.fl;
+  if(base==null){box.innerHTML='<div class="placeholder"><div class="big">⌀</div>No '+(ST.mount==="ft"?"foot":"flange")+' price for this unit (Standart/–). Switch mounting.</div>';return;}
+  const lines=[{l:"<b>"+SEL.t+"</b>",s:(ST.mount==="ft"?"foot":"flange")+" · "+SEL.kw+"kW",a:base,t:"base"}];
+  if($('#brake').checked){const tq=parseFloat($('#btq').value)||0;const b=tq?findBrake(tq):null;
+    if(b)lines.push({l:"Brake "+b.code,s:b.tqr+" Nm · "+cur,a:b.p,t:"brake"});
+    else lines.push({l:"Brake",s:"enter torque (Nm)",a:0,t:"brake"});}
+  const flange=SEL.fl!=null?SEL.fl:base,bases={unit:base,flange:flange,motor:base};
+  CFG.options.forEach(o=>{const el=$('#op_'+o.id);if(el&&el.checked){const amt=(bases[o.base]||base)*o.pct/100;
+    lines.push({l:o.label,s:"+"+o.pct+"% of "+o.base,a:amt,t:"opt"});}});
+  const listSub=lines.reduce((s,l)=>s+l.a,0);
+  const rate=parseFloat($('#mrate').value)||0;
+  const afterM=ST.mmode==="discount"?listSub*(1-rate/100):listSub*(1+rate/100);
+  const marginAmt=afterM-listSub;
+  // lubricant surcharge — net €/L, added AFTER margin (price list: "net olarak eklenir")
+  const litres=parseFloat($('#oilL').value)||0, er=parseFloat($('#eurRate').value)||35;
+  const oilLines=[];
+  CFG.oils.forEach(o=>{const el=$('#oil_'+o.id);if(el&&el.checked&&litres>0){
+    const eur=o.eurL*litres, amt=cur==="EUR"?eur:cur==="TL"?eur*er:eur*CFG.eurUSD;
+    oilLines.push({l:o.label.replace(/\s*\(.*\)/,'')+" (net)",a:amt});}});
+  const oilNet=oilLines.reduce((s,l)=>s+l.a,0);
+  const afterOil=afterM+oilNet;
+  const term=$('#term').value,tr=(CFG.terms[cur]||{})[term]||0,afterT=afterOil*(1+tr/100);
+  const vat=+ST.vat,total=afterT*(1+vat/100),vatAmt=total-afterT;
+
+  // waterfall segments
+  const segs=[["var(--acc)",base]];
+  lines.slice(1).forEach(l=>segs.push([l.t==="brake"?"var(--blue)":"var(--warn)",l.a]));
+  const wsum=segs.reduce((s,x)=>s+x[1],0)||1;
+  const wf=segs.map(x=>`<i style="width:${x[1]/wsum*100}%;background:${x[0]}"></i>`).join("");
+
+  // cost view
+  let costHtml="";
+  if($('#costview').checked){
+    const spec=motorSpec(SEL.t);
+    const ae=matchMotor(SEL.kw,spec,"AEMOT"),gk=matchMotor(SEL.kw,spec,"GAMAK");
+    const disc=CFG.supplierDiscount.AEMOT;
+    const aeCost=ae?ae.p*(1-disc/100):null;
+    costHtml=`<div class="cost"><div class="h"><span>⚙ Cost reference — motor supply</span><span>${SEL.kw}kW · frame ${spec.frame||"?"} · ${spec.pole||"?"}p</span></div>`+
+      (ae?`<div class="cl"><span>AEMOT ${ae.t} <em style="color:var(--dim)">${ae.fit}</em></span><b>${fmt(ae.p)} ₺</b></div>
+           <div class="cl mgn"><span>AEMOT cost (−${disc}%)</span><b>${fmt(aeCost)} ₺</b></div>`:`<div class="cl"><span>AEMOT</span><b>no ${SEL.kw}kW match</b></div>`)+
+      (gk?`<div class="cl"><span>GAMAK ${gk.t} <em style="color:var(--dim)">${gk.fit}</em></span><b>${fmt(gk.p)} ₺</b></div>`:``)+
+      `<div class="cl" style="color:var(--dim)"><span>note</span><b>motor cost only — not full unit BOM</b></div></div>`;
+  }
+
+  $('#q_id').textContent="Q-"+(SEL.t.replace(/[^0-9]/g,"").slice(0,6)||"0000");
+  box.innerHTML=`
+    <div class="chips">
+      <span class="chip acc">${cur}</span><span class="chip">${ST.mount==="ft"?"FOOT":"FLANGE"}</span>
+      <span class="chip">${$('#tier').value}</span><span class="chip">${ST.mmode.toUpperCase()} ${rate}%</span>
+      <span class="chip">TERM ${term.toUpperCase()} +${tr}%</span>${vat?'<span class="chip">+VAT</span>':''}
+    </div>
+    <div class="waterfall">${wf}</div>
+    <div class="qlines">
+      ${lines.map(l=>`<div class="ql"><div class="lbl">${l.l}<div style="font:10px var(--mono);color:var(--dim)">${l.s}</div></div><div class="amt">${fmt(l.a)}</div></div>`).join("")}
+      <div class="ql sub"><div class="lbl">List subtotal</div><div class="amt">${fmt(listSub)}</div></div>
+      <div class="ql sub ${marginAmt<0?'neg':''}"><div class="lbl">${ST.mmode==="discount"?"Discount":"Markup"} ${rate}%</div><div class="amt">${fmt(marginAmt)}</div></div>
+      ${oilLines.map(l=>`<div class="ql sub"><div class="lbl">${l.l}</div><div class="amt">${fmt(l.a)}</div></div>`).join("")}
+      ${tr?`<div class="ql sub"><div class="lbl">Term ${term} +${tr}%</div><div class="amt">${fmt(afterT-afterM)}</div></div>`:''}
+      ${vat?`<div class="ql sub"><div class="lbl">VAT +${vat}%</div><div class="amt">${fmt(vatAmt)}</div></div>`:''}
+    </div>
+    <div class="grand"><div class="lab">Customer total</div><div class="val">${fmt(total)}<span>${sym(cur)} ${cur}</span></div></div>
+    ${costHtml}
+    <div class="btnrow"><button class="btn" onclick="window.print()">🖨 Export / PDF</button>
+      <button class="btn ghost" onclick="navigator.clipboard&&navigator.clipboard.writeText('${SEL.t} — '+'${fmt(total)}'+' ${cur}')">⧉ Copy</button></div>
+    <div class="foot">List basis İ-MAK/GAMAK/EMF/AEMOT 2026 · verify before binding quote · engine: pricer.py</div>`;
+}
+</script>
+</body>
+</html>

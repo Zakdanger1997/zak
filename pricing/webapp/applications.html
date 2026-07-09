@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İ-MAK · Applications</title>
+<style>
+  :root{--bg:#080d13;--bg2:#0c141d;--panel:#0f1925;--line:#1e3244;--line2:#2a4a63;--txt:#dbe7f0;
+    --mut:#7e97ac;--dim:#4d6274;--acc:#25d0d0;--acc2:#0e8f9c;--blue:#3b9dff;--good:#37d67a;--warn:#f2b544;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font:14px/1.5 system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--txt);min-height:100vh;
+    background:radial-gradient(1200px 500px at 85% -10%,rgba(37,208,208,.08),transparent 60%),linear-gradient(180deg,#0a1119,#080d13 40%)}
+  .grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+    background-image:linear-gradient(rgba(37,208,208,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(37,208,208,.045) 1px,transparent 1px);
+    background-size:44px 44px;mask-image:linear-gradient(180deg,#000,transparent 70%)}
+  header{position:relative;z-index:2;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(18,32,50,.9),rgba(8,13,19,.6))}
+  .logo{display:flex;align-items:center;gap:11px}
+  .logo .mark{width:34px;height:34px;border-radius:9px;background:conic-gradient(from 210deg,var(--acc),var(--blue),var(--acc));display:grid;place-items:center;font-weight:800;color:#04222a}
+  .logo b{font-size:16px;letter-spacing:.5px}.logo small{display:block;color:var(--acc);font:600 10px/1 var(--mono);letter-spacing:2px;margin-top:2px}
+  .nav{margin-left:auto;display:flex;gap:8px}
+  .nav a{font:600 11px/1 var(--mono);color:var(--mut);text-decoration:none;background:rgba(18,32,50,.6);border:1px solid var(--line);padding:8px 12px;border-radius:20px}
+  .nav a.on{color:#04222a;background:var(--acc);border-color:var(--acc)}
+  .wrap{position:relative;z-index:2;max-width:1080px;margin:20px auto;padding:0 18px}
+  .draft{background:rgba(242,181,68,.1);border:1px solid rgba(242,181,68,.3);border-radius:10px;padding:10px 14px;margin-bottom:16px;font:12px/1.5 var(--mono);color:var(--warn)}
+  .layout{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .phead{padding:12px 16px;border-bottom:1px solid var(--line);background:rgba(18,32,50,.4);font:600 12px/1 var(--mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--mut)}
+  .apps{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .app{display:flex;gap:10px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#0a121b;cursor:pointer;transition:.12s}
+  .app:hover{border-color:var(--acc)}.app.on{background:rgba(37,208,208,.12);border-color:var(--acc)}
+  .app .ic{font-size:20px}.app .nm{font:600 13px system-ui}
+  .detail{padding:18px}
+  .detail .big{font:800 22px var(--mono);color:#fff;margin:0 0 2px}
+  .detail .desc{color:var(--mut);font-size:13px;margin-bottom:14px}
+  .rec{border:1px solid var(--acc2);border-radius:12px;padding:14px 16px;background:linear-gradient(150deg,rgba(37,208,208,.12),rgba(59,157,255,.05));margin-bottom:12px}
+  .rec .lab{font:600 10px/1 var(--mono);letter-spacing:1.5px;color:var(--acc);text-transform:uppercase}
+  .rec .series{font:800 24px var(--mono);color:#fff;margin:6px 0}
+  .rec .alt{color:var(--mut);font:12px var(--mono)}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(30,50,68,.5);font-size:13px}
+  .kv .k{color:var(--mut)}.kv .v{font:600 13px var(--mono);text-align:right;max-width:60%}
+  .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .opt{font:600 10px/1 var(--mono);padding:6px 10px;border-radius:20px;border:1px solid var(--line);color:var(--mut);background:#0a121b}
+  .opt.key{color:var(--warn);border-color:rgba(242,181,68,.35)}
+  .cta{display:flex;gap:8px;margin-top:14px}
+  .cta a{flex:1;text-align:center;text-decoration:none;font:600 12px system-ui;padding:10px;border-radius:9px}
+  .cta a.p{background:var(--acc);color:#04222a}.cta a.s{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  .muted{color:var(--dim);font:12px var(--mono);text-align:center;padding:40px 10px}
+  .foot{max-width:1080px;margin:8px auto 30px;padding:0 18px;position:relative;z-index:2;font:11px/1.5 var(--mono);color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<header>
+  <div class="logo"><div class="mark">İM</div><div><b>APPLICATION SELECTOR</b><small>WHAT ARE YOU DRIVING?</small></div></div>
+  <div class="nav"><a href="index.html">Pricing</a><a href="xref.html">Equivalent</a><a href="applications.html" class="on">Applications</a></div>
+</header>
+
+<div class="wrap">
+  <div class="draft">⚙ DRAFT v1 — application→series guidance from the İ-MAK product range. Will be aligned to your reference applications program once uploaded. Recommendations are starting points; confirm torque/service-factor in the Pricing tool (By-torque mode).</div>
+  <div class="layout">
+    <div class="panel">
+      <div class="phead">Choose the application</div>
+      <div class="apps" id="apps"></div>
+    </div>
+    <div class="panel">
+      <div class="phead">İ-MAK recommendation</div>
+      <div class="detail" id="detail"><div class="muted">Pick an application on the left…</div></div>
+    </div>
+  </div>
+</div>
+<div class="foot">Selection guidance based on the İ-MAK product range (helical İR, bevel İRK, parallel YP, worm İRS, hoist İRC, extruder MAE/MKE, aerator 4DS, planetary IPR). Service factor (fB) per duty &amp; shock — verify against catalogue before quoting.</div>
+
+<script>
+const APPS=[
+ {id:"belt",ic:"🎞️",nm:"Belt / roller conveyor",series:"İR",alt:"İRK for right-angle layout",
+  desc:"General material transport on belts or roller decks.",
+  sf:"1.25–1.5 (uniform load, ≤8h/day)",mount:"Foot or B5 flange, solid shaft",
+  opts:[["Backstop","key"],["IE3/IE4 motor",""],["Brake for accurate stop",""]]},
+ {id:"screw",ic:"🌀",nm:"Screw conveyor",series:"İRN / İRNX / İRO",alt:"YP parallel-shaft",
+  desc:"Hollow-shaft shaft-mount drive slid onto the screw, reacted by a torque arm.",
+  sf:"1.25–1.5",mount:"Hollow shaft + torque arm (shrink disk or key)",
+  opts:[["Torque arm","key"],["Taconite seals","key"],["Backstop if inclined",""]]},
+ {id:"elevator",ic:"🪣",nm:"Bucket elevator",series:"İRK",alt:"İR inline",
+  desc:"Vertical bucket lift — anti-runback essential.",
+  sf:"1.5–1.75",mount:"Foot / flange, solid shaft",
+  opts:[["Backstop","key"],["Brake","key"],["Forced cooling (continuous)",""]]},
+ {id:"mixer",ic:"🌪️",nm:"Mixer / agitator",series:"İRK",alt:"IPR planetary for high torque",
+  desc:"Vertical output, high overhung + axial thrust, often food/chemical.",
+  sf:"1.5–2.0 (shock)",mount:"Vertical flange, reinforced bearings",
+  opts:[["Drywell seal","key"],["Food-grade oil","key"],["Reinforced output bearing",""]]},
+ {id:"crane",ic:"🏗️",nm:"Crane / hoist / travel",series:"İRC",alt:"İRK for travel drive",
+  desc:"Lifting and travel duty with defined FEM/ISO duty cycles.",
+  sf:"per FEM/ISO group",mount:"Foot, double shaft for two drums",
+  opts:[["Brake","key"],["Encoder","key"],["Backstop",""]]},
+ {id:"fan",ic:"🌬️",nm:"Fan / blower",series:"İR",alt:"İRK right-angle",
+  desc:"High-inertia start, long running hours.",
+  sf:"1.4–1.75 (high inertia)",mount:"Foot / flange",
+  opts:[["Forced cooling fan","key"],["Backstop (single-direction)",""],["IE4 motor",""]]},
+ {id:"extruder",ic:"🧵",nm:"Extruder",series:"MAE / MKE",alt:"—",
+  desc:"Plastics/rubber/food screw drive with high axial thrust.",
+  sf:"per screw thrust rating",mount:"Integrated thrust-bearing block, splined output",
+  opts:[["Thrust bearing block","key"],["Forced lubrication","key"],["Oil cooling",""]]},
+ {id:"aerator",ic:"💧",nm:"Aerator / water treatment",series:"4DS",alt:"İRK vertical",
+  desc:"Surface aerators — vertical output, thrust load, corrosive wet environment.",
+  sf:"1.5–2.0",mount:"Vertical, weatherproof",
+  opts:[["Corrosion coating C4/C5","key"],["Reinforced thrust bearing","key"],["Space heater",""]]},
+ {id:"table",ic:"🔄",nm:"Rotary table / positioner",series:"IPR / IPRK",alt:"İRK bevel",
+  desc:"High torque density, compact, precise low-speed positioning.",
+  sf:"1.25–1.5",mount:"Flange, low backlash",
+  opts:[["Reduced backlash","key"],["Encoder","key"],["Brake",""]]},
+ {id:"cooling",ic:"❄️",nm:"Cooling tower",series:"İRK",alt:"—",
+  desc:"Long slender output, wet corrosive environment, low noise.",
+  sf:"1.5–2.0",mount:"Long output shaft, vertical fan",
+  opts:[["Corrosion coating","key"],["Non-spark fan cover",""],["Vibration sensor",""]]},
+ {id:"pump",ic:"⚙️",nm:"Rotary pump / general",series:"İR",alt:"İRS worm (economy)",
+  desc:"General machinery, uniform load.",
+  sf:"1.1–1.25",mount:"Foot / flange",
+  opts:[["IE3/IE4 motor",""],["Standard seals",""]]},
+ {id:"poultry",ic:"🐔",nm:"Poultry / agriculture",series:"ITR",alt:"İRS worm",
+  desc:"Light-duty feed & ventilation drives.",
+  sf:"1.0–1.25",mount:"Foot / flange",
+  opts:[["Corrosion coating",""],["Sealed for washdown",""]]}
+];
+const $=s=>document.querySelector(s);
+$('#apps').innerHTML=APPS.map(a=>`<div class="app" data-id="${a.id}"><span class="ic">${a.ic}</span><span class="nm">${a.nm}</span></div>`).join("");
+$('#apps').querySelectorAll('.app').forEach(el=>el.onclick=()=>{
+  $('#apps').querySelectorAll('.app').forEach(x=>x.classList.remove('on'));el.classList.add('on');show(el.dataset.id);});
+function show(id){
+  const a=APPS.find(x=>x.id===id);
+  $('#detail').innerHTML=`
+    <div class="big">${a.ic} ${a.nm}</div><div class="desc">${a.desc}</div>
+    <div class="rec"><div class="lab">Recommended İ-MAK series</div>
+      <div class="series">${a.series}</div><div class="alt">alt: ${a.alt}</div></div>
+    <div class="kv"><span class="k">Typical service factor fB</span><span class="v">${a.sf}</span></div>
+    <div class="kv"><span class="k">Mounting / output</span><span class="v">${a.mount}</span></div>
+    <div class="opts">${a.opts.map(o=>`<span class="opt ${o[1]}">${o[0]}</span>`).join("")}</div>
+    <div class="cta"><a class="p" href="index.html">→ Size &amp; price it</a><a class="s" href="xref.html">Competitor equivalent</a></div>`;
+}
+</script>
+</body>
+</html>
