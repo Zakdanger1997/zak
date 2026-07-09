@@ -13,10 +13,16 @@
   },
 
   "customer_tiers": {
-    "_comment": "Optional per-customer overrides of margin. Example only.",
+    "_comment": "I-MAK list-price discounts by customer type (confirmed 2026-07).",
     "LIST": {"mode": "discount", "discount_pct": 0.0},
-    "DEALER_A": {"mode": "discount", "discount_pct": 25.0},
-    "OEM_B": {"mode": "markup", "markup_pct": 18.0}
+    "DEALER": {"mode": "discount", "discount_pct": 37.0},
+    "OEM": {"mode": "discount", "discount_pct": 35.0}
+  },
+
+  "supplier_discounts": {
+    "_comment": "What WE pay suppliers = supplier list x (1 - discount). Cost side.",
+    "AEMOT": {"discount_pct": 25.0, "note": "motor supplier - 25% off all units & options"},
+    "GAMAK": {"discount_pct": 0.0,  "note": "set when known"}
   },
 
   "payment_terms": {

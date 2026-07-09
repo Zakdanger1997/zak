@@ -19,6 +19,7 @@ Structured price data extracted from 14 official/competitor price-list PDFs. Ext
 | Table | Rows | Currency | Content |
 |---|---|---|---|
 | `gamak_motors` | 327 | TL (Ex=USD) | Electric motors by IE class (IE1–IE4 + ATEX/Ex): power, frame/pole, price |
+| `aemot_motors` | 527 | TL | Motor supplier AEMOT (AAH/AAP/ABP/AAK/ABK/AAS/ABS families) by kW/pole. **We buy at −25% off list** (cost side) |
 | `emf_brakes` | 401 | TL (+DEX €) | Brakes/clutches (YBF/DEX/dusty/servo), torque, bare vs motor-mounted variants |
 | `kaplin_couplings` | 51 | TL | Coupling prices (semi-structured) |
 
@@ -39,6 +40,10 @@ Structured price data extracted from 14 official/competitor price-list PDFs. Ext
 - **`imak_planetary`**: `size, series(IPR/IPRK), stage(S1–S5), input_config(FS/FC/HS/HC…), price_eur`.
 - **`gamak_motors`**: `ie_class ∈ {IE1,IE2,IE3,IE4,IE-}`, `motor_type` e.g. `M22D 71 M 2a`.
 - **`comp_yilmaz_planetary_units`**: `model_base` (e.g. 2302), `variant` L/K, `imak_equiv_series` (IPR/IPRK), `pt_price_tl`, `rt_price_tl`.
+
+## Margin rules (confirmed 2026-07)
+- **Selling (I-MAK list):** DEALER **−37%**, OEM **−35%**.
+- **Buying (supplier cost):** AEMOT motors **−25%** off AEMOT list (all units + options).
 
 ## Currency & terms
 - **TL / EUR / USD parallel lists** — the engine stores all three natively (no conversion needed for I-MAK standard/MA-MK).
