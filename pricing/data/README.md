@@ -29,6 +29,11 @@ Structured price data extracted from 14 official/competitor price-list PDFs. Ext
 | `cema_customer_options` | 34 | USD | CEMA customer: output-shaft (standard/stainless) + flange adders for İRK/YP |
 | `redservis_s_series` | 30 | EUR | Redservis Russia: S-series worm — gearbox, flange, single/double shaft, torque arm |
 
+### Engineering ratings (from catalogues)
+| Table | Rows | Content |
+|---|---|---|
+| `imak_ratings` | 21,192 | Performance data from İR/İRK/YP/İRS catalogues: per model×ratio → **output torque M2 (Nm)**, output speed n2 (rpm), ratio i, service factor Sf, radial load. `size_key` links to the price list (96/97 keys match). Powers the Torque Finder + auto brake-sizing |
+
 ### Competitor
 | Table | Rows | Currency | Content |
 |---|---|---|---|

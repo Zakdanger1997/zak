@@ -131,8 +131,19 @@
         </div>
         <div><label>Series</label><select id="series"></select></div>
       </div>
-      <label>Search — model code or power</label>
-      <input id="q" placeholder="İRM 82   ·   0,55 kW   ·   İRKM 103 …" autocomplete="off">
+      <label>Selection mode</label>
+      <div class="seg" id="smode"><button data-v="model" class="on">By model</button><button data-v="torque">By torque ⚙</button></div>
+      <div id="byModel">
+        <label>Search — model code or power</label>
+        <input id="q" placeholder="İRM 82   ·   0,55 kW   ·   İRKM 103 …" autocomplete="off">
+      </div>
+      <div id="byTorque" style="display:none">
+        <div class="row">
+          <div><label>Required output torque</label><input id="reqTq" type="number" placeholder="Nm"></div>
+          <div><label>Output speed (±20%)</label><input id="reqRpm" type="number" placeholder="rpm · optional"></div>
+        </div>
+        <label>Min. service factor</label><input id="reqSf" type="number" value="1.0" step="0.1">
+      </div>
       <div id="results"><div class="empty">type to search 1,753 units per currency…</div></div>
     </div>
 
@@ -190,7 +201,7 @@ const CFG={
   ]
 };
 const D=window.IMAK_DATA,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const ST={cur:"TL",mount:"ft",mmode:"discount",vat:0};
+const ST={cur:"TL",mount:"ft",mmode:"discount",vat:0,smode:"model"};
 let SEL=null;
 
 function segInit(id,key,cb){$('#'+id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
@@ -205,8 +216,10 @@ function segInit(id,key,cb){$('#'+id).addEventListener('click',e=>{const b=e.tar
   segInit('mount','mount',render);
   segInit('mmode','mmode',render);
   segInit('vatseg','vat',render);
+  segInit('smode','smode',switchMode);
   $('#series').addEventListener('change',search);
   $('#q').addEventListener('input',search);
+  ['#reqTq','#reqRpm','#reqSf'].forEach(s=>$(s).addEventListener('input',search));
   ['#term','#tier','#mrate','#brake','#btq','#costview'].forEach(s=>$(s).addEventListener('input',()=>{
     if(s==='#tier'){const t=CFG.tiers[$('#tier').value];if(t){ST.mmode=t.mode;$('#mrate').value=t.rate;
       $$('#mmode button').forEach(x=>x.classList.toggle('on',x.dataset.v===t.mode));}}
@@ -222,18 +235,64 @@ function fillTerms(){const t=CFG.terms[ST.cur]||{cash:0};
 function fmt(n){return n==null?"—":n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function sym(c){return c==="TL"?"₺":c==="EUR"?"€":"$";}
 
+function switchMode(){const t=ST.smode==="torque";
+  $('#byTorque').style.display=t?"block":"none";$('#byModel').style.display=t?"none":"block";search();}
+
+// rated output torque for a unit = max catalogue M2 among ratings sharing its size_key
+function ratedTorque(sk){if(!sk)return null;let mx=0;
+  D.ratings.forEach(r=>{if(r.sk===sk&&r.t>mx)mx=r.t;});return mx||null;}
+const SERIES_MAP={"İR":["İRM"],"İRK":["İRKM"],"YP":["YPM"],"İRS":["İRSM","SM","İRSDM"]};
+function priceForSk(sk,motorHint,series){
+  const fam=SERIES_MAP[series]||null;
+  let cands=D.geared.filter(g=>g.c===ST.cur&&g.sk===sk&&(g.ft!=null||g.fl!=null)&&(!fam||fam.includes(g.s)));
+  if(!cands.length) cands=D.geared.filter(g=>g.c===ST.cur&&g.sk===sk&&(g.ft!=null||g.fl!=null)); // fallback any series
+  const frame=(motorHint||"").match(/\b(56|63|71|80|90|100|112|132|160|180|200|225|250|280|315|355)\b/);
+  if(frame){const fm=cands.filter(g=>g.t.includes(frame[1]+" ")||g.t.includes("/ "+frame[1]));
+    if(fm.length){fm.sort((a,b)=>(a.ft||a.fl||1e9)-(b.ft||b.fl||1e9));return fm[0];}}
+  cands.sort((a,b)=>(a.ft||a.fl||1e9)-(b.ft||b.fl||1e9));return cands[0]||null;}
+
+function selectUnit(u){SEL=u;
+  const rt=ratedTorque(u.sk);
+  if(rt&&!$('#btq').value){$('#btq').value=Math.round(rt);}   // auto-suggest brake torque
+  render();}
+
 function search(){
+  const el=$('#results');
+  if(ST.smode==="torque"){return torqueSearch(el);}
   const s=$('#series').value,q=$('#q').value.trim().toLowerCase();
   let rows=D.geared.filter(g=>g.c===ST.cur);
   if(s)rows=rows.filter(g=>g.s===s);
   if(q)rows=rows.filter(g=>(g.t+" "+g.kw+" "+g.rpm).toLowerCase().includes(q));
-  const el=$('#results');
   if(!rows.length){el.innerHTML='<div class="empty">no matching units</div>';return;}
   el.innerHTML=rows.slice(0,250).map(g=>{const i=D.geared.indexOf(g);
     return `<div class="u" data-i="${i}"><div class="code">${g.t}</div>
       <div class="meta"><b>${g.kw}</b>kW · out <b>${g.rpm}</b> · ft <b>${fmt(g.ft)}</b> / fl <b>${fmt(g.fl)}</b> ${sym(g.c)}</div></div>`}).join("");
-  el.querySelectorAll('.u').forEach(u=>u.onclick=()=>{SEL=D.geared[+u.dataset.i];
-    el.querySelectorAll('.u').forEach(x=>x.classList.remove('sel'));u.classList.add('sel');render();});
+  el.querySelectorAll('.u').forEach(u=>u.onclick=()=>{
+    el.querySelectorAll('.u').forEach(x=>x.classList.remove('sel'));u.classList.add('sel');selectUnit(D.geared[+u.dataset.i]);});
+}
+
+function torqueSearch(el){
+  const req=parseFloat($('#reqTq').value)||0, rpm=parseFloat($('#reqRpm').value)||0, sf=parseFloat($('#reqSf').value)||0;
+  const ser=$('#series').value;
+  if(!req){el.innerHTML='<div class="empty">enter required output torque (Nm)…</div>';return;}
+  let rows=D.ratings.filter(r=>r.t>=req && (!sf||!r.sf||r.sf>=sf) && (!ser||r.s===ser));
+  if(rpm)rows=rows.filter(r=>r.n&&Math.abs(r.n-rpm)<=rpm*0.20);
+  // best fit: smallest torque that still covers req (least oversized), then highest Sf
+  rows.sort((a,b)=>(a.t-b.t)||((b.sf||0)-(a.sf||0)));
+  rows=rows.slice(0,120);
+  if(!rows.length){el.innerHTML='<div class="empty">no unit meets that torque/speed/Sf</div>';return;}
+  el.innerHTML=rows.map((r,idx)=>{
+    const motor=(r.m.split('/')[1]||'').trim();
+    const pr=priceForSk(r.sk,motor,r.s);
+    return `<div class="u" data-idx="${idx}"><div class="code">${r.m}</div>
+      <div class="meta"><b>${fmt(r.t)}</b>Nm · i=<b>${r.i}</b> · n₂ <b>${r.n??'—'}</b>rpm · Sf <b>${r.sf??'—'}</b>${pr?` · ~<b>${fmt(pr.ft||pr.fl)}</b> ${sym(ST.cur)}`:` · <span style="color:var(--dim)">no price link</span>`}</div></div>`;
+  }).join("");
+  el.querySelectorAll('.u').forEach((u,i)=>u.onclick=()=>{
+    el.querySelectorAll('.u').forEach(x=>x.classList.remove('sel'));u.classList.add('sel');
+    const r=rows[i], motor=(r.m.split('/')[1]||'').trim(), pr=priceForSk(r.sk,motor,r.s);
+    if(pr){$('#btq').value=Math.round(r.t);$('#brake').checked=false;selectUnit(pr);}
+    else{el.insertAdjacentHTML('afterbegin','<div class="empty">this unit has no price-list link — select by model</div>');}
+  });
 }
 
 // motor spec from type_full e.g. "İRM 82 İR 63 / 71 M4a" -> {frame:71,pole:4}
