@@ -40,6 +40,11 @@ Structured price data extracted from 14 official/competitor price-list PDFs. Ext
 | `comp_yilmaz_planetary_units` | 68 | TL | **Yılmaz** planetary PT/RT bare units, L (→our IPR) & K (→our IPRK) variants, dated 08.09.2025 |
 | `comp_yilmaz_planetary_options` | 33 | TL | Yılmaz twin-shaft, shrink-disk, drum-flange, single/double torque-arm adders |
 
+### Cross-reference mapping
+| File | Rows | Content |
+|---|---|---|
+| `xref_map.csv` | 20 | **The "in-house comparison sheet" schema** — competitor model → İ-MAK equivalent. Yılmaz planetary seeded (variant→series & stage exact; frame→size **provisional**, rank-aligned). Edit/extend with your validated equivalences and add SEW/NORD/Bonfiglioli rows. Consumed by `webapp/xref.html` |
+
 ## Key column notes
 - **`imak_geared_motors`**: `currency, series, page, power_kw, power_hp, output_rpm, type_full, gearbox, motor, price_foot, price_flange`. `type_full` e.g. `İRM 143 IR 73 / 71 M4a` → gearbox `İRM 143 IR 73`, motor `71 M4a`. `Standart`=standard-fit, `-`=not offered.
 - **`imak_planetary`**: `size, series(IPR/IPRK), stage(S1–S5), input_config(FS/FC/HS/HC…), price_eur`.

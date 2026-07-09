@@ -1,0 +1,25 @@
+brand,comp_type,comp_frame,comp_variant,imak_series,imak_size,confidence,note
+# Cross-reference mapping: competitor -> I-MAK equivalent.
+# THIS IS THE "IN-HOUSE COMPARISON SHEET" SCHEMA — replace provisional rows with your validated equivalences.
+# stage maps directly (Yilmaz FFSS -> S<SS>); variant L->IPR (inline), K->IPRK (right-angle).
+# comp_frame = Yilmaz planetary frame; imak_size = I-MAK IPR/IPRK size. confidence: provisional|confirmed.
+Yilmaz,planetary,11,L,IPR,101,provisional,rank-aligned guess — verify
+Yilmaz,planetary,12,L,IPR,105,provisional,rank-aligned guess — verify
+Yilmaz,planetary,15,L,IPR,109,provisional,rank-aligned guess — verify
+Yilmaz,planetary,16,L,IPR,111,provisional,rank-aligned guess — verify
+Yilmaz,planetary,19,L,IPR,115,provisional,rank-aligned guess — verify
+Yilmaz,planetary,23,L,IPR,119,provisional,rank-aligned guess — verify
+Yilmaz,planetary,24,L,IPR,123,provisional,rank-aligned guess — verify
+Yilmaz,planetary,27,L,IPR,125,provisional,rank-aligned guess — verify
+Yilmaz,planetary,29,L,IPR,129,provisional,rank-aligned guess — verify
+Yilmaz,planetary,35,L,IPR,133,provisional,rank-aligned guess — verify
+Yilmaz,planetary,11,K,IPRK,101,provisional,rank-aligned guess — verify
+Yilmaz,planetary,12,K,IPRK,105,provisional,rank-aligned guess — verify
+Yilmaz,planetary,15,K,IPRK,109,provisional,rank-aligned guess — verify
+Yilmaz,planetary,16,K,IPRK,111,provisional,rank-aligned guess — verify
+Yilmaz,planetary,19,K,IPRK,115,provisional,rank-aligned guess — verify
+Yilmaz,planetary,23,K,IPRK,119,provisional,rank-aligned guess — verify
+Yilmaz,planetary,24,K,IPRK,123,provisional,rank-aligned guess — verify
+Yilmaz,planetary,27,K,IPRK,125,provisional,rank-aligned guess — verify
+Yilmaz,planetary,29,K,IPRK,129,provisional,rank-aligned guess — verify
+Yilmaz,planetary,35,K,IPRK,133,provisional,rank-aligned guess — verify
