@@ -1,2 +1,2 @@
 # I-MAK catalogue PDFs are large (~350MB) and public/re-fetchable — keep them out of git
-pricing/catalogues/*.pdf
+*.pdf
