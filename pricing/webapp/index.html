@@ -157,8 +157,14 @@
       </div>
       <div class="chk" style="margin-top:12px"><input type="checkbox" id="brake"><label for="brake">Add brake (EMF) — output torque</label>
         <input type="number" id="btq" placeholder="Nm" style="max-width:110px"></div>
-      <label>Options</label>
+      <label>Options (from price list)</label>
       <div class="optgrid" id="opts"></div>
+      <label>Lubricant surcharge (net €/L)</label>
+      <div class="optgrid" id="oils"></div>
+      <div class="row">
+        <div><label>Oil litres</label><input id="oilL" type="number" value="1" step="0.5"></div>
+        <div><label>€ rate (surcharge FX)</label><input id="eurRate" type="number" value="35" step="0.5"></div>
+      </div>
     </div>
 
     <div class="phead"><span class="n">03</span><h2>Commercial</h2></div>
@@ -193,13 +199,24 @@ const CFG={
   supplierDiscount:{AEMOT:25,GAMAK:0},
   brakeVariant:"MOTORA MONTAJLI",
   options:[
-    {id:"special_output_shaft",label:"Special output shaft +6%",pct:6,base:"unit"},
-    {id:"special_input_shaft", label:"Special input shaft +6%", pct:6,base:"unit"},
-    {id:"foot_and_flange_IRAF",label:"İRAF foot+flange +5%",pct:5,base:"flange"},
-    {id:"atex_mamk",           label:"ATEX certificate +10%",  pct:10,base:"unit"},
-    {id:"special_hollow_shaft",label:"Special hollow shaft +5%",pct:5,base:"unit"},
-    {id:"special_extruder_shaft",label:"Special extruder shaft +10%",pct:10,base:"unit"}
-  ]
+    {id:"out_shaft",   label:"Special output shaft +6%",pct:6,base:"unit"},
+    {id:"in_shaft",    label:"Special input shaft +6%", pct:6,base:"unit"},
+    {id:"iraf",        label:"Foot+flange İRAF +5%",    pct:5,base:"flange"},
+    {id:"atex",        label:"ATEX certificate +15%",   pct:15,base:"unit"},
+    {id:"bore",        label:"Special worm bore +10%",  pct:10,base:"unit"},
+    {id:"rear_out",    label:"Rear motor output +15%",  pct:15,base:"unit"},
+    {id:"cust_mot_b5", label:"Customer motor B5/B14 +3%",pct:3,base:"unit"},
+    {id:"cust_mot_dir",label:"Customer motor direct +6%",pct:6,base:"unit"},
+    {id:"dc_servo",    label:"DC/Servo/Hydromotor +25%",pct:25,base:"unit"},
+    {id:"epoxy",       label:"Epoxy paint +3%",         pct:3,base:"unit"},
+    {id:"cust_brake",  label:"Customer brake fit +10%", pct:10,base:"brake"}
+  ],
+  oils:[
+    {id:"oil_synth",  label:"Synthetic oil (+15 €/L)",  eurL:15},
+    {id:"oil_synth40",label:"Synthetic oil −40°C (+20 €/L)",eurL:20},
+    {id:"oil_food",   label:"Food-grade oil (+20 €/L)", eurL:20}
+  ],
+  eurTL:35, eurUSD:1.08
 };
 const D=window.IMAK_DATA,$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const ST={cur:"TL",mount:"ft",mmode:"discount",vat:0,smode:"model"};
@@ -213,6 +230,7 @@ function segInit(id,key,cb){$('#'+id).addEventListener('click',e=>{const b=e.tar
   fillSeries();fillTerms();
   $('#tier').innerHTML=Object.keys(CFG.tiers).map(k=>`<option>${k}</option>`).join("");
   $('#opts').innerHTML=CFG.options.map(o=>`<div class="chk"><input type="checkbox" id="op_${o.id}" data-opt="${o.id}"><label for="op_${o.id}">${o.label}</label></div>`).join("");
+  $('#oils').innerHTML=CFG.oils.map(o=>`<div class="chk"><input type="checkbox" id="oil_${o.id}"><label for="oil_${o.id}">${o.label}</label></div>`).join("");
   segInit('cur','cur',()=>{fillSeries();fillTerms();search();render();});
   segInit('mount','mount',render);
   segInit('mmode','mmode',render);
@@ -226,6 +244,8 @@ function segInit(id,key,cb){$('#'+id).addEventListener('click',e=>{const b=e.tar
       $$('#mmode button').forEach(x=>x.classList.toggle('on',x.dataset.v===t.mode));}}
     render();}));
   $('#opts').addEventListener('change',render);
+  $('#oils').addEventListener('change',render);
+  ['#oilL','#eurRate'].forEach(s=>$(s).addEventListener('input',render));
 })();
 
 function fillSeries(){const set=[...new Set(D.geared.filter(g=>g.c===ST.cur).map(g=>g.s))].sort();
@@ -339,7 +359,15 @@ function render(){
   const rate=parseFloat($('#mrate').value)||0;
   const afterM=ST.mmode==="discount"?listSub*(1-rate/100):listSub*(1+rate/100);
   const marginAmt=afterM-listSub;
-  const term=$('#term').value,tr=(CFG.terms[cur]||{})[term]||0,afterT=afterM*(1+tr/100);
+  // lubricant surcharge — net €/L, added AFTER margin (price list: "net olarak eklenir")
+  const litres=parseFloat($('#oilL').value)||0, er=parseFloat($('#eurRate').value)||35;
+  const oilLines=[];
+  CFG.oils.forEach(o=>{const el=$('#oil_'+o.id);if(el&&el.checked&&litres>0){
+    const eur=o.eurL*litres, amt=cur==="EUR"?eur:cur==="TL"?eur*er:eur*CFG.eurUSD;
+    oilLines.push({l:o.label.replace(/\s*\(.*\)/,'')+" (net)",a:amt});}});
+  const oilNet=oilLines.reduce((s,l)=>s+l.a,0);
+  const afterOil=afterM+oilNet;
+  const term=$('#term').value,tr=(CFG.terms[cur]||{})[term]||0,afterT=afterOil*(1+tr/100);
   const vat=+ST.vat,total=afterT*(1+vat/100),vatAmt=total-afterT;
 
   // waterfall segments
@@ -374,6 +402,7 @@ function render(){
       ${lines.map(l=>`<div class="ql"><div class="lbl">${l.l}<div style="font:10px var(--mono);color:var(--dim)">${l.s}</div></div><div class="amt">${fmt(l.a)}</div></div>`).join("")}
       <div class="ql sub"><div class="lbl">List subtotal</div><div class="amt">${fmt(listSub)}</div></div>
       <div class="ql sub ${marginAmt<0?'neg':''}"><div class="lbl">${ST.mmode==="discount"?"Discount":"Markup"} ${rate}%</div><div class="amt">${fmt(marginAmt)}</div></div>
+      ${oilLines.map(l=>`<div class="ql sub"><div class="lbl">${l.l}</div><div class="amt">${fmt(l.a)}</div></div>`).join("")}
       ${tr?`<div class="ql sub"><div class="lbl">Term ${term} +${tr}%</div><div class="amt">${fmt(afterT-afterM)}</div></div>`:''}
       ${vat?`<div class="ql sub"><div class="lbl">VAT +${vat}%</div><div class="amt">${fmt(vatAmt)}</div></div>`:''}
     </div>

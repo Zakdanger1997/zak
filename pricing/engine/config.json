@@ -33,16 +33,21 @@
   },
 
   "option_rules": {
-    "_comment": "%-based adders from I-MAK catalogue notes. pct applied to the referenced base; flat added net.",
+    "_comment": "Full option set from I-MAK price list (26.01.2026) notes. pct applied to referenced base; oils are net EUR/litre added after margin.",
     "special_output_shaft":  {"pct": 6.0,  "base": "unit",   "note": "Cikis Milli ozel olcu"},
     "special_input_shaft":   {"pct": 6.0,  "base": "unit",   "note": "Giris Milli ozel olcu"},
-    "foot_and_flange_IRAF":  {"pct": 5.0,  "base": "flange", "note": "Ayakli-Flansli"},
+    "foot_and_flange_IRAF":  {"pct": 5.0,  "base": "flange", "note": "Ayakli-Flansli IRAF"},
+    "atex":                  {"pct": 15.0, "base": "unit",   "note": "Atex Belgesi"},
+    "special_worm_bore":     {"pct": 10.0, "base": "unit",   "note": "Kovan ozel olcu (motorsuz)"},
     "rear_motor_output":     {"pct": 15.0, "base": "motor",  "note": "Motor arkasindan cikis mili"},
+    "customer_motor_b5b14":  {"pct": 3.0,  "base": "unit",   "note": "Musteri motoru B5/B14 montaj (motorsuz)"},
+    "customer_motor_direct": {"pct": 6.0,  "base": "unit",   "note": "Musteri motoru direk akuple (motorsuz)"},
+    "dc_servo_hydromotor":   {"pct": 25.0, "base": "unit",   "note": "DC/Hidromotor/Servomotor baglantisi"},
+    "epoxy_paint":           {"pct": 3.0,  "base": "unit",   "note": "Epoxi boya"},
     "customer_brake_fit":    {"pct": 10.0, "base": "brake",  "note": "Fren musteri gonderirse baglanti ucreti"},
-    "atex_mamk":             {"pct": 10.0, "base": "unit",   "note": "MA/MK Atex certificate"},
-    "special_hollow_shaft":  {"pct": 5.0,  "base": "unit",   "note": "MA/MK special hollow shaft"},
-    "special_extruder_shaft":{"pct": 10.0, "base": "unit",   "note": "MA/MK special extruder shaft"},
-    "synthetic_oil_-40C":    {"flat_per_litre": {"EUR": 20.0}, "note": "Add 20 EUR/L net"}
+    "synthetic_oil":         {"flat_per_litre": {"EUR": 15.0}, "note": "Sentetik yag - net EUR/L"},
+    "synthetic_oil_-40C":    {"flat_per_litre": {"EUR": 20.0}, "note": "Sentetik yag -40C - net EUR/L"},
+    "food_grade_oil":        {"flat_per_litre": {"EUR": 20.0}, "note": "Gida yag - net EUR/L"}
   },
 
   "brake_default_variant": "MOTORA MONTAJLI",
