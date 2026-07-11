@@ -1,0 +1,1110 @@
+{
+  "name": "İş Başvuru Asistanı (Telegram + AI)",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -600,
+        300
+      ],
+      "webhookId": "is-basvuru-telegram",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-cred",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "telegram_chat_id",
+              "value": "BURAYA_CHAT_ID_YAZIN",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "sheet_url",
+              "value": "BURAYA_GOOGLE_SHEET_LINKINIZI_YAPISTIRIN",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "cv_url",
+              "value": "https://drive.google.com/uc?export=download&id=BURAYA_CV_DOSYA_ID",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "ad_soyad",
+              "value": "Adınız Soyadınız",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "meslek",
+              "value": "Örn: Makine Mühendisi",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "pozisyon",
+              "value": "Örn: Üretim / Proje Mühendisi",
+              "type": "string"
+            },
+            {
+              "id": "a7",
+              "name": "deneyim_ozeti",
+              "value": "Örn: 5 yıl otomotiv yan sanayinde üretim ve kalite süreçlerinde çalıştım...",
+              "type": "string"
+            },
+            {
+              "id": "a8",
+              "name": "yetenekler",
+              "value": "Örn: SolidWorks, AutoCAD, Lean Üretim, İngilizce (B2)",
+              "type": "string"
+            },
+            {
+              "id": "a9",
+              "name": "telefon",
+              "value": "+90 5xx xxx xx xx",
+              "type": "string"
+            },
+            {
+              "id": "a10",
+              "name": "linkedin",
+              "value": "linkedin.com/in/kullanici-adiniz",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "ayarlar",
+      "name": "Ayarlar",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -380,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.callback_query !== undefined }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-tur",
+      "name": "Mesaj mı Onay mı?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Butona basıldığında hangi taslak için ne istendiğini çözer\nconst cb = $json.callback_query || {};\nconst parts = String(cb.data || '').split(':');\nreturn [{ json: {\n  action: parts[0] || '',\n  draft_id: parts[1] || '',\n  query_id: cb.id,\n  chat_id: String((cb.message && cb.message.chat && cb.message.chat.id) || ''),\n  message_id: (cb.message && cb.message.message_id) || null\n} }];"
+      },
+      "id": "onayi-coz",
+      "name": "Onayı Çöz",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        60,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "operation": "answerQuery",
+        "queryId": "={{ $json.query_id }}",
+        "additionalFields": {}
+      },
+      "id": "butonu-yanitla",
+      "name": "Butonu Yanıtla",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        280,
+        60
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-cred",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Ayarlar').first().json.sheet_url }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Taslaklar"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "id",
+              "lookupValue": "={{ $('Onayı Çöz').first().json.draft_id }}"
+            }
+          ]
+        },
+        "combineFilters": "AND",
+        "options": {}
+      },
+      "id": "taslagi-bul",
+      "name": "Taslağı Bul",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        500,
+        60
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred",
+          "name": "Google Sheets Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Ayarlar').first().json.sheet_url }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Gonderilenler"
+        },
+        "options": {}
+      },
+      "id": "gonderilmis-kontrol",
+      "name": "Gönderilmişleri Kontrol Et",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        60
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred",
+          "name": "Google Sheets Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gönder / atla / mükerrer (aynı firmaya ikinci mail) kararını verir\nconst FREE = ['gmail.com','hotmail.com','outlook.com','yahoo.com','icloud.com','yandex.com','mail.ru','protonmail.com','live.com','msn.com'];\nconst esc = s => String(s ?? '').replace(/([_*`\\[])/g, '\\\\$1');\n\nconst onay = $('Onayı Çöz').first().json;\nconst taslaklar = $('Taslağı Bul').all().map(i => i.json).filter(r => r && r.id);\nconst gonderilen = $input.all().map(i => i.json).filter(r => r && (r.email || r.domain));\n\nconst taslak = taslaklar.find(r => String(r.id) === String(onay.draft_id));\n\nif (!taslak) {\n  return [{ json: { decision: 'uyari', chat_id: onay.chat_id, bildirim: '⚠️ Taslak bulunamadı (id: ' + esc(onay.draft_id) + '). Google Sheet içindeki Taslaklar sayfasını kontrol edin.' } }];\n}\nif (String(taslak.durum) === 'GONDERILDI') {\n  return [{ json: { decision: 'uyari', chat_id: onay.chat_id, bildirim: '⚠️ Bu başvuru zaten gönderilmiş: ' + esc(taslak.firma) } }];\n}\nif (onay.action !== 'send') {\n  return [{ json: { ...taslak, ...onay, decision: 'atla', bildirim: '⏭ Atlandı: ' + esc(taslak.firma) + ' (' + esc(taslak.email) + ')' } }];\n}\n\nconst d = String(taslak.domain || '').toLowerCase();\nconst kurumsal = d && !FREE.includes(d);\nconst mukerrer = gonderilen.some(g =>\n  String(g.email || '').toLowerCase() === String(taslak.email || '').toLowerCase()\n  || (kurumsal && String(g.domain || '').toLowerCase() === d)\n);\nif (mukerrer) {\n  return [{ json: { decision: 'uyari', chat_id: onay.chat_id, bildirim: '⚠️ ' + esc(taslak.firma) + ' firmasına zaten mail gönderilmiş. Aynı firmaya ikinci kez göndermedim.' } }];\n}\n\nreturn [{ json: { ...taslak, ...onay, decision: 'gonder', bildirim: '✅ Gönderildi: ' + esc(taslak.firma) + ' (' + esc(taslak.email) + ')\\n📄 CV eklendi ve firma gönderilenler listesine kaydedildi.' } }];"
+      },
+      "id": "karar-ver",
+      "name": "Karar Ver",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        940,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c1",
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "gonder",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Gönder"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c1",
+                    "leftValue": "={{ $json.decision }}",
+                    "rightValue": "atla",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Atla"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "karar-switch",
+      "name": "Karar",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1160,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Ayarlar').first().json.cv_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "cv-indir",
+      "name": "CV'yi İndir",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1400,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Karar Ver').first().json.email }}",
+        "subject": "={{ $('Karar Ver').first().json.konu }}",
+        "emailType": "text",
+        "message": "={{ $('Karar Ver').first().json.govde }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "data"
+              }
+            ]
+          }
+        }
+      },
+      "id": "gmail-gonder",
+      "name": "Başvuru Mailini Gönder",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1620,
+        -80
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail-cred",
+          "name": "Gmail Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Ayarlar').first().json.sheet_url }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Gonderilenler"
+        },
+        "operation": "append",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tarih": "={{ new Date().toISOString().slice(0,16).replace('T',' ') }}",
+            "firma": "={{ $('Karar Ver').first().json.firma }}",
+            "email": "={{ $('Karar Ver').first().json.email }}",
+            "domain": "={{ $('Karar Ver').first().json.domain }}",
+            "konu": "={{ $('Karar Ver').first().json.konu }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "gonderilenlere-ekle",
+      "name": "Gönderilenlere Ekle",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1840,
+        -80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred",
+          "name": "Google Sheets Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Ayarlar').first().json.sheet_url }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Taslaklar"
+        },
+        "operation": "appendOrUpdate",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Karar Ver').first().json.id }}",
+            "durum": "GONDERILDI"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "taslak-gonderildi",
+      "name": "Taslağı Güncelle - Gönderildi",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2060,
+        -80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred",
+          "name": "Google Sheets Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Karar Ver').first().json.chat_id }}",
+        "text": "={{ $('Karar Ver').first().json.bildirim }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bildir-gonderildi",
+      "name": "Bildir - Gönderildi",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2280,
+        -80
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-cred",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Ayarlar').first().json.sheet_url }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Taslaklar"
+        },
+        "operation": "appendOrUpdate",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Karar Ver').first().json.id }}",
+            "durum": "ATLANDI"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "taslak-atlandi",
+      "name": "Taslağı Güncelle - Atlandı",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1400,
+        60
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred",
+          "name": "Google Sheets Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Karar Ver').first().json.chat_id }}",
+        "text": "={{ $('Karar Ver').first().json.bildirim }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bildir-atlandi",
+      "name": "Bildir - Atlandı",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1620,
+        60
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-cred",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.bildirim }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bildir-uyari",
+      "name": "Bildir - Uyarı",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1400,
+        220
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-cred",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Telegram mesajından e-posta adreslerini ayıklar\nconst ayar = $('Ayarlar').first().json;\nconst msg = $json.message || {};\nconst chatId = String((msg.chat && msg.chat.id) || '');\n\n// Güvenlik: sadece sizin sohbetinizden gelen mesajlar işlenir\nconst izinli = String(ayar.telegram_chat_id || '').trim();\nif (izinli && izinli !== 'BURAYA_CHAT_ID_YAZIN' && chatId !== izinli) {\n  return [];\n}\n\nconst text = msg.text || msg.caption || '';\nconst bulunan = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g) || [];\nconst benzersiz = [...new Set(bulunan.map(e => e.toLowerCase()))];\n\nif (benzersiz.length === 0) {\n  return [{ json: { no_emails: true, chat_id: chatId } }];\n}\n\nreturn benzersiz.map(email => ({\n  json: { email, domain: email.split('@')[1], chat_id: chatId }\n}));"
+      },
+      "id": "mailleri-ayikla",
+      "name": "Mailleri Ayıkla",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        60,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Ayarlar').first().json.sheet_url }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Gonderilenler"
+        },
+        "options": {}
+      },
+      "id": "gonderilenleri-oku",
+      "name": "Gönderilenleri Oku",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        280,
+        560
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred",
+          "name": "Google Sheets Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Daha önce mail atılan firmaları ve liste içi tekrarları eler\nconst FREE = ['gmail.com','hotmail.com','outlook.com','yahoo.com','icloud.com','yandex.com','mail.ru','protonmail.com','live.com','msn.com'];\nconst esc = s => String(s ?? '').replace(/([_*`\\[])/g, '\\\\$1');\n\nconst adaylar = $('Mailleri Ayıkla').all().map(i => i.json);\nconst gonderilen = $input.all().map(i => i.json).filter(r => r && (r.email || r.domain));\n\nif (adaylar.length && adaylar[0].no_emails) {\n  return [{ json: { yeni_yok: true, chat_id: adaylar[0].chat_id, mesaj: 'Mesajınızda e-posta adresi bulamadım. Lütfen başvurmak istediğiniz firmaların e-posta adreslerini gönderin.' } }];\n}\n\nconst chatId = adaylar[0].chat_id;\nconst gEmail = new Set(gonderilen.map(g => String(g.email || '').toLowerCase()).filter(Boolean));\nconst gDomain = new Set(gonderilen.map(g => String(g.domain || '').toLowerCase()).filter(d => d && !FREE.includes(d)));\n\nconst yeni = [];\nconst atlanan = [];\nconst goruldu = new Set();\n\nfor (const a of adaylar) {\n  const kurumsal = !FREE.includes(a.domain);\n  if (gEmail.has(a.email) || (kurumsal && gDomain.has(a.domain))) {\n    atlanan.push(esc(a.email) + ' → bu firmaya daha önce gönderilmiş');\n    continue;\n  }\n  if (kurumsal && goruldu.has(a.domain)) {\n    atlanan.push(esc(a.email) + ' → listede aynı firmadan başka adres var');\n    continue;\n  }\n  if (kurumsal) goruldu.add(a.domain);\n  yeni.push(a);\n}\n\nif (yeni.length === 0) {\n  return [{ json: { yeni_yok: true, chat_id: chatId, mesaj: 'Gönderilecek yeni firma yok.' + (atlanan.length ? '\\n\\nAtlananlar:\\n- ' + atlanan.join('\\n- ') : '') } }];\n}\n\nreturn yeni.map(a => ({ json: a }));"
+      },
+      "id": "yenileri-suz",
+      "name": "Yenileri Süz",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        500,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.yeni_yok !== true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-yeni",
+      "name": "Yeni Firma Var mı?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Aşağıdaki bilgilerle bir iş başvuru e-postası hazırla.\n\nADAY PROFİLİ:\n- Ad Soyad: {{ $('Ayarlar').first().json.ad_soyad }}\n- Meslek: {{ $('Ayarlar').first().json.meslek }}\n- Hedef Pozisyon: {{ $('Ayarlar').first().json.pozisyon }}\n- Deneyim Özeti: {{ $('Ayarlar').first().json.deneyim_ozeti }}\n- Yetenekler: {{ $('Ayarlar').first().json.yetenekler }}\n- Telefon: {{ $('Ayarlar').first().json.telefon }}\n- LinkedIn: {{ $('Ayarlar').first().json.linkedin }}\n\nBAŞVURULACAK ADRES:\n- E-posta: {{ $json.email }}\n- E-posta domaini: {{ $json.domain }}",
+        "options": {
+          "systemMessage": "Sen deneyimli bir kariyer danışmanı ve insan kaynakları uzmanısın. Görevin, sana verilen e-posta adresinin ait olduğu firmayı tespit edip adaya bu firmaya özel bir iş başvuru e-postası hazırlamak.\n\nYAPACAKLARIN:\n1. E-posta domaininden (örn: ik@arcelik.com.tr -> Arçelik) firmanın adını ve faaliyet gösterdiği sektörü tahmin et.\n2. Adayın profilini bu firmanın sektörüne ve olası ihtiyaçlarına göre öne çıkararak, kişiye ve firmaya özel, profesyonel ama samimi bir Türkçe iş başvuru e-postası yaz.\n3. E-postada CV'nin ekte olduğunu mutlaka belirt.\n4. E-postanın sonuna imza olarak adayın adını, telefonunu ve LinkedIn adresini ekle.\n5. Mail metni 150-250 kelime arasında olsun. Abartılı övgülerden kaçın, somut deneyim ve yeteneklere dayan.\n6. Domain gmail.com, hotmail.com gibi genel bir sağlayıcıysa firma adını e-postanın kullanıcı adından tahmin etmeye çalış; emin olamazsan firma_adi alanına 'Bilinmiyor' yaz ve genel ama yine de profesyonel bir başvuru metni hazırla.\n\nCEVAP FORMATI - ÇOK ÖNEMLİ:\nSadece ve sadece aşağıdaki JSON formatında cevap ver. JSON dışında hiçbir açıklama, selamlama veya kod bloğu işareti yazma:\n{\"firma_adi\": \"...\", \"sektor\": \"...\", \"konu\": \"...\", \"mail_metni\": \"...\"}\nmail_metni alanında satır sonları için \\n kullan."
+        }
+      },
+      "id": "ai-agent",
+      "name": "Firma Analizi (AI)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        960,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "openai-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        900,
+        700
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-cred",
+          "name": "OpenAI Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// AI cevabını JSON olarak çözer ve Telegram onay mesajını hazırlar\nconst esc = s => String(s ?? '').replace(/([_*`\\[])/g, '\\\\$1');\nconst cand = $('Yenileri Süz').item.json;\nconst ayar = $('Ayarlar').first().json;\n\nlet raw = String($json.output ?? $json.text ?? '');\nconst m = raw.match(/\\{[\\s\\S]*\\}/);\nlet p = {};\ntry { p = JSON.parse(m ? m[0] : raw); } catch (e) {\n  p = { firma_adi: cand.domain, sektor: '', konu: 'İş Başvurusu - ' + ayar.ad_soyad, mail_metni: raw };\n}\n\nconst id = Math.random().toString(36).slice(2, 8);\nconst tarih = new Date().toISOString().slice(0, 16).replace('T', ' ');\nconst firma = p.firma_adi || cand.domain;\nconst konu = p.konu || ('İş Başvurusu - ' + ayar.ad_soyad);\nconst govde = p.mail_metni || '';\n\nconst onay_mesaji = '🏢 Firma: ' + esc(firma)\n  + '\\n🏷 Sektör: ' + esc(p.sektor || '-')\n  + '\\n📧 Alıcı: ' + esc(cand.email)\n  + '\\n📌 Konu: ' + esc(konu)\n  + '\\n\\n━━━━━━━━━━━━━━\\n'\n  + esc(govde).slice(0, 2500)\n  + '\\n━━━━━━━━━━━━━━\\n\\nBu başvuruyu göndereyim mi?';\n\nreturn { json: { id, tarih, email: cand.email, domain: cand.domain, firma, sektor: p.sektor || '', konu, govde, durum: 'BEKLIYOR', chat_id: cand.chat_id, onay_mesaji } };"
+      },
+      "id": "taslak-hazirla",
+      "name": "Taslak Hazırla",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1240,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Ayarlar').first().json.sheet_url }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Taslaklar"
+        },
+        "operation": "append",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "tarih": "={{ $json.tarih }}",
+            "email": "={{ $json.email }}",
+            "domain": "={{ $json.domain }}",
+            "firma": "={{ $json.firma }}",
+            "sektor": "={{ $json.sektor }}",
+            "konu": "={{ $json.konu }}",
+            "govde": "={{ $json.govde }}",
+            "durum": "={{ $json.durum }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "taslagi-kaydet",
+      "name": "Taslağı Kaydet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1460,
+        480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gsheets-cred",
+          "name": "Google Sheets Hesabım"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Taslak Hazırla').item.json.chat_id }}",
+        "text": "={{ $('Taslak Hazırla').item.json.onay_mesaji }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Gönder",
+                    "additionalFields": {
+                      "callback_data": "=send:{{ $('Taslak Hazırla').item.json.id }}"
+                    }
+                  },
+                  {
+                    "text": "⏭ Atla",
+                    "additionalFields": {
+                      "callback_data": "=skip:{{ $('Taslak Hazırla').item.json.id }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "onay-iste",
+      "name": "Onay İste",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        480
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-cred",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.mesaj }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "bildir-yeni-yok",
+      "name": "Bildir - Yeni Yok",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        760
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram-cred",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Ayarlar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ayarlar": {
+      "main": [
+        [
+          {
+            "node": "Mesaj mı Onay mı?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mesaj mı Onay mı?": {
+      "main": [
+        [
+          {
+            "node": "Onayı Çöz",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mailleri Ayıkla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Onayı Çöz": {
+      "main": [
+        [
+          {
+            "node": "Butonu Yanıtla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Butonu Yanıtla": {
+      "main": [
+        [
+          {
+            "node": "Taslağı Bul",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Taslağı Bul": {
+      "main": [
+        [
+          {
+            "node": "Gönderilmişleri Kontrol Et",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gönderilmişleri Kontrol Et": {
+      "main": [
+        [
+          {
+            "node": "Karar Ver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Karar Ver": {
+      "main": [
+        [
+          {
+            "node": "Karar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Karar": {
+      "main": [
+        [
+          {
+            "node": "CV'yi İndir",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Taslağı Güncelle - Atlandı",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bildir - Uyarı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CV'yi İndir": {
+      "main": [
+        [
+          {
+            "node": "Başvuru Mailini Gönder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Başvuru Mailini Gönder": {
+      "main": [
+        [
+          {
+            "node": "Gönderilenlere Ekle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gönderilenlere Ekle": {
+      "main": [
+        [
+          {
+            "node": "Taslağı Güncelle - Gönderildi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Taslağı Güncelle - Gönderildi": {
+      "main": [
+        [
+          {
+            "node": "Bildir - Gönderildi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Taslağı Güncelle - Atlandı": {
+      "main": [
+        [
+          {
+            "node": "Bildir - Atlandı",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mailleri Ayıkla": {
+      "main": [
+        [
+          {
+            "node": "Gönderilenleri Oku",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gönderilenleri Oku": {
+      "main": [
+        [
+          {
+            "node": "Yenileri Süz",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Yenileri Süz": {
+      "main": [
+        [
+          {
+            "node": "Yeni Firma Var mı?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Yeni Firma Var mı?": {
+      "main": [
+        [
+          {
+            "node": "Firma Analizi (AI)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Bildir - Yeni Yok",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firma Analizi (AI)": {
+      "main": [
+        [
+          {
+            "node": "Taslak Hazırla",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Firma Analizi (AI)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Taslak Hazırla": {
+      "main": [
+        [
+          {
+            "node": "Taslağı Kaydet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Taslağı Kaydet": {
+      "main": [
+        [
+          {
+            "node": "Onay İste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "is-basvuru-asistani"
+  }
+}
