@@ -253,14 +253,16 @@ const APPS = [
 
 /* ---------- Kaldırma & Vinç ---------- */
 { id:"hoist", grp:{tr:"Kaldırma & Vinç",en:"Lifting & Crane"}, dia:"hoist", sf:1.5, eta:0.97,
-  name:{tr:"Vinç kaldırma — direkt tambur",en:"Crane hoist — direct drum"}, series:{tr:"İRC Serisi (kaldırma)",en:"İRC series (hoist)"},
-  formula:{tr:"Mᴛ = m·g·r ,  n = 9,55·v/r ,  Pm = Mᴛ·n/(9550·η)", en:"Mᴛ = m·g·r ,  n = 9.55·v/r ,  Pm = Mᴛ·n/(9550·η)"},
-  vars:[V("m","Kaldırılacak yük m","Load m","kg",2000,50),V("D","Tambur çapı Ø","Drum Ø","mm",300,10),V("v","Kaldırma hızı v","Lift speed v","m/min",10,0.5)],
-  calc:v=>{const r=v.D/2000;const MT=v.m*G*r;const vms=v.v/60;const n=9.55*vms/r;
+  name:{tr:"Vinç kaldırma (tambur + palanga)",en:"Crane hoist (drum + falls)"}, series:{tr:"İRC Serisi (kaldırma)",en:"İRC series (hoist)"},
+  formula:{tr:"Mᴛ = m·g·r/z ,  n = 9,55·v·z/r ,  Pm = Mᴛ·n/(9550·η)", en:"Mᴛ = m·g·r/z ,  n = 9.55·v·z/r ,  Pm = Mᴛ·n/(9550·η)"},
+  vars:[V("m","Kaldırılacak yük m","Load m","kg",2000,50),V("D","Tambur çapı Ø","Drum Ø","mm",300,10),
+        V("v","Kaldırma hızı v","Lift speed v","m/min",10,0.5),V("z","Palanga kat sayısı z","Rope falls z","",1,1)],
+  calc:v=>{const r=v.D/2000;const z=Math.max(1,v.z);const MT=v.m*G*r/z;const vms=v.v/60;const n=9.55*vms*z/r;
     return {MT,n,steps:[
       {lab:{tr:"Tambur yarıçapı",en:"Drum radius"},expr:`r = ${v.D}/2000`,res:R(r,3),u:"m"},
-      {lab:{tr:"Tambur momenti",en:"Drum moment"},expr:`Mᴛ = ${v.m}·9,81·${R(r,3)}`,res:R(MT),u:"Nm"},
-      {lab:{tr:"Tambur devri",en:"Drum speed"},expr:`n = 9,55·${R(vms,3)}/${R(r,3)}`,res:R(n,1),u:"d/dk"}]};}},
+      {lab:{tr:"Palanga kat sayısı",en:"Rope falls"},expr:`z`,res:z,u:""},
+      {lab:{tr:"Tambur momenti",en:"Drum moment"},expr:`Mᴛ = ${v.m}·9,81·${R(r,3)}/${z}`,res:R(MT),u:"Nm"},
+      {lab:{tr:"Tambur devri",en:"Drum speed"},expr:`n = 9,55·${R(vms,3)}·${z}/${R(r,3)}`,res:R(n,1),u:"d/dk"}]};}},
 
 { id:"pulley", grp:{tr:"Kaldırma & Vinç",en:"Lifting & Crane"}, dia:"pulley", sf:1.5, eta:0.95,
   name:{tr:"Palangalı kaldırma",en:"Pulley / block-and-tackle hoist"}, series:{tr:"İRC Serisi (kaldırma)",en:"İRC series (hoist)"},

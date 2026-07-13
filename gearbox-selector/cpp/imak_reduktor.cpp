@@ -128,13 +128,14 @@ std::vector<App> build_apps(){
         ST("Çıkış momenti","Output moment","Mᴛ=9550·Pₒ/n",MT,"Nm")};return r;}});
 
     // ---------- Kaldırma & Vinç ----------
-    A.push_back({"hoist","Kaldırma & Vinç","Lifting & Crane","Vinç kaldırma — direkt tambur","Crane hoist — direct drum",
-      "İRC Serisi (kaldırma)","İRC series (hoist)","Mᴛ=m·g·r ; n=9,55·v/r","Mᴛ=m·g·r ; n=9.55·v/r",
+    A.push_back({"hoist","Kaldırma & Vinç","Lifting & Crane","Vinç kaldırma (tambur + palanga)","Crane hoist (drum + falls)",
+      "İRC Serisi (kaldırma)","İRC series (hoist)","Mᴛ=m·g·r/z ; n=9,55·v·z/r","Mᴛ=m·g·r/z ; n=9.55·v·z/r",
       1.5,0.97,
-      {V("m","Kaldırılacak yük m","Load m","kg",2000),V("D","Tambur çapı Ø","Drum Ø","mm",300),V("v","Kaldırma hızı v","Lift speed v","m/min",10)},
-      [](std::map<std::string,double>&v){Res r;double rr=v["D"]/2000;double MT=v["m"]*G*rr;double vms=v["v"]/60;double n=9.55*vms/rr;
-        r.MT=MT;r.n=n;r.steps={ST("Tambur yarıçapı","Drum radius","r=D/2000",rr,"m"),ST("Tambur momenti","Drum moment","Mᴛ=m·g·r",MT,"Nm"),
-        ST("Tambur devri","Drum speed","n=9,55·v/r",n,"d/dk")};return r;}});
+      {V("m","Kaldırılacak yük m","Load m","kg",2000),V("D","Tambur çapı Ø","Drum Ø","mm",300),V("v","Kaldırma hızı v","Lift speed v","m/min",10),
+       V("z","Palanga kat sayısı z","Rope falls z","",1)},
+      [](std::map<std::string,double>&v){Res r;double rr=v["D"]/2000;double z=std::max(1.0,v["z"]);double MT=v["m"]*G*rr/z;double vms=v["v"]/60;double n=9.55*vms*z/rr;
+        r.MT=MT;r.n=n;r.steps={ST("Tambur yarıçapı","Drum radius","r=D/2000",rr,"m"),ST("Palanga kat sayısı","Rope falls","z",z,""),
+        ST("Tambur momenti","Drum moment","Mᴛ=m·g·r/z",MT,"Nm"),ST("Tambur devri","Drum speed","n=9,55·v·z/r",n,"d/dk")};return r;}});
 
     A.push_back({"pulley","Kaldırma & Vinç","Lifting & Crane","Palangalı kaldırma","Pulley / block-and-tackle hoist",
       "İRC Serisi (kaldırma)","İRC series (hoist)","Mᴛ=m·g·r/z ; n=9,55·v·z/r","Mᴛ=m·g·r/z ; n=9.55·v·z/r",

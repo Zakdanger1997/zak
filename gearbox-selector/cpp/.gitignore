@@ -1,5 +1,2 @@
-# compiled binaries (platform-specific — rebuild with g++ / cl)
 imak_reduktor
-imak_reduktor.exe
 *.o
-*.obj
