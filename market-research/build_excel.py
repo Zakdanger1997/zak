@@ -247,18 +247,118 @@ for region in ["Jutland","Funen","Zealand / Copenhagen & East","Other / Unconfir
 for i,w in enumerate([28,24,30,8],1):
     ws.column_dimensions[get_column_letter(i)].width = w
 
-# ---------- TAB 5: Decision Makers (template) ----------
+# ---------- TAB 5: Decision Makers (Apollo.io roster) ----------
+# Pulled via Apollo People Search (free, no credits). Last names are MASKED by Apollo's
+# plan; full name + email + LinkedIn require an enrichment pass (~1 credit/person).
 ws = wb.create_sheet("Decision Makers")
-DM_HEAD = ["Company","Role (target)","Name","LinkedIn / Email","Source","Status"]
-dm = []
-target_roles = ["CEO / Managing Director","Purchasing / Procurement Director","Engineering Manager","R&D Manager","Production Manager","Technical Director","Supply Chain Director"]
-# seed one CEO placeholder row per top-15 company
-for i in order[:15]:
-    dm.append([rows[i][0], "CEO / Managing Director", "", "", "TO ENRICH via Apollo.io", "pending"])
+DM_HEAD = ["Company","Role Category","First Name","Last Name (masked)","Exact Title","Location","Full Name / Email / LinkedIn"]
+# [company, role, first, masked_last, title]
+decision_makers = [
+["Gram Equipment A/S","CEO/MD","Dirk","Ha***g","CEO Gram-Equipment A/S"],
+["Gram Equipment A/S","Purchasing/Procurement","Peter","Ra***n","Strategic Procurement Manager & Lead"],
+["Gram Equipment A/S","R&D","Michael","Co***s","R&D Manager"],
+["Gram Equipment A/S","Production","Jens","Ha***n","Production Manager"],
+["Cabinplant A/S","CEO/MD (Owner)","Jan","Ha***n","CFO, Co-owner"],
+["Cabinplant A/S","Purchasing/Procurement","Juergen","Ju***n","Procurement Manager"],
+["Cabinplant A/S","Engineering","Michael","Pe***n","Engineering Manager - Processing"],
+["Cabinplant A/S","Production","Henrik","So***d","Production Manager"],
+["Carsoe (Carsoe Group A/S)","CEO/MD","Soren","Kl***o","CEO"],
+["Carsoe (Carsoe Group A/S)","Technical Director","Henrik","Po***n","CTO"],
+["Carsoe (Carsoe Group A/S)","Purchasing/Procurement","Doris","Ha***n","Procurement & Logistics Manager"],
+["Carsoe (Carsoe Group A/S)","Engineering","Magnus","He***d","Manager of Mechanical Engineering"],
+["KM Fish Machinery A/S","CEO/MD","Soren","Kl***o","CEO (shared Carsoe org)"],
+["KM Fish Machinery A/S","Purchasing/Procurement","Doris","Ha***n","Procurement & Logistics Manager (shared Carsoe org)"],
+["Uni-Food Technic A/S","CEO/MD (Owner)","Jeppe","Ch***n","Chief Executive Officer, Owner"],
+["Uni-Food Technic A/S","Production","Michael","Ha***n","Production Manager"],
+["Kaj Olesen A/S","CEO/MD","Jacob","Ol***n","CEO"],
+["IRAS A/S","CEO/MD (Owner)","Peter","Ra***n","Owner"],
+["DSI Freezing Solutions / DSI Dantech A/S","Supply Chain","Hans","Vi***d","Supply Chain Director (interim)"],
+["DSI Freezing Solutions / DSI Dantech A/S","Production","Anders","Ch***n","Production Manager"],
+["Qupaq A/S","CEO/MD","Christian","Bo***s","Chief Executive Officer"],
+["Globaq Solutions (ex-Billund Aquaculture)","Engineering","Carlos","Ar***i","Engineering Manager"],
+["Primodan A/S","CEO/MD","Lars","He***n","CEO"],
+["Primodan A/S","Production","Tommy","Ol***n","Production Manager"],
+["SiccaDania A/S","CEO/MD","Lone","Ho***t","CEO SiccaDania Holding"],
+["SiccaDania A/S","Engineering","Willy","Ma***k","Engineering Manager"],
+["Tetra Pak Hoyer A/S","Production","Lasse","Je***n","Production Manager"],
+["Tetra Pak Hoyer A/S","Engineering","Morten","Os***i","Engineering Manager"],
+["Tetra Pak Hoyer A/S","Purchasing/Procurement","Allen","Le***y","Senior Innovation Procurement Manager"],
+["Tetra Pak Hoyer A/S","R&D","Soren","An***n","R&D Project Manager"],
+["Tetra Pak Hoyer A/S","Supply Chain","Bente","Da***d","Supply Manager"],
+["Tetra Pak Hoyer A/S","Technical Director","(Mr.)","Ra***n","Technical Sales Director"],
+["GEA Process Engineering A/S (ex-Niro)","CEO/MD","Claus","Th***n","Country Mgr Dir DACH & Nordics NPE / MD GEA Liquid Technologies A/S"],
+["GEA Process Engineering A/S (ex-Niro)","Technical Director","Poul-Erik","Aa***d","Technical Director"],
+["GEA Process Engineering A/S (ex-Niro)","R&D","Anders","Re***n","Head of Digitalization and Automation R&D"],
+["GEA Process Engineering A/S (ex-Niro)","Supply Chain","Lars","Ho***n","Senior Director Procurement & Supply Chain"],
+["GEA Process Engineering A/S (ex-Niro)","Purchasing/Procurement","Rene","Cl***n","Head of Procurement (interim), GEA Liquid Technology A/S"],
+["GEA Process Engineering A/S (ex-Niro)","Engineering","Peter","Pl***t","Head of Project Engineering - Membrane Filtration"],
+["SPX FLOW Danmark (APV)","Engineering","Lis","Ra***n","Engineering Manager, Process Technology Membrane & UHT"],
+["NDT - Nordic Dairy Technology ApS","CEO/MD","Stig","Pe***n","Chief Executive Officer"],
+["Egatec A/S","CEO/MD","Rene","Mo***r","Adm. Direktor / CEO"],
+["Egatec A/S","Engineering","Tommy","Pe***n","Head of Engineering, Automation"],
+["Frontmatec Group","Supply Chain","Thorbjorn","Be***n","Senior Director Supply Chain Europe"],
+["Frontmatec Group","R&D","Thomas","La***n","R&D Manager, Instruments"],
+["Scansteel foodtech A/S","CEO/MD","Henrik","Sa***g","CEO/Owner"],
+["Scansteel foodtech A/S","R&D","Henrik","La***n","Project and R&D Manager"],
+["Scansteel foodtech A/S","Engineering","Mohammad","Sa***y","Technical Engineering Manager"],
+["Fomaco A/S","CEO/MD","Sebastian","Mu***r","CEO"],
+["Fomaco A/S","Technical Director","Carsten","Gi***l","CTO"],
+["Fomaco A/S","Production","Ole","Ni***n","Production Manager"],
+["JS Proputec A/S","CEO/MD","Morten","Br***g","Chief Executive Officer"],
+["JS Proputec A/S","Production","Bjarne","Je***n","Production Manager"],
+["BAADER Food Systems Denmark A/S (ex-LINCO)","CEO/MD","Henning","Pe***n","Managing Director / CEO"],
+["BAADER Food Systems Denmark A/S (ex-LINCO)","R&D","Michael","Ha***n","Head of R&D"],
+["BAADER Food Systems Denmark A/S (ex-LINCO)","Engineering","Danny","Od***e","Engineering Manager"],
+["BAADER Food Systems Denmark A/S (ex-LINCO)","Production","Niels","Th***n","Production Manager"],
+["BAADER Food Systems Denmark A/S (ex-LINCO)","Technical Director","Michael","Ba***g","Technical Director"],
+["Jorgensen Engineering A/S","CEO/MD","Mike","Go***a","Chief Executive Officer"],
+["Jorgensen Engineering A/S","Technical Director","Thomas","La***n","Chief Technology Officer"],
+["Jorgensen Engineering A/S","Engineering","Jeppe","Jo***n","Engineering Manager"],
+["Jorgensen Engineering A/S","Production","Johnni","Ha***n","Production Manager"],
+["Haarslev Industries A/S","Engineering","Kaare","Ve***g","Engineering Centre Manager"],
+["Haarslev Industries A/S","Engineering (Automation)","Henrik","Je***n","Engineering Centre Manager - Automation & Control"],
+["Haarslev Industries A/S","Sales Engineering","Hamed","Sh***i","Sales Engineering Manager"],
+["Daniatech ApS / SD Mixing (SiccaDania)","CEO/MD","Jens","An***n","Managing Director"],
+["Daniatech ApS / SD Mixing (SiccaDania)","R&D/Technical","Gorm","Kj***f","Technology Owner, UHT & Thermal Processing"],
+["SANOVO Technology A/S","CEO/MD","Michael","Mi***v","CEO"],
+["SANOVO Technology A/S","R&D","Martin","So***n","R&D Manager"],
+["SANOVO Technology A/S","Engineering (Electrical)","Henrik","Mo***r","Product Owner, Electrical"],
+["Scanvaegt Systems A/S","CEO/MD","Jan","El***d","Adm. Direktor / CEO"],
+["Scanvaegt Systems A/S","R&D","Simon","So***d","R&D Team Manager"],
+["Scanvaegt Systems A/S","R&D (Project)","Niels","Hu***e","Project Manager R&D"],
+["Schur Technology A/S (Schur Group)","CEO/MD","Hans","Sc***r","Chief Executive Officer"],
+["Schur Technology A/S (Schur Group)","Purchasing/Procurement","Kasper","An***n","Procurement Manager"],
+["Schur Technology A/S (Schur Group)","Supply Chain","Ditte","Ch***n","Director of Supply Chain"],
+["Schur Technology A/S (Schur Group)","Production","Michael","Tr***n","Produktions Leder"],
+["Aasted ApS","CEO/MD","Piet","Ta***n","CEO"],
+["Aasted ApS","Technical Director/CTO","Henrik","He***n","Chief Technology Officer"],
+["Aasted ApS","Purchasing","Christian","Aa***d","Head of Purchasing Department"],
+["Aasted ApS","Production","Paw","Ne***l","Production Manager"],
+["Aasted ApS","Engineering","Niels","Ha***n","Head of Sales Engineering"],
+["Aasted ApS","Owner","Allan","Aa***d","Vice Chairman, Owner"],
+["Varimixer A/S (Wodschow & Co.)","CEO/MD","Paw","Soe","CEO"],
+["Varimixer A/S (Wodschow & Co.)","Production","Jesper","Ol***n","Production Manager"],
+["Chocoma ApS","CEO/MD (Owner)","Christian","Ni***n","Owner"],
+["Sealing System 2024 A/S","CEO/MD","Ole","Je***n","CEO"],
+["Sealing System 2024 A/S","Purchasing/Procurement","Dion","La***n","Procurement Manager"],
+["Sealing System 2024 A/S","Engineering","Tonny","Ra***k","Engineering Manager"],
+["Sealing System 2024 A/S","Technical Director","Tue","Pe***n","Technical Director"],
+["Sealing System 2024 A/S","Production","Rasmus","Da***n","Manager of Electrical Engineering & Manufacturing"],
+["Dansk Maskin Teknik A/S (DMT)","Engineering","Andreas","La***n","Head of Mechanical Engineering"],
+["Micro Matic A/S","Engineering","Thomas","Ma***g","Head of Engineering"],
+["Micro Matic A/S","Purchasing/Procurement","Danny","Li***e","Project Manager - Group Procurement"],
+["Micro Matic A/S","Production","Kristian","An***n","Production Manager"],
+["Flexmatic (now SteelXperts ApS)","CEO/MD","Bjarne","So***n","Adm. Direktor og Medejer"],
+["Dalum Beverage Equipment ApS","CEO/MD","Kim","Da***m","CEO"],
+]
+dm = [[c, role, first, last, title, "Denmark", "(enrich to reveal)"] for (c,role,first,last,title) in decision_makers]
 write_table(ws, DM_HEAD, dm)
-ws.cell(row=len(dm)+3, column=1, value="NOTE: This tab is a template. Names + personal LinkedIn/email are not reliably public and are").font=Font(italic=True,color="C00000")
-ws.cell(row=len(dm)+4, column=1, value="reserved for an Apollo.io enrichment pass across all 49 companies (targets: "+", ".join(target_roles)+").").font=Font(italic=True,color="C00000")
-for i,w in enumerate([28,30,24,34,24,12],1):
+note_r = len(dm)+3
+ws.cell(row=note_r, column=1, value=f"{len(dm)} decision-makers across 36 of 49 companies, pulled via Apollo People Search (FREE, no credits).").font=Font(italic=True,bold=True,color=BLUE)
+ws.cell(row=note_r+1, column=1, value="Last names are MASKED by Apollo (e.g. Ra***n). Full name + business email + LinkedIn URL require an").font=Font(italic=True,color="C00000")
+ws.cell(row=note_r+2, column=1, value="enrichment pass (~1 lead credit per person). 13 companies returned no Apollo records: Kroma, BoPil, Trepko,").font=Font(italic=True,color="C00000")
+ws.cell(row=note_r+3, column=1, value="Landia, CTI Process, Attec (merged into Frontmatec), Butina, DanfoTech, Skals, Bila, Haas-Meincke, Bruel, FH Scandinox.").font=Font(italic=True,color="C00000")
+for i,w in enumerate([40,24,16,18,46,12,26],1):
     ws.column_dimensions[get_column_letter(i)].width = w
 
 # ---------- TAB 6: Gearbox Suppliers ----------
