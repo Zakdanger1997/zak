@@ -9,7 +9,7 @@
 | Batch | Sectors | Target | Status | Output file |
 |---|---|---|---|---|
 | 1 | Food processing, dairy, meat, fish, bakery, beverage | 40–70 | ✅ Done — **49 companies** | `data/batch-1-food.md` |
-| 2 | Agriculture, feed mills, grain, livestock, poultry | 30–50 | ⬜ Not started | `data/batch-2-agriculture.md` |
+| 2 | Agriculture, feed mills, grain, livestock, poultry | 30–50 | ✅ Done — **36 companies** | `data/batch-2-agriculture.md` |
 | 3 | Material handling, conveyors, packaging, logistics | 40–60 | ⬜ Not started | `data/batch-3-material-handling.md` |
 | 4 | Wind energy, marine, offshore | 30–50 | ⬜ Not started | `data/batch-4-wind-marine.md` |
 | 5 | Industrial automation, special machines, robotics, machine tools | 40–60 | ⬜ Not started | `data/batch-5-automation.md` |
