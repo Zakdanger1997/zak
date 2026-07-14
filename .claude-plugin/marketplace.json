@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "salesably-marketplace",
+  "version": "1.0.0",
+  "description": "Sales and marketing skills for Claude Code by Salesably.ai",
+  "owner": {
+    "name": "Zakdanger1997",
+    "email": "178354582+Zakdanger1997@users.noreply.github.com"
+  },
+  "plugins": [
+    {
+      "name": "marketing-skills",
+      "description": "10 specialized marketing skills: brand voice, positioning, content strategy, copywriting, and distribution.",
+      "source": "./marketing-skills",
+      "category": "marketing"
+    },
+    {
+      "name": "sales-skills",
+      "description": "9 specialized sales skills: deal qualification, prospect research, call preparation, and stakeholder engagement.",
+      "source": "./sales-skills",
+      "category": "sales"
+    }
+  ]
+}
