@@ -8,7 +8,7 @@
 
 | Batch | Sectors | Status | Output |
 |---|---|---|---|
-| 1 | Food: dairy/meat, beverage/winery/bottling, bakery & milling, general food, packaging | 🟡 Running | `data/sa-batch-1-food.md` |
+| 1 | Food: dairy/meat, beverage/winery/bottling, bakery & milling, general food, packaging | ✅ Done — **42 companies** | `data/sa-batch-1-food.md` |
 | 2 | Agriculture: grain handling, feed, livestock, farm machinery, irrigation | ⬜ | `data/sa-batch-2-agriculture.md` |
 | 3 | **Mining & mineral processing equipment** (SA flagship: crushers, mills, screens, conveyors, feeders) | ⬜ | `data/sa-batch-3-mining.md` |
 | 4 | Materials handling & bulk (conveyors, elevators, stackers, ports) | ⬜ | `data/sa-batch-4-materials-handling.md` |
