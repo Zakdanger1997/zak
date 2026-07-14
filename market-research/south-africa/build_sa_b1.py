@@ -160,6 +160,56 @@ for region in ["Gauteng / Inland","Western Cape","KwaZulu-Natal","Free State"]:
     rr+=1
 for i,w in enumerate([32,24,30,8],1): ws.column_dimensions[get_column_letter(i)].width=w
 
+ws=wb.create_sheet("Decision Makers")
+DM_HEAD=["Company","Role","Full Name","Title","Business Email","Email Status","LinkedIn URL","Location"]
+dm=[
+["Filmatic Packaging","MD","Riaan Van Zyl","Managing Director","rvanzyl@filmatic.com","verified","linkedin.com/in/riaan-van-zyl-41355240","Cape Town"],
+["Filmatic Packaging","Operations","Chris Mijburgh","Operations Director","chrism@filmatic.com","verified","linkedin.com/in/chris-mijburgh-850b193b","South Africa"],
+["Acepak","MD","Matthew Grobler","Managing Director","matthew@acepak.co.za","verified","linkedin.com/in/matthew-grobler-acepak","Cape Town"],
+["Acepak","Technical","Clinton Meadows","Technical Director","clinton@acepak.co.za","verified","linkedin.com/in/clinton-meadows-67807470","Cape Town"],
+["Acepak","Sales","Justin Tomsett","Sales Director","justin@acepak.co.za","verified","linkedin.com/in/justin-tomsett-acepak","Cape Town"],
+["Macadams International","CEO","John Reilly","Chief Executive Officer","jreilly@macadams.co.za","verified","linkedin.com/in/john-reilly-5b841b23","Johannesburg"],
+["Macadams International","Director","Bruce Armstrong","Director","barmstrong@macadams.co.za","verified","linkedin.com/in/bruce-armstrong-2793a4b2","Durban"],
+["Macadams International","Projects/Technical","Michael Hodgson","Projects Director","mhodgson@macadams.co.za","verified","linkedin.com/in/michael-hodgson-a0a8182b","South Africa"],
+["Macadams International","Production","Neo Nkadimeng","Production Manager","nnkadimeng@macadams.co.za","verified","linkedin.com/in/neo-nkadimeng-90ba7ba7","Cape Town"],
+["Macadams International","Purchasing","Selina Plaatjes","Import Buying Manager","splaatjes@macadams.co.za","verified","linkedin.com/in/selina-plaatjes-805701282","Cape Town"],
+["JF Equipment","Operations","Francois Bester","Operations Manager","","unavailable","linkedin.com/in/francois-bester-2b89561b5","Gauteng"],
+["Anderson Engineering","CEO","Hans Coertse","CEO","hans@andersoneng.co.za","verified","linkedin.com/in/hans-coertse-b4046070","Durban"],
+["Anderson Engineering","MD","Hennie Jager","Managing Director","henniedj@andersoneng.co.za","verified","linkedin.com/in/hpdejager","Durban"],
+["Anderson Engineering","Engineering","Andrew Charters","Design Engineering Manager","","unavailable","linkedin.com/in/andrew-charters-097352bb","South Africa"],
+["Anderson Engineering","Operations","Trevor Govender","Operations Manager","","unavailable","linkedin.com/in/trevor-govender-2519a315","Pietermaritzburg"],
+["Facet Engineering","Operations","Nicole Fairweather","Operations Director","nicolefairweather@facetengineering.co.za","verified","linkedin.com/in/nicole-fairweather-910a4315","Johannesburg"],
+["Facet Engineering","Technical","Johan Pretorius","Technical Director","","unavailable","linkedin.com/in/johan-pretorius-798a3245","Johannesburg"],
+["Jones Industrial Mixers","Engineering","Gareth Lyndon","Engineering Director","gareth@jonesmixers.co.za","verified","linkedin.com/in/gareth-lyndon-45b217a6","Johannesburg"],
+["Jones Industrial Mixers","Director","John Broli","Director","","unavailable","linkedin.com/in/john-broli-46580217","Johannesburg"],
+["CFAM Technologies","Purchasing","Riaan Redelinghuys","Procurement Manager","riaan@cfam.co.za","verified","linkedin.com/in/riaan-redelinghuys-1959a228","South Africa"],
+["National Packaging Systems (NPS)","Owner","John Pelucci","Owner","john@nps.co.za","verified","linkedin.com/in/john-pelucci-65b9084","Durban"],
+["National Packaging Systems (NPS)","Operations","Sanjay Sookdeo","Operation Director","sanjay@nationalpackagingsystems.co.za","verified","linkedin.com/in/sanjay-sookdeo-29791899","Durban"],
+["Schullpak CC","MD","Graham Hull","Managing Director","graham@schullpak.co.za","verified","linkedin.com/in/graham-hull-54549b54","Cape Town"],
+["Schullpak CC","Operations/GM","Johan Slabbert","Operations / General Manager","johan@schullpak.co.za","verified","linkedin.com/in/johan-slabbert-20391a127","Johannesburg"],
+["Mixtec","MD","Jono Lyndon","Managing Director","jlyndon@mixtec.com","verified","linkedin.com/in/jono-lyndon-78b6222a","South Africa"],
+["Mixtec","Engineering","Metta Hofmeister","Engineering Manager","","unavailable","linkedin.com/in/metta-jan-hofmeister-4411653b","Johannesburg"],
+["Afromix (AFX Holdings)","MD","Eugene Els","Managing Director","eugene.els@afromix.co.za","verified","linkedin.com/in/eugene-els-166b1314","Johannesburg"],
+["Afromix (AFX Holdings)","Projects","JJ Strydom","Projects Director","jj.strydom@afromix.co.za","verified","linkedin.com/in/jj-strydom-0a5b0347","Johannesburg"],
+["Afromix (AFX Holdings)","Finance","Barry Middleton","Financial Director","barry.middleton@afromix.co.za","verified","linkedin.com/in/barry-middleton-b63481220","Benoni"],
+["Afromix (AFX Holdings)","Sales","Verna Els","Sales and Marketing Director","verna.els@afromix.co.za","verified","linkedin.com/in/verna-els-203a97154","Johannesburg"],
+["PMD Packaging","Technical","Pat Galleymore","Technical Director","pat@pmdpackaging.co.za","verified","linkedin.com/in/pat-galleymore-4971ba12a","South Africa"],
+["Inpakt Group","Marketing/MD","Nishara Naidoo","Marketing Director (also MD Inpaktsa)","nishara@inpaktgroup.co.za","verified","linkedin.com/in/nishara-naidoo-95a39226","Durban"],
+["Basils Business Opportunities (BBO)","MD","Basil Phupha","Managing Director","basil@bbosa.co.za","verified","linkedin.com/in/basil-phupha-a41857197","Johannesburg"],
+["Saturn Stainless Industries","MD","Jacques Schreuder","Managing Director","jacques@saturnstainless.co.za","verified","linkedin.com/in/jacques-schreuder-0aba4925","Cape Town"],
+["Saturn Stainless Industries","Production","Francois Carolissen","Production Manager","francois@saturnstainless.co.za","verified","linkedin.com/in/francois-carolissen-15115a246","Paarl"],
+]
+write_table(ws,DM_HEAD,dm)
+for ri,rec in enumerate(dm,start=2):
+    cell=ws.cell(row=ri,column=6); st=rec[5]
+    cell.fill=PatternFill("solid",fgColor=GREEN if st=="verified" else RED)
+verified=sum(1 for r in dm if r[5]=="verified")
+note_r=len(dm)+3
+ws.cell(row=note_r,column=1,value=f"{len(dm)} decision-makers enriched via Apollo (16 of 42 companies). {verified} verified business emails; rest email-unavailable (LinkedIn still provided).").font=Font(italic=True,bold=True,color=BLUE)
+ws.cell(row=note_r+1,column=1,value="SA Apollo coverage is thin: 26 of 42 companies had NO records (incl. Roff, Powercon, Egli, MPE, STEGEL, Maize Master, Drotsky). For those use company website / LinkedIn.").font=Font(italic=True,color="C00000")
+ws.cell(row=note_r+2,column=1,value="EXCLUDED: ABC Hansen Africa's 2 Apollo matches were mis-linked to 'Argon Asset Management' (wrong org) and dropped.").font=Font(italic=True,color="C00000")
+for i,w in enumerate([32,18,26,42,36,14,44,16],1): ws.column_dimensions[get_column_letter(i)].width=w
+
 ws=wb.create_sheet("Gearbox Suppliers")
 gs=[
 ["SEW-Eurodrive","Germany (SA assembly)","DOMINANT SA incumbent - local assembly Nelspruit + JHB; default drive on most food OEMs","Price + lead-time on standard helical/worm/bevel"],
