@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="doc.title">Poupées du Monde — Musée des poupées, Médina de Rabat</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="doc.desc" content="" />
+  <meta name="theme-color" content="#2E5D64" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Poupées du Monde — Médina de Rabat" />
+  <meta property="og:description" content="Plus de 2 500 poupées du monde en costumes traditionnels, au cœur d’un riad de la Médina de Rabat." />
+  <meta property="og:image" content="assets/img/courtyard-patio.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/logo/favicon-512.png" />
+  <link rel="apple-touch-icon" href="assets/logo/apple-touch-icon.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+
+  <!-- Structured data: TouristAttraction / Museum -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Museum",
+    "name": "Poupées du Monde",
+    "description": "Private collection of 2,500+ dolls in folk costumes from over 90 countries, inside a historic riad in Rabat's Medina.",
+    "address": { "@type": "PostalAddress", "addressLocality": "Rabat", "addressRegion": "Rabat-Salé-Kénitra", "addressCountry": "MA" },
+    "image": "assets/img/courtyard-patio.jpg",
+    "touristType": ["Families", "Culture", "Tourists"]
+  }
+  </script>
+</head>
+
+<body>
+
+  <!-- ======================= HEADER ======================= -->
+  <header class="site-header" id="header">
+    <div class="wrap header-inner">
+      <a href="#home" class="brand" aria-label="Poupées du Monde">
+        <img src="assets/logo/logo-badge.png" alt="Poupées du Monde" class="brand-logo" />
+        <span class="brand-name">
+          <span class="brand-name-main">Poupées du Monde</span>
+          <span class="brand-name-sub">Médina de Rabat</span>
+        </span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Primary">
+        <a href="#story" data-i18n="nav.story">Notre histoire</a>
+        <a href="#collection" data-i18n="nav.collection">La collection</a>
+        <a href="#gallery" data-i18n="nav.gallery">Galerie</a>
+        <a href="#info" data-i18n="nav.info">Infos pratiques</a>
+        <a href="#contact" data-i18n="nav.contact">Contact</a>
+        <a href="#booking" class="btn btn-sm btn-primary nav-book" data-i18n="nav.book">Réserver une visite</a>
+      </nav>
+
+      <div class="header-tools">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button data-lang="fr" class="is-active">FR</button>
+          <button data-lang="en">EN</button>
+          <button data-lang="ar">ع</button>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================= HERO ======================= -->
+  <section class="hero" id="home">
+    <div class="hero-media">
+      <img src="assets/img/courtyard-patio.jpg" alt="" fetchpriority="high" />
+      <div class="hero-scrim"></div>
+    </div>
+    <div class="wrap hero-content">
+      <p class="kicker kicker-light" data-i18n="hero.kicker">Musée des poupées · Médina de Rabat</p>
+      <h1 class="hero-title" data-i18n="hero.title">Un voyage autour du monde,<br>une poupée à la fois</h1>
+      <p class="hero-sub" data-i18n="hero.sub"></p>
+      <div class="hero-actions">
+        <a href="#booking" class="btn btn-primary" data-i18n="hero.cta1">Réserver une visite</a>
+        <a href="#collection" class="btn btn-ghost" data-i18n="hero.cta2">Découvrir la collection</a>
+      </div>
+    </div>
+    <a href="#story" class="hero-scroll" aria-hidden="true"><span data-i18n="hero.scroll">Défiler</span><i></i></a>
+  </section>
+
+  <!-- ======================= STATS ======================= -->
+  <section class="stats reveal">
+    <div class="wrap stats-grid">
+      <div class="stat"><span class="stat-num">2 500+</span><span class="stat-label" data-i18n="stat.dolls">poupées</span></div>
+      <div class="stat"><span class="stat-num">90+</span><span class="stat-label" data-i18n="stat.countries">pays représentés</span></div>
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">continents</span></div>
+      <div class="stat"><span class="stat-num" data-i18n="stat.riadv">1</span><span class="stat-label" data-i18n="stat.riad">riad historique</span></div>
+    </div>
+  </section>
+
+  <!-- ======================= STORY ======================= -->
+  <section class="section" id="story">
+    <div class="wrap story-grid">
+      <div class="story-text reveal">
+        <p class="kicker" data-i18n="story.kicker">Notre histoire</p>
+        <h2 data-i18n="story.title">Une collection née d’une passion pour les cultures du monde</h2>
+        <p data-i18n="story.p1"></p>
+        <p data-i18n="story.p2"></p>
+        <p data-i18n="story.p3"></p>
+        <ul class="tags">
+          <li data-i18n="story.tag1">Collection privée</li>
+          <li data-i18n="story.tag2">Riad de la médina</li>
+          <li data-i18n="story.tag3">Miniatures faites main</li>
+        </ul>
+      </div>
+      <div class="story-media reveal">
+        <img src="assets/img/entrance-door.jpg" alt="" loading="lazy" class="story-img-main" />
+        <img src="assets/img/doll-thuringia.jpg" alt="" loading="lazy" class="story-img-float" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= EXPERIENCE ======================= -->
+  <section class="section section-alt" id="collection">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="kicker" data-i18n="exp.kicker">La collection</p>
+        <h2 data-i18n="exp.title">Ce que vous allez découvrir</h2>
+        <p class="section-sub" data-i18n="exp.sub"></p>
+      </div>
+      <div class="cards">
+        <article class="card reveal">
+          <div class="card-media"><img src="assets/img/dolls-ecuador-thumb.jpg" alt="" loading="lazy" /></div>
+          <div class="card-body">
+            <h3 data-i18n="exp.c1.t">Poupées des cinq continents</h3>
+            <p data-i18n="exp.c1.d"></p>
+          </div>
+        </article>
+        <article class="card reveal">
+          <div class="card-media"><img src="assets/img/courtyard-patio-thumb.jpg" alt="" loading="lazy" /></div>
+          <div class="card-body">
+            <h3 data-i18n="exp.c2.t">Le patio-jardin du riad</h3>
+            <p data-i18n="exp.c2.d"></p>
+          </div>
+        </article>
+        <article class="card reveal">
+          <div class="card-media"><img src="assets/img/miniature-bakery-thumb.jpg" alt="" loading="lazy" /></div>
+          <div class="card-body">
+            <h3 data-i18n="exp.c3.t">Les miniatures de Mme Haffar</h3>
+            <p data-i18n="exp.c3.d"></p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= GALLERY ======================= -->
+  <section class="section" id="gallery">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="kicker" data-i18n="gal.kicker">Galerie</p>
+        <h2 data-i18n="gal.title">Un aperçu de la collection</h2>
+        <p class="section-sub" data-i18n="gal.sub"></p>
+      </div>
+      <div class="gallery reveal" id="gallery-grid">
+        <figure class="g-item g-tall"><img src="assets/img/entrance-door-thumb.jpg" data-full="assets/img/entrance-door.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.entrance" loading="lazy" /></figure>
+        <figure class="g-item"><img src="assets/img/doll-renaissance-thumb.jpg" data-full="assets/img/doll-renaissance.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.renaissance" loading="lazy" /></figure>
+        <figure class="g-item"><img src="assets/img/dolls-asia-thumb.jpg" data-full="assets/img/dolls-asia.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.asia" loading="lazy" /></figure>
+        <figure class="g-item g-tall"><img src="assets/img/courtyard-patio-thumb.jpg" data-full="assets/img/courtyard-patio.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.courtyard" loading="lazy" /></figure>
+        <figure class="g-item"><img src="assets/img/dolls-ecuador-thumb.jpg" data-full="assets/img/dolls-ecuador.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.ecuador" loading="lazy" /></figure>
+        <figure class="g-item"><img src="assets/img/miniature-bakery-thumb.jpg" data-full="assets/img/miniature-bakery.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.bakery" loading="lazy" /></figure>
+        <figure class="g-item"><img src="assets/img/doll-folk-braid-thumb.jpg" data-full="assets/img/doll-folk-braid.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.folk" loading="lazy" /></figure>
+        <figure class="g-item g-tall"><img src="assets/img/miniature-soap-shop-thumb.jpg" data-full="assets/img/miniature-soap-shop.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.soap" loading="lazy" /></figure>
+        <figure class="g-item"><img src="assets/img/doll-thuringia-thumb.jpg" data-full="assets/img/doll-thuringia.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.thuringia" loading="lazy" /></figure>
+        <figure class="g-item"><img src="assets/img/birdcage-thumb.jpg" data-full="assets/img/birdcage.jpg" alt="" data-i18n-attr="alt" data-i18n="gal.birdcage" loading="lazy" /></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= PRACTICAL INFO ======================= -->
+  <section class="section section-alt" id="info">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="kicker" data-i18n="info.kicker">Infos pratiques</p>
+        <h2 data-i18n="info.title">Préparer votre visite</h2>
+      </div>
+      <div class="info-grid">
+        <div class="info-col reveal">
+          <div class="info-block">
+            <h3><span class="ic">🕑</span><span data-i18n="info.hours">Horaires d’ouverture</span></h3>
+            <table class="info-table" id="hours-table"></table>
+          </div>
+          <div class="info-block">
+            <h3><span class="ic">🎟️</span><span data-i18n="info.prices">Tarifs</span></h3>
+            <table class="info-table" id="prices-table"></table>
+          </div>
+          <p class="info-note" data-i18n="info.note"></p>
+        </div>
+        <div class="info-col reveal">
+          <div class="info-block">
+            <h3><span class="ic">📍</span><span data-i18n="info.address">Adresse</span></h3>
+            <p id="address-line"></p>
+            <p><a id="maps-link" class="link-arrow" target="_blank" rel="noopener" data-i18n="info.mapbtn">Voir sur Google Maps</a></p>
+          </div>
+          <div class="info-block">
+            <h3><span class="ic">✉️</span><span data-i18n="info.contact">Contact</span></h3>
+            <p><a id="tel-link" class="info-contact"></a></p>
+            <p><a id="email-link" class="info-contact"></a></p>
+          </div>
+          <div class="map-embed" id="map-embed"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= BOOKING ======================= -->
+  <section class="section booking" id="booking">
+    <div class="wrap booking-grid">
+      <div class="booking-intro reveal">
+        <p class="kicker" data-i18n="book.kicker">Réservation</p>
+        <h2 data-i18n="book.title">Réserver votre visite</h2>
+        <p class="section-sub" data-i18n="book.sub"></p>
+        <a id="whatsapp-btn" class="btn btn-whatsapp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.02ZM12.05 20.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.23 8.24-8.23a8.2 8.2 0 0 1 8.23 8.24c0 4.54-3.69 8.23-8.23 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+          <span data-i18n="book.whatsapp">Réserver sur WhatsApp</span>
+        </a>
+      </div>
+
+      <form class="booking-form reveal" id="booking-form" novalidate>
+        <div class="field">
+          <label for="bf-name" data-i18n="book.name">Nom complet</label>
+          <input id="bf-name" name="name" type="text" required autocomplete="name" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="bf-email" data-i18n="book.email">E-mail</label>
+            <input id="bf-email" name="email" type="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="bf-phone" data-i18n="book.phone">Téléphone (facultatif)</label>
+            <input id="bf-phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="bf-date" data-i18n="book.date">Date souhaitée</label>
+            <input id="bf-date" name="date" type="date" />
+          </div>
+          <div class="field">
+            <label for="bf-people" data-i18n="book.people">Nombre de visiteurs</label>
+            <input id="bf-people" name="people" type="number" min="1" value="2" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="bf-lang" data-i18n="book.lang">Langue de la visite</label>
+          <select id="bf-lang" name="tour_language">
+            <option value="fr" data-i18n="book.lang.fr">Français</option>
+            <option value="en" data-i18n="book.lang.en">Anglais</option>
+            <option value="ar" data-i18n="book.lang.ar">Arabe</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bf-msg" data-i18n="book.msg">Message (facultatif)</label>
+          <textarea id="bf-msg" name="message" rows="3" data-i18n-attr="placeholder" data-i18n="book.msgph"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="bf-submit" data-i18n="book.submit">Envoyer la demande</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ======================= FOOTER ======================= -->
+  <footer class="site-footer" id="contact">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <img src="assets/logo/logo-mark-white.png" alt="Poupées du Monde" class="footer-logo" />
+        <p data-i18n="foot.tag"></p>
+        <div class="social" id="footer-social"></div>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="foot.explore">Explorer</h4>
+        <a href="#story" data-i18n="nav.story">Notre histoire</a>
+        <a href="#collection" data-i18n="nav.collection">La collection</a>
+        <a href="#gallery" data-i18n="nav.gallery">Galerie</a>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="foot.visit">Visiter</h4>
+        <a href="#info" data-i18n="nav.info">Infos pratiques</a>
+        <a href="#booking" data-i18n="nav.book">Réserver une visite</a>
+        <a id="footer-tel"></a>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="foot.follow">Suivez-nous</h4>
+        <a id="footer-ig" target="_blank" rel="noopener">Instagram</a>
+        <a id="footer-fb" target="_blank" rel="noopener">Facebook</a>
+      </div>
+    </div>
+    <div class="wrap footer-bottom">
+      <span>© <span id="year"></span> Poupées du Monde — <span data-i18n="foot.rights">Tous droits réservés.</span></span>
+      <span data-i18n="foot.made">Collection privée · Exposition Poupées du Monde</span>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true">
+    <button class="lb-close" id="lb-close" aria-label="Close">&times;</button>
+    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous">&#8249;</button>
+    <figure class="lb-figure"><img id="lb-img" src="" alt="" /><figcaption id="lb-cap"></figcaption></figure>
+    <button class="lb-nav lb-next" id="lb-next" aria-label="Next">&#8250;</button>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
