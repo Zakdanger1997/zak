@@ -148,7 +148,8 @@
   function closeLb() { lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; }
   collectItems();
   $("#gallery-grid").addEventListener("click", (e) => {
-    const img = e.target.closest("img"); if (!img) return;
+    const fig = e.target.closest(".g-item"); if (!fig) return;
+    const img = fig.querySelector("img"); if (!img) return;
     collectItems(); openLb(gItems.indexOf(img));
   });
   $("#lb-close").addEventListener("click", closeLb);

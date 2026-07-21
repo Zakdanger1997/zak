@@ -21,11 +21,11 @@ window.SITE_CONFIG = {
 
   /* --- Location ------------------------------------------ */
   // Shown as the address text.
-  address: "Médina de Rabat — Rabat, Maroc",   // « À CONFIRMER (adresse exacte) »
+  address: "3 impasse Nakhla, Rue Bouqroune — Médina de Rabat 10000, Maroc",
   // Google Maps: paste the full <iframe src="..."> URL from Maps > Share > Embed.
   // If empty, a link/search button to Maps is shown instead.
   mapsEmbed: "",
-  mapsQuery: "Poupées du Monde Rabat Médina",
+  mapsQuery: "Poupées du Monde 3 impasse Nakhla Rue Bouqroune Médina Rabat",
 
   /* --- Social -------------------------------------------- */
   instagram: "https://www.instagram.com/poupeesdumonderabat",
