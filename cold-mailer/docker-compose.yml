@@ -1,0 +1,27 @@
+# n8n على اللابتوب/السيرفر — يعمل 24/7 ويعيد نفسه تلقائياً
+# التشغيل من داخل هذا المجلد:  docker compose up -d
+# الإيقاف:                     docker compose down
+# التحديث:                    docker compose pull && docker compose up -d
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    restart: always                     # يعود تلقائياً بعد أي انهيار أو إعادة تشغيل للجهاز
+    ports:
+      - "5678:5678"                     # افتح المتصفح على http://localhost:5678
+    environment:
+      - TZ=Europe/Istanbul              # غيّرها لمنطقتك (مثلاً Asia/Riyadh)
+      - GENERIC_TIMEZONE=Europe/Istanbul
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_PERSONALIZATION_ENABLED=false
+      # حماية بكلمة مرور بسيطة (اختياري لكن مُستحسن):
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=BURAYA_GUCLU_SIFRE   # غيّر كلمة المرور
+    volumes:
+      - n8n_data:/home/node/.n8n        # حفظ دائم لإعدادات n8n والـ workflows
+      - ./data:/data/mailer             # مجلد بياناتك (القوائم، التواقيع، السجلات)
+
+volumes:
+  n8n_data:

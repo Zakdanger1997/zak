@@ -1,0 +1,854 @@
+{
+  "name": "Cold Mailer — account5",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9-16 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "جدول الإرسال",
+      "name": "جدول الإرسال",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1100,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "my_account",
+              "value": "account5",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "my_region",
+              "value": "REGION5",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "from_email",
+              "value": "BURAYA_account5_EMAIL",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "daily_limit",
+              "value": 40,
+              "type": "number"
+            },
+            {
+              "id": "a5",
+              "name": "batch_size",
+              "value": 8,
+              "type": "number"
+            },
+            {
+              "id": "a6",
+              "name": "master_path",
+              "value": "/data/mailer/master-list.csv",
+              "type": "string"
+            },
+            {
+              "id": "a7",
+              "name": "sig_path",
+              "value": "/data/mailer/signatures.csv",
+              "type": "string"
+            },
+            {
+              "id": "a8",
+              "name": "log_path",
+              "value": "/data/mailer/account5/sent-log.csv",
+              "type": "string"
+            },
+            {
+              "id": "a9",
+              "name": "offer",
+              "value": "فتح قناة تواصل والتعارف المهني: الهدف أن يردّ المستلم فنبدأ حواراً قد يثمر تعاوناً مستقبلاً.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "إعدادات الإرسال",
+      "name": "إعدادات الإرسال",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -900,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "={{ $json.master_path }}",
+        "options": {}
+      },
+      "id": "قراءة القائمة",
+      "name": "قراءة القائمة",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "csv",
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "استخراج القائمة",
+      "name": "استخراج القائمة",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "={{ $('إعدادات الإرسال').first().json.sig_path }}",
+        "options": {}
+      },
+      "id": "قراءة التواقيع",
+      "name": "قراءة التواقيع",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -380,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "csv",
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "استخراج التواقيع",
+      "name": "استخراج التواقيع",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "={{ $('إعدادات الإرسال').first().json.log_path }}",
+        "options": {}
+      },
+      "id": "قراءة السجل",
+      "name": "قراءة السجل",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "csv",
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "استخراج السجل",
+      "name": "استخراج السجل",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        100,
+        200
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('إعدادات الإرسال').first().json;\nconst list = $('استخراج القائمة').all().map(i => i.json).filter(r => r && r.email);\nconst sent = $('استخراج السجل').all().map(i => i.json).filter(r => r && r.email);\n\nconst regions = String(cfg.my_region || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean);\nconst sentSet = new Set(sent.map(r => String(r.email).toLowerCase()));\nconst today = new Date().toISOString().slice(0, 10);\nconst sentToday = sent.filter(r => String(r.tarih || '').slice(0, 10) === today).length;\nconst remaining = Math.max(0, Number(cfg.daily_limit || 40) - sentToday);\nif (remaining <= 0) return [];\nconst batch = Math.min(Number(cfg.batch_size || 8), remaining);\n\nconst out = [];\nconst seen = new Set();\nfor (const row of list) {\n  const email = String(row.email || '').trim().toLowerCase();\n  if (!email || !email.includes('@')) continue;\n  const region = String(row.region || '').trim().toLowerCase();\n  if (regions.length && !regions.includes(region)) continue;\n  if (sentSet.has(email) || seen.has(email)) continue;\n  seen.add(email);\n  out.push({ json: { ...row, email } });\n  if (out.length >= batch) break;\n}\nreturn out;"
+      },
+      "id": "تصفية وتحضير",
+      "name": "تصفية وتحضير",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=اكتب رسالة إيميل حسب التعليمات.\nالغرض: {{ $('إعدادات الإرسال').first().json.offer }}\nالمستلم:\n- الاسم: {{ $json.first_name }}\n- الشركة: {{ $json.company }}\n- المنصب: {{ $json.title }}\n- المنطقة: {{ $json.region }}\n- ملاحظة: {{ $json.custom1 }}",
+        "options": {
+          "systemMessage": "أنت شخص حقيقي يعمل في شركة ويكتب رسالة إيميل قصيرة وشخصية إلى شخص واحد بعينه. لست مسوّقاً ولا تكتب إعلاناً؛ تكتب كأنك تراسل زميلاً في المجال لأول مرة.\n\nاللغة: إن كانت منطقة المستلم تركية (İstanbul, Ankara, İzmir, Bursa...) فاكتب بالتركية. إن كانت عربية (الرياض, جدة, دبي, القاهرة...) فاكتب بالعربية. غير ذلك اكتب بالإنجليزية.\n\nقواعد صارمة (نبرة شخصية):\n1. الطول 50–80 كلمة فقط، 3–4 جمل.\n2. رسمي معتدل: محترم ومهني لكن إنساني وطبيعي، بلا تكلّف ولا مبالغة.\n3. أول جملة تخصيص حقيقي يذكر شيئاً محدداً عن الشركة أو المنصب أو الملاحظة الخاصة، لا افتتاحية عامة.\n4. جملة أو جملتان عن الغرض بشكل مباشر بسيط.\n5. اختم بسؤال واحد قصير يسهل الرد عليه (لا عرض تسويقي).\n6. أضف بعد السؤال جملة انسحاب إنسانية ناعمة (عربي: «ولو الموضوع ما يناسبك ردّ بكلمة وما أزعجك»؛ وبما يناسب بالتركية/الإنجليزية).\n\nممنوعات (لا تستخدمها إطلاقاً): «أتمنى أن يصلك إيميلي وأنت بخير»/'I hope this email finds you well'/'Umarım iyisinizdir'؛ «أردت التواصل»/'I wanted to reach out'؛ لغة مبيعات («عرض خاص»، «حصري»، «الآن فقط»، 'exclusive')؛ «علاوة على ذلك»/«في الختام»/'Furthermore'؛ إيموجي ورموز و Markdown وعناوين وشرطات em طويلة.\n\nلا تكتب توقيعاً؛ سيُضاف تلقائياً.\n\nالمخرجات: أعد JSON فقط بلا أي نص خارجه بهذا الشكل: {\"subject\": \"...\", \"body\": \"...\"}. subject من 2–4 كلمات شخصي وقصير بلا رموز. body نص الرسالة فقط بلا توقيع."
+        }
+      },
+      "id": "كاتب الإيميل",
+      "name": "كاتب الإيميل",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        460,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "نموذج OpenAI",
+      "name": "نموذج OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-cred",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const cfg = $('إعدادات الإرسال').first().json;\nconst rec = $('تصفية وتحضير').item.json;\n\nlet sig = '';\ntry {\n  const sigs = $('استخراج التواقيع').all().map(i => i.json);\n  const row = sigs.find(s => String(s.account).trim() === String(cfg.my_account).trim());\n  sig = row ? String(row.signature) : '';\n} catch (e) {}\nsig = sig.replace(/\\\\n/g, '\\n');\n\nlet raw = String($json.output ?? $json.text ?? '');\nconst m = raw.match(/\\{[\\s\\S]*\\}/);\nlet p = {};\ntry { p = JSON.parse(m ? m[0] : raw); } catch (e) { p = { subject: '', body: raw }; }\n\nconst subject = (p.subject || '').trim() || 'تواصل';\nconst body = (p.body || '').trim() + (sig ? '\\n\\n' + sig : '');\n\nreturn { json: { email: rec.email, first_name: rec.first_name || '', company: rec.company || '', region: rec.region || '', subject, body } };"
+      },
+      "id": "بناء الرسالة",
+      "name": "بناء الرسالة",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('إعدادات الإرسال').first().json.from_email }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "إرسال الإيميل",
+      "name": "إرسال الإيميل",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        880,
+        200
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-account5",
+          "name": "SMTP account5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const rec = $('بناء الرسالة').item.json;\nconst now = new Date().toISOString().slice(0, 16).replace('T', ' ');\nreturn { json: { tarih: now, email: rec.email, region: rec.region || '', firma: rec.company || '', konu: rec.subject || '', durum: 'GONDERILDI' } };"
+      },
+      "id": "صف السجل",
+      "name": "صف السجل",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const old = $('استخراج السجل').all().map(i => i.json).filter(r => r && r.email);\nconst neu = $input.all().map(i => i.json);\nreturn [...old, ...neu].map(r => ({ json: r }));"
+      },
+      "id": "دمج السجل",
+      "name": "دمج السجل",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "csv",
+        "options": {}
+      },
+      "id": "تحويل إلى CSV",
+      "name": "تحويل إلى CSV",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1480,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $('إعدادات الإرسال').first().json.log_path }}",
+        "dataPropertyName": "data",
+        "options": {}
+      },
+      "id": "حفظ السجل",
+      "name": "حفظ السجل",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "mailbox": "INBOX",
+        "postProcessAction": "read",
+        "format": "simple",
+        "options": {}
+      },
+      "id": "استقبال الردود",
+      "name": "استقبال الردود",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [
+        -900,
+        640
+      ],
+      "credentials": {
+        "imap": {
+          "id": "imap-account5",
+          "name": "IMAP account5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "my_account",
+              "value": "account5",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "main_email",
+              "value": "BURAYA_ANA_EMAIL",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "from_email",
+              "value": "BURAYA_account5_EMAIL",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "إعدادات الردود",
+      "name": "إعدادات الردود",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -700,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $json;\nconst from = j.from || (j.headers && j.headers.from) || '';\nconst subject = j.subject || '(بلا موضوع)';\nconst snippet = String(j.textPlain || j.text || '').replace(/\\s+/g, ' ').slice(0, 300);\nconst cfg = $('إعدادات الردود').first().json;\nconst text = '📬 رد جديد على ' + cfg.my_account + '\\n\\nمن: ' + from + '\\nالموضوع: ' + subject + '\\n\\n' + snippet;\nreturn { json: { text, subject: 'رد جديد على ' + cfg.my_account } };"
+      },
+      "id": "تجهيز الإشعار",
+      "name": "تجهيز الإشعار",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -500,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('إعدادات الردود').first().json.from_email }}",
+        "toEmail": "={{ $('إعدادات الردود').first().json.main_email }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "إشعار برد",
+      "name": "إشعار برد",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -300,
+        640
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-account5",
+          "name": "SMTP account5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 17 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "جدول التقرير",
+      "name": "جدول التقرير",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -900,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "my_account",
+              "value": "account5",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "my_region",
+              "value": "REGION5",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "main_email",
+              "value": "BURAYA_ANA_EMAIL",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "from_email",
+              "value": "BURAYA_account5_EMAIL",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "log_path",
+              "value": "/data/mailer/account5/sent-log.csv",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "إعدادات التقرير",
+      "name": "إعدادات التقرير",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -700,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "={{ $('إعدادات التقرير').first().json.log_path }}",
+        "options": {}
+      },
+      "id": "قراءة سجل التقرير",
+      "name": "قراءة سجل التقرير",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        900
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "csv",
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "استخراج سجل التقرير",
+      "name": "استخراج سجل التقرير",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        900
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $('إعدادات التقرير').first().json;\nconst rows = $('استخراج سجل التقرير').all().map(i => i.json).filter(r => r && r.email);\nconst today = new Date().toISOString().slice(0, 10);\nconst t = rows.filter(r => String(r.tarih || '').slice(0, 10) === today).length;\nconst text = 'تقرير ' + cfg.my_account + ' — ' + today + '\\n\\n'\n  + 'أُرسل اليوم: ' + t + '\\n'\n  + 'إجمالي المُرسَل (كل الوقت): ' + rows.length + '\\n'\n  + 'المنطقة: ' + cfg.my_region;\nreturn { json: { text, subject: 'تقرير ' + cfg.my_account + ' ' + today } };"
+      },
+      "id": "تجهيز التقرير",
+      "name": "تجهيز التقرير",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('إعدادات التقرير').first().json.from_email }}",
+        "toEmail": "={{ $('إعدادات التقرير').first().json.main_email }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "إرسال التقرير",
+      "name": "إرسال التقرير",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        60,
+        900
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-account5",
+          "name": "SMTP account5"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "جدول الإرسال": {
+      "main": [
+        [
+          {
+            "node": "إعدادات الإرسال",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "إعدادات الإرسال": {
+      "main": [
+        [
+          {
+            "node": "قراءة القائمة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة القائمة": {
+      "main": [
+        [
+          {
+            "node": "استخراج القائمة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج القائمة": {
+      "main": [
+        [
+          {
+            "node": "قراءة التواقيع",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة التواقيع": {
+      "main": [
+        [
+          {
+            "node": "استخراج التواقيع",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج التواقيع": {
+      "main": [
+        [
+          {
+            "node": "قراءة السجل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة السجل": {
+      "main": [
+        [
+          {
+            "node": "استخراج السجل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج السجل": {
+      "main": [
+        [
+          {
+            "node": "تصفية وتحضير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تصفية وتحضير": {
+      "main": [
+        [
+          {
+            "node": "كاتب الإيميل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "كاتب الإيميل": {
+      "main": [
+        [
+          {
+            "node": "بناء الرسالة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "بناء الرسالة": {
+      "main": [
+        [
+          {
+            "node": "إرسال الإيميل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "إرسال الإيميل": {
+      "main": [
+        [
+          {
+            "node": "صف السجل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "صف السجل": {
+      "main": [
+        [
+          {
+            "node": "دمج السجل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "دمج السجل": {
+      "main": [
+        [
+          {
+            "node": "تحويل إلى CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تحويل إلى CSV": {
+      "main": [
+        [
+          {
+            "node": "حفظ السجل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نموذج OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "كاتب الإيميل",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استقبال الردود": {
+      "main": [
+        [
+          {
+            "node": "إعدادات الردود",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "إعدادات الردود": {
+      "main": [
+        [
+          {
+            "node": "تجهيز الإشعار",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تجهيز الإشعار": {
+      "main": [
+        [
+          {
+            "node": "إشعار برد",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "جدول التقرير": {
+      "main": [
+        [
+          {
+            "node": "إعدادات التقرير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "إعدادات التقرير": {
+      "main": [
+        [
+          {
+            "node": "قراءة سجل التقرير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة سجل التقرير": {
+      "main": [
+        [
+          {
+            "node": "استخراج سجل التقرير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج سجل التقرير": {
+      "main": [
+        [
+          {
+            "node": "تجهيز التقرير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تجهيز التقرير": {
+      "main": [
+        [
+          {
+            "node": "إرسال التقرير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "cold-mailer-account5"
+  }
+}
