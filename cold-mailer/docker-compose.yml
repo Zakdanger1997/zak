@@ -22,6 +22,15 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n        # حفظ دائم لإعدادات n8n والـ workflows
       - ./data:/data/mailer             # مجلد بياناتك (القوائم، التواقيع، السجلات)
+    # حدود الموارد: تمنع الحاوية من استهلاك أكثر من اللازم على اللابتوب
+    deploy:
+      resources:
+        limits:
+          memory: 1g                    # حد أقصى 1 جيجابايت ذاكرة (كافٍ بسهولة)
+          cpus: "1.0"                   # حد أقصى نواة معالج واحدة
+        reservations:
+          memory: 256m                  # يضمن 256 ميجابايت متاحة دائماً
+    mem_swappiness: 0                   # يتجنّب إبطاء الجهاز باستخدام swap
 
 volumes:
   n8n_data:
