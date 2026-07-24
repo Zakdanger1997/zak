@@ -100,6 +100,20 @@ Repeat Step 5 per clip. Space multiple posts out rather than dumping them all at
 - **TikTok**: fully automated end-to-end via the Higgsfield `tiktok_*` tools (connect → prepare → publish → status).
 - **YouTube Shorts / Instagram Reels**: **not auto-published by this skill** — there is no connected YouTube/Instagram upload tool in the default setup. The clips produced here (9:16 with captions) are ready to upload manually to those platforms. If YouTube/IG auto-upload is needed, it would require adding those platform APIs (YouTube Data API OAuth, Instagram Graph API) as separate integrations. State this limitation plainly rather than implying auto-upload.
 
+## Shoppable clips (TikTok Shop)
+
+If the goal is to **sell** off the clips (not just grow an audience), the clips can drive to a TikTok Shop. Keep the boundary clear about what is automated vs. manual:
+
+- **A TikTok Shop is a separate account from a creator account.** It requires a **Seller account** applied for at the TikTok Shop Seller Center (`seller.tiktok.com`) with business/identity/bank verification — it is **not** created by any tool in this pipeline. See `tiktok-shop-setup.md` in this skill folder for the full onboarding checklist.
+- **Link the Shop to the same TikTok account this skill publishes to.** Only then can posted clips be tagged with products.
+- **Product tagging happens inside TikTok's Shop interface (or the Shop API), not via the connected publishing tools.** So the flow is:
+  - **Automated here:** cut clips → publish to TikTok (draft or live) via `tiktok_publish`.
+  - **Manual in TikTok:** open the posted clip and attach the product tag / product link.
+- **Script clips to sell** when a Shop is the destination: lead with the problem/hook in the first 3s, show the product in use, and end on a clear "tap the yellow cart / link" style CTA. Pull tone from `brand-voice`.
+- Disclose paid/branded content honestly at publish time (`commercial_content_disclosure`) — TikTok requires it for commercial posts.
+
+When a user asks about "opening a store," route them to `tiktok-shop-setup.md` first (that's an account-onboarding task), then bring them back to this pipeline for producing the shoppable clips themselves.
+
 ## Output Format
 
 When running this skill, deliver:
