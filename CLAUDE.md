@@ -12,11 +12,11 @@ This is **Salesably Marketplace**, a collection of Claude Code plugins for sales
 salesably-marketplace/
 ├── .claude-plugin/
 │   └── marketplace.json     # Marketplace manifest - lists available plugins
-├── marketing-skills/        # Marketing plugin (10 skills)
+├── marketing-skills/        # Marketing plugin (11 skills)
 │   ├── .claude-plugin/
 │   │   └── plugin.json      # Plugin manifest - declares skills path
 │   ├── README.md            # Plugin documentation
-│   └── skills/              # 10 marketing skills (each folder has SKILL.md)
+│   └── skills/              # 11 marketing skills (each folder has SKILL.md)
 │       ├── brand-voice/
 │       ├── positioning-angles/
 │       ├── keyword-research/
@@ -26,6 +26,7 @@ salesably-marketplace/
 │       ├── newsletter/
 │       ├── email-sequences/
 │       ├── content-atomizer/
+│       ├── clip-cutter/
 │       └── orchestrator/
 ├── sales-skills/            # Sales plugin (9 skills)
 │   ├── .claude-plugin/

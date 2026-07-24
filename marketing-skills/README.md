@@ -2,7 +2,7 @@
 
 **Marketing that actually moves the needle.**
 
-Stop churning out generic content. These 10 skills transform Claude into your strategic marketing partner—building brand foundations, crafting copy that converts, and distributing content that compounds.
+Stop churning out generic content. These 11 skills transform Claude into your strategic marketing partner—building brand foundations, crafting copy that converts, and distributing content that compounds.
 
 Built on proven frameworks used to build audiences and drive revenue for modern businesses.
 
@@ -12,7 +12,7 @@ Built on proven frameworks used to build audiences and drive revenue for modern 
 
 ## What is this?
 
-This is a plugin for **Claude Code**, Anthropic's agentic command-line interface. It adds 10 specialized marketing skills to Claude, allowing it to act as a strategic partner for your marketing team. 
+This is a plugin for **Claude Code**, Anthropic's agentic command-line interface. It adds 11 specialized marketing skills to Claude, allowing it to act as a strategic partner for your marketing team. 
 
 If you are new to Claude Code, [start here](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview).
 
@@ -78,6 +78,7 @@ Maximize reach and orchestrate everything.
 | Skill | Purpose |
 |-------|---------|
 | **content-atomizer** | Repurpose one piece into many formats across platforms |
+| **clip-cutter** | Cut long videos into vertical captioned clips and publish to TikTok |
 | **orchestrator** | Route and sequence skills for comprehensive campaigns |
 
 ## Quick Start

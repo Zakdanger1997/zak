@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- New `clip-cutter` marketing skill: cut long YouTube videos into vertical captioned short clips and publish them to TikTok via the Higgsfield MCP tools.
 - New `CONTRIBUTING.md` guide for open-source contributors.
 - GitHub Issue and Pull Request templates.
 - Explicit "No Em-Dashes" and "Human-First" guidelines to marketing skills.

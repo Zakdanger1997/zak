@@ -11,7 +11,7 @@ This skill acts as a routing system for marketing projects - diagnosing needs, r
 
 Help users navigate the marketing skills suite by identifying the right skill(s) for their needs and sequencing them effectively for multi-step projects.
 
-## The 10 Marketing Skills Available
+## The 11 Marketing Skills Available
 
 ### Foundation Layer
 | Skill | Purpose | Use When |
@@ -37,6 +37,7 @@ Help users navigate the marketing skills suite by identifying the right skill(s)
 | Skill | Purpose | Use When |
 |-------|---------|----------|
 | `content-atomizer` | Repurpose across platforms | Maximizing content ROI, filling calendars, multi-platform |
+| `clip-cutter` | Cut long videos into vertical captioned clips and publish to TikTok | Have a podcast/interview/long video, need Shorts/Reels/TikToks, building a clipping channel |
 
 ## Diagnostic Questions
 
@@ -65,7 +66,7 @@ To identify the right skill, ask:
 ### 4. What's the primary channel?
 - **Organic search** → `seo-content`, `keyword-research`
 - **Email marketing** → `email-sequences`, `newsletter`, `lead-magnet`
-- **Social media** → `content-atomizer`, `newsletter` (repurposing)
+- **Social media** → `content-atomizer`, `clip-cutter`, `newsletter` (repurposing)
 - **Landing pages/ads** → `direct-response-copy`, `lead-magnet`
 - **Multiple channels** → Start with `brand-voice` for consistency
 
@@ -223,6 +224,7 @@ If you know you need just one skill:
 | "...send a newsletter" | `newsletter` |
 | "...build email automation" | `email-sequences` |
 | "...repurpose content" | `content-atomizer` |
+| "...cut clips / make shorts / post to TikTok" | `clip-cutter` |
 
 ## Output Format
 

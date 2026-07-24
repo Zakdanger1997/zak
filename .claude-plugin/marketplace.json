@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "marketing-skills",
-      "description": "10 specialized marketing skills: brand voice, positioning, content strategy, copywriting, and distribution.",
+      "description": "11 specialized marketing skills: brand voice, positioning, content strategy, copywriting, distribution, and short-form video clipping.",
       "source": "./marketing-skills",
       "category": "marketing"
     },
