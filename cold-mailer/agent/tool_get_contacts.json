@@ -1,0 +1,181 @@
+{
+  "name": "TOOL — get_pending_contacts",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "Trigger",
+      "name": "Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $json.query ?? $json;\nlet p = {};\ntry { p = (typeof raw === 'string') ? JSON.parse(raw) : raw; } catch (e) { p = {}; }\nreturn [{ json: {\n  account: String(p.account || 'account1').trim(),\n  region: String(p.region || '').trim(),\n  limit: Math.max(1, Math.min(Number(p.limit || 8), 20))\n} }];"
+      },
+      "id": "قراءة الطلب",
+      "name": "قراءة الطلب",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "/data/mailer/master-list.csv",
+        "options": {}
+      },
+      "id": "قراءة القائمة",
+      "name": "قراءة القائمة",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "csv",
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "استخراج القائمة",
+      "name": "استخراج القائمة",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "fileSelector": "=/data/mailer/{{ $('قراءة الطلب').first().json.account }}/sent-log.csv",
+        "options": {}
+      },
+      "id": "قراءة السجل",
+      "name": "قراءة السجل",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "csv",
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "استخراج السجل",
+      "name": "استخراج السجل",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const req = $('قراءة الطلب').first().json;\nconst region = String(req.region || '').toLowerCase();\nconst limit = req.limit;\nconst list = $('استخراج القائمة').all().map(i => i.json).filter(r => r && r.email);\nconst sent = $('استخراج السجل').all().map(i => i.json).filter(r => r && r.email);\nconst sentSet = new Set(sent.map(r => String(r.email).toLowerCase()));\n\nconst out = []; const seen = new Set();\nfor (const row of list) {\n  const email = String(row.email || '').trim().toLowerCase();\n  if (!email || !email.includes('@')) continue;\n  if (region && String(row.region || '').trim().toLowerCase() !== region) continue;\n  if (sentSet.has(email) || seen.has(email)) continue;\n  seen.add(email);\n  out.push({ email, first_name: row.first_name || '', company: row.company || '',\n             title: row.title || '', region: row.region || '', custom1: row.custom1 || '' });\n  if (out.length >= limit) break;\n}\nreturn [{ json: { account: req.account, region: req.region, count: out.length, contacts: out } }];"
+      },
+      "id": "تصفية",
+      "name": "تصفية",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "قراءة الطلب",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة الطلب": {
+      "main": [
+        [
+          {
+            "node": "قراءة القائمة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة القائمة": {
+      "main": [
+        [
+          {
+            "node": "استخراج القائمة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج القائمة": {
+      "main": [
+        [
+          {
+            "node": "قراءة السجل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "قراءة السجل": {
+      "main": [
+        [
+          {
+            "node": "استخراج السجل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "استخراج السجل": {
+      "main": [
+        [
+          {
+            "node": "تصفية",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "tool-get-contacts"
+  }
+}

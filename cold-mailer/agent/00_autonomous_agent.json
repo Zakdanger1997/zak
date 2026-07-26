@@ -1,0 +1,304 @@
+{
+  "name": "Cold Mailer — AI Agent (autonomous)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9-16 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "جدول التشغيل",
+      "name": "جدول التشغيل",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "m1",
+              "name": "main_email",
+              "value": "BURAYA_ANA_EMAIL",
+              "type": "string"
+            },
+            {
+              "id": "m2",
+              "name": "instruction",
+              "value": "شغّل دورة التواصل الآن لكل الحسابات.",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "ابدأ الدورة",
+      "name": "ابدأ الدورة",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.instruction }}",
+        "options": {
+          "systemMessage": "أنت مساعد تواصل مستقل (autonomous outreach agent). في كل تشغيلة تنفّذ الدورة الآتية بنفسك:\n\nلكل حساب في الجدول أدناه:\n1. استدعِ الأداة get_pending_contacts ومرّر لها JSON: {\"account\":\"account1\",\"region\":\"<المنطقة>\",\"limit\":8}\n   لتحصل على العملاء الذين لم تُرسَل لهم بعد.\n2. لكل عميل في النتيجة: اكتب رسالة إيميل شخصية قصيرة (القواعد أدناه) ثم استدعِ الأداة send_email\n   ومرّر لها JSON: {\"account\":\"account1\",\"to\":\"<email>\",\"subject\":\"<subject>\",\"body\":\"<body>\",\"company\":\"<company>\",\"region\":\"<region>\"}\n3. لا تطلب ولا ترسل لنفس العنوان مرتين. الأدوات تمنع التكرار وتجاوز الحد تلقائياً؛ إن أعادت الأداة\n   status=skipped_duplicate أو cap_reached فتجاوز هذا العميل وأكمل.\n4. لا ترسل أكثر من 8 لكل حساب في التشغيلة الواحدة.\n\nالحسابات والمناطق (عدّلها حسب توزيعك):\n- account1 → İstanbul\n- account2 → Ankara\n- account3 → İzmir\n- account4 → الرياض\n- account5 → دبي\n\nالغرض من الرسائل: فتح قناة تواصل والتعارف المهني — الهدف أن يردّ المستلم فنبدأ حواراً قد يثمر تعاوناً.\n\nقواعد كتابة الإيميل (شخصي لا تسويقي):\n- اللغة حسب المنطقة: التركية للمناطق التركية، العربية للعربية، الإنجليزية لغيرها.\n- 50–80 كلمة، 3–4 جمل، رسمي معتدل وإنساني.\n- أول جملة تخصيص حقيقي عن الشركة/المنصب/الملاحظة.\n- اختم بسؤال قصير + جملة انسحاب ناعمة («ولو ما يناسبك ردّ بكلمة وما أزعجك»).\n- ممنوع: العبارات المستهلكة، لغة المبيعات، الإيموجي، Markdown. لا تكتب توقيعاً (يُضاف تلقائياً).\n\nفي نهاية التشغيلة أعد ملخصاً نصياً موجزاً: كم أُرسل لكل حساب وكم تُخطّي ولماذا.\n\nملاحظة عن جلب العملاء: إن لم تجد الأداة عملاء جدداً لحساب ما، فذلك يعني أن قائمته انتهت — لا تختلق عناوين، انتقل للحساب التالي.",
+          "maxIterations": 60
+        }
+      },
+      "id": "الوكيل",
+      "name": "الوكيل",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -280,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "id": "نموذج OpenAI",
+      "name": "نموذج OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -360,
+        520
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-cred",
+          "name": "OpenAI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "id": "ذاكرة",
+      "name": "ذاكرة",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -200,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "name": "get_pending_contacts",
+        "description": "احصل على العملاء غير المُرسَل لهم لحساب/منطقة. المدخل نص JSON: {\"account\":\"account1\",\"region\":\"İstanbul\",\"limit\":8}",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_get_pending_contacts_ID"
+        }
+      },
+      "id": "get_pending_contacts",
+      "name": "get_pending_contacts",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -40,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "name": "send_email",
+        "description": "أرسل إيميلاً واحداً (يمنع التكرار والحد تلقائياً). المدخل نص JSON: {\"account\":\"account1\",\"to\":\"x@y.com\",\"subject\":\"..\",\"body\":\"..\",\"company\":\"..\",\"region\":\"..\"}",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "REPLACE_send_email_ID"
+        }
+      },
+      "id": "send_email",
+      "name": "send_email",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        120,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "text",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "r2",
+              "name": "subject",
+              "value": "=تقرير دورة التواصل — {{ $now.format('yyyy-LL-dd HH:mm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "id": "تجهيز التقرير",
+      "name": "تجهيز التقرير",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -40,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('ابدأ الدورة').first().json.main_email }}",
+        "toEmail": "={{ $('ابدأ الدورة').first().json.main_email }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "إرسال التقرير",
+      "name": "إرسال التقرير",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        180,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-account1",
+          "name": "SMTP account1"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "جدول التشغيل": {
+      "main": [
+        [
+          {
+            "node": "ابدأ الدورة",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ابدأ الدورة": {
+      "main": [
+        [
+          {
+            "node": "الوكيل",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "نموذج OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "الوكيل",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ذاكرة": {
+      "ai_memory": [
+        [
+          {
+            "node": "الوكيل",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_pending_contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "الوكيل",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send_email": {
+      "ai_tool": [
+        [
+          {
+            "node": "الوكيل",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "الوكيل": {
+      "main": [
+        [
+          {
+            "node": "تجهيز التقرير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "تجهيز التقرير": {
+      "main": [
+        [
+          {
+            "node": "إرسال التقرير",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "cold-mailer-agent"
+  }
+}
