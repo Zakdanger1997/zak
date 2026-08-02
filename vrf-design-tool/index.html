@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VRF System Design Tool</title>
+<style>
+  :root{
+    --bg:#0f1720; --panel:#16212e; --panel2:#1d2b3a; --line:#2b3d52;
+    --text:#e8eef5; --muted:#93a4b8; --accent:#3fa9f5; --accent2:#2ecc71;
+    --warn:#f5a623; --bad:#e74c3c; --good:#2ecc71;
+    --chip:#22334a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+       background:var(--bg);color:var(--text);font-size:14px;line-height:1.45}
+  header{background:linear-gradient(90deg,#12202f,#16293c);border-bottom:1px solid var(--line);
+         padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+  header h1{font-size:18px;margin:0;font-weight:650;letter-spacing:.2px}
+  header .sub{color:var(--muted);font-size:12px}
+  header .spacer{flex:1}
+  .btn{background:var(--accent);color:#04121f;border:0;border-radius:7px;padding:8px 13px;
+       font-weight:600;cursor:pointer;font-size:13px}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{background:var(--panel2)}
+  .btn.sm{padding:5px 9px;font-size:12px;border-radius:6px}
+  .btn.danger{background:transparent;border:1px solid var(--bad);color:#ff9c8f}
+  nav{display:flex;gap:4px;padding:8px 16px;background:var(--panel);border-bottom:1px solid var(--line);
+      position:sticky;top:57px;z-index:19;flex-wrap:wrap}
+  nav button{background:transparent;border:0;color:var(--muted);padding:9px 14px;border-radius:7px;
+             cursor:pointer;font-size:13px;font-weight:600}
+  nav button.active{background:var(--panel2);color:var(--text)}
+  main{max-width:1080px;margin:0 auto;padding:22px 18px 80px}
+  section{display:none}
+  section.active{display:block;animation:fade .18s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:18px;margin-bottom:18px}
+  .card h2{margin:0 0 4px;font-size:16px}
+  .card p.hint{margin:0 0 14px;color:var(--muted);font-size:12.5px}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:640px){.g2,.g3{grid-template-columns:1fr}}
+  label.fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+  input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--text);
+        border-radius:7px;padding:8px 9px;font-size:13px;font-family:inherit}
+  input:focus,select:focus,textarea:focus{outline:1px solid var(--accent);border-color:var(--accent)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left}
+  th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  td input,td select{width:100%;padding:5px 6px;background:transparent;border:1px solid transparent}
+  td input:hover,td select:hover{border-color:var(--line)}
+  td input:focus,td select:focus{background:var(--panel2)}
+  td.num,th.num{text-align:right}
+  .tblwrap{overflow-x:auto}
+  .rowbtn{color:var(--bad);cursor:pointer;background:none;border:0;font-size:16px;line-height:1}
+  .stat{display:flex;flex-direction:column;gap:2px;background:var(--panel2);border:1px solid var(--line);
+        border-radius:9px;padding:12px 14px}
+  .stat .k{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.4px}
+  .stat .v{font-size:22px;font-weight:700}
+  .stat .u{color:var(--muted);font-size:12px;font-weight:500}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;
+        font-size:12px;font-weight:600;background:var(--chip)}
+  .pill.good{background:rgba(46,204,113,.16);color:#7ee2a8}
+  .pill.warn{background:rgba(245,166,35,.16);color:#ffce7a}
+  .pill.bad{background:rgba(231,76,60,.16);color:#ff9c8f}
+  .tag{font-size:11px;color:var(--muted)}
+  .note{background:rgba(63,169,245,.09);border:1px solid rgba(63,169,245,.35);border-radius:9px;
+        padding:11px 13px;font-size:12.5px;color:#bcdcf6;margin:6px 0 14px}
+  .warnbar{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.4);border-radius:9px;
+        padding:11px 13px;font-size:12.5px;color:#ffce7a;margin:6px 0 14px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .kv .lbl{color:var(--muted)}
+  .kv .val{font-weight:600}
+  .muted{color:var(--muted)}
+  code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+  .small{font-size:11.5px}
+  @media print{
+    header,nav,.toolbar,.rowbtn,.btn{display:none!important}
+    body{background:#fff;color:#000}
+    .card{border-color:#ccc;break-inside:avoid}
+    section{display:block!important}
+    input,select{border:0;color:#000;background:transparent}
+    th{color:#333}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>VRF System Design Tool</h1>
+    <div class="sub">Open, catalog-agnostic VRF / multi-split design workbook</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn ghost sm" onclick="saveFile()">⬇ Save project</button>
+  <button class="btn ghost sm" onclick="document.getElementById('loadInput').click()">⬆ Load</button>
+  <input id="loadInput" type="file" accept="application/json" style="display:none" onchange="loadFile(event)">
+  <button class="btn ghost sm" onclick="window.print()">🖨 Print / PDF</button>
+  <button class="btn sm" onclick="resetAll()">↺ New</button>
+</header>
+
+<nav id="nav"></nav>
+
+<main>
+  <!-- ============ PROJECT ============ -->
+  <section id="tab-project" class="active">
+    <div class="card">
+      <h2>Project & design conditions</h2>
+      <p class="hint">Basic identification and the ambient conditions your design is rated at.</p>
+      <div class="grid g3">
+        <label class="fld">Project name<input id="p_name" oninput="save()"></label>
+        <label class="fld">Client<input id="p_client" oninput="save()"></label>
+        <label class="fld">Designer<input id="p_designer" oninput="save()"></label>
+        <label class="fld">Date<input id="p_date" type="date" oninput="save()"></label>
+        <label class="fld">Location / notes<input id="p_loc" oninput="save()"></label>
+        <label class="fld">Mode
+          <select id="p_mode" onchange="recalc()">
+            <option value="cooling">Cooling (primary)</option>
+            <option value="heating">Heating (primary)</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid g3" style="margin-top:12px">
+        <label class="fld">Outdoor design temp (°C)<input id="p_todb" type="number" value="35" oninput="recalc()"></label>
+        <label class="fld">Indoor design temp (°C)<input id="p_tidb" type="number" value="27" oninput="recalc()"></label>
+        <label class="fld">Diversity / simultaneity factor
+          <input id="p_div" type="number" step="0.01" value="1.00" oninput="recalc()">
+        </label>
+      </div>
+      <div class="note">
+        This tool does the repetitive VRF design math — combination ratio, capacity corrections,
+        pipe sizing and refrigerant charge — using standard engineering methods. All product data
+        (capacities, pipe tables, correction curves, charge rates) comes from <b>the tables you enter</b>
+        under each tab, so results are only as accurate as the catalog figures you paste in from your
+        manufacturer's engineering manual.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LOADS / INDOOR UNITS ============ -->
+  <section id="tab-loads">
+    <div class="card">
+      <h2>Rooms & indoor units</h2>
+      <p class="hint">One row per indoor unit. Enter the room load directly, or an area and a
+        W/m² intensity to estimate it. Nominal capacity is the catalogue rating of the indoor unit you select.</p>
+      <div class="tblwrap">
+      <table id="roomTbl">
+        <thead><tr>
+          <th>Room / zone</th>
+          <th class="num">Area m²</th>
+          <th class="num">W/m²</th>
+          <th class="num">Est. load W</th>
+          <th class="num">Design load W</th>
+          <th>Indoor unit model</th>
+          <th class="num">Nominal kW</th>
+          <th class="num">Qty</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="roomBody"></tbody>
+      </table>
+      </div>
+      <div class="toolbar">
+        <button class="btn sm" onclick="addRoom()">+ Add room</button>
+        <button class="btn ghost sm" onclick="fillEstToDesign()">Copy est.→design</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Load summary</h2>
+      <div class="grid g3" id="loadStats"></div>
+    </div>
+  </section>
+
+  <!-- ============ OUTDOOR / COMBINATION ============ -->
+  <section id="tab-outdoor">
+    <div class="card">
+      <h2>Outdoor unit & combination ratio</h2>
+      <p class="hint">The combination ratio is the connected indoor capacity divided by the outdoor
+        unit's nominal capacity. Set your manufacturer's allowable window (commonly ~50–130%).</p>
+      <div class="grid g3">
+        <label class="fld">Outdoor unit model<input id="o_model" oninput="recalc()"></label>
+        <label class="fld">Outdoor nominal capacity (kW)<input id="o_cap" type="number" value="28" oninput="recalc()"></label>
+        <label class="fld">Number of outdoor modules<input id="o_mods" type="number" value="1" oninput="recalc()"></label>
+        <label class="fld">Min combination ratio %<input id="o_crmin" type="number" value="50" oninput="recalc()"></label>
+        <label class="fld">Max combination ratio %<input id="o_crmax" type="number" value="130" oninput="recalc()"></label>
+      </div>
+      <div class="grid g3" style="margin-top:14px" id="crStats"></div>
+      <div id="crFlag" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- ============ CORRECTION FACTORS ============ -->
+  <section id="tab-correction">
+    <div class="card">
+      <h2>Capacity correction</h2>
+      <p class="hint">Actual delivered capacity is the nominal capacity multiplied by correction factors
+        for equivalent piping length and indoor/outdoor height difference. Enter the curve points from your
+        manual; the tool interpolates linearly.</p>
+      <div class="grid g2">
+        <label class="fld">Equivalent main pipe length (m)<input id="c_len" type="number" value="30" oninput="recalc()"></label>
+        <label class="fld">Height difference ODU↔IDU (m)<input id="c_ht" type="number" value="10" oninput="recalc()"></label>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <h2>Length correction table</h2>
+        <p class="hint">Equivalent length (m) → capacity factor.</p>
+        <div class="tblwrap"><table id="lenTbl"><thead><tr><th class="num">Length m</th><th class="num">Factor</th><th></th></tr></thead><tbody id="lenBody"></tbody></table></div>
+        <div class="toolbar"><button class="btn sm" onclick="addCurve('len')">+ Row</button></div>
+      </div>
+      <div class="card">
+        <h2>Height correction table</h2>
+        <p class="hint">Height difference (m) → capacity factor.</p>
+        <div class="tblwrap"><table id="htTbl"><thead><tr><th class="num">Height m</th><th class="num">Factor</th><th></th></tr></thead><tbody id="htBody"></tbody></table></div>
+        <div class="toolbar"><button class="btn sm" onclick="addCurve('ht')">+ Row</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Corrected capacity</h2>
+      <div class="grid g3" id="corrStats"></div>
+    </div>
+  </section>
+
+  <!-- ============ PIPING ============ -->
+  <section id="tab-piping">
+    <div class="card">
+      <h2>Refrigerant pipe sizing</h2>
+      <p class="hint">Pipe diameters are selected by the capacity carried in each segment. Enter your
+        manufacturer's sizing table (capacity up-to → liquid & gas OD). Then add pipe segments; the tool
+        picks the smallest row whose limit ≥ the segment capacity.</p>
+      <div class="grid g2">
+        <div>
+          <h3 style="font-size:13px;color:var(--muted);margin:0 0 8px">Sizing table (capacity ≤ → OD mm)</h3>
+          <div class="tblwrap"><table id="sizeTbl"><thead><tr><th class="num">Cap ≤ kW</th><th class="num">Liquid OD</th><th class="num">Gas OD</th><th></th></tr></thead><tbody id="sizeBody"></tbody></table></div>
+          <div class="toolbar"><button class="btn sm" onclick="addSize()">+ Row</button></div>
+        </div>
+        <div>
+          <h3 style="font-size:13px;color:var(--muted);margin:0 0 8px">Charge per metre by liquid OD (kg/m)</h3>
+          <div class="tblwrap"><table id="chgTbl"><thead><tr><th class="num">Liquid OD</th><th class="num">kg / m</th><th></th></tr></thead><tbody id="chgBody"></tbody></table></div>
+          <div class="toolbar"><button class="btn sm" onclick="addChg()">+ Row</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Pipe segments</h2>
+      <p class="hint">Each run of pipe with its carried capacity and length. Diameter and additional
+        charge are computed for you.</p>
+      <div class="tblwrap">
+      <table id="segTbl">
+        <thead><tr>
+          <th>Segment</th><th class="num">Capacity kW</th><th class="num">Length m</th>
+          <th class="num">Liquid OD</th><th class="num">Gas OD</th><th class="num">Charge kg</th><th></th>
+        </tr></thead>
+        <tbody id="segBody"></tbody>
+      </table>
+      </div>
+      <div class="toolbar"><button class="btn sm" onclick="addSeg()">+ Add segment</button></div>
+    </div>
+  </section>
+
+  <!-- ============ CHARGE ============ -->
+  <section id="tab-charge">
+    <div class="card">
+      <h2>Refrigerant charge</h2>
+      <p class="hint">Total charge = factory pre-charge of the outdoor unit + additional charge for the
+        installed liquid piping (from the pipe-segment table).</p>
+      <div class="grid g2">
+        <label class="fld">Factory pre-charge (kg)<input id="r_base" type="number" step="0.1" value="0" oninput="recalc()"></label>
+        <label class="fld">Refrigerant type<input id="r_type" value="R-410A" oninput="save()"></label>
+      </div>
+      <div class="grid g3" style="margin-top:14px" id="chargeStats"></div>
+    </div>
+  </section>
+
+  <!-- ============ SUMMARY / BOM ============ -->
+  <section id="tab-summary">
+    <div class="card">
+      <h2>Design summary</h2>
+      <div id="summaryBody"></div>
+    </div>
+    <div class="card">
+      <h2>Bill of materials</h2>
+      <div class="tblwrap"><table id="bomTbl"><thead><tr><th>Item</th><th>Model / spec</th><th class="num">Qty</th></tr></thead><tbody id="bomBody"></tbody></table></div>
+      <div class="toolbar"><button class="btn ghost sm" onclick="exportCsv()">⬇ Export summary CSV</button></div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ---------------- state ---------------- */
+const TABS=[['project','Project'],['loads','Rooms & loads'],['outdoor','Outdoor / CR'],
+  ['correction','Correction'],['piping','Piping'],['charge','Charge'],['summary','Summary / BOM']];
+const KEY='vrf_design_tool_v1';
+let state=null;
+
+function blank(){return {
+  p:{name:'',client:'',designer:'',date:'',loc:'',mode:'cooling',todb:35,tidb:27,div:1.0},
+  rooms:[{name:'Office 1',area:20,wm2:120,est:0,load:2400,model:'',cap:2.8,qty:1}],
+  o:{model:'',cap:28,mods:1,crmin:50,crmax:130},
+  c:{len:30,ht:10,
+     lenCurve:[[0,1.0],[30,0.97],[60,0.92],[90,0.86],[120,0.80]],
+     htCurve:[[0,1.0],[15,0.98],[30,0.95],[50,0.90]]},
+  pipe:{
+    sizes:[[5.6,6.35,12.7],[11.2,9.52,15.88],[22.4,12.7,19.05],[45,15.88,22.2],[99,19.05,28.58]],
+    charge:[[6.35,0.022],[9.52,0.057],[12.7,0.11],[15.88,0.17],[19.05,0.25]],
+    segs:[['Main riser',28,15],['Branch A',11,8],['Branch B',5.6,6]]
+  },
+  r:{base:0,type:'R-410A'}
+};}
+
+/* ---------------- nav ---------------- */
+const nav=document.getElementById('nav');
+TABS.forEach(([id,label],i)=>{
+  const b=document.createElement('button');
+  b.textContent=label; b.dataset.tab=id; if(i===0)b.classList.add('active');
+  b.onclick=()=>{
+    document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('section').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('tab-'+id).classList.add('active');
+    if(id==='summary')renderSummary();
+  };
+  nav.appendChild(b);
+});
+
+/* ---------------- helpers ---------------- */
+const $=id=>document.getElementById(id);
+const num=v=>{const n=parseFloat(v);return isFinite(n)?n:0;};
+const fmt=(n,d=2)=>isFinite(n)?n.toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+function interp(curve,x){
+  const pts=[...curve].map(p=>[num(p[0]),num(p[1])]).sort((a,b)=>a[0]-b[0]);
+  if(!pts.length)return 1;
+  if(x<=pts[0][0])return pts[0][1];
+  if(x>=pts[pts.length-1][0])return pts[pts.length-1][1];
+  for(let i=0;i<pts.length-1;i++){
+    const[a,b]=[pts[i],pts[i+1]];
+    if(x>=a[0]&&x<=b[0]){const t=(x-a[0])/(b[0]-a[0]||1);return a[1]+t*(b[1]-a[1]);}
+  }
+  return 1;
+}
+
+/* ---------------- persistence ---------------- */
+function save(){
+  // pull scalar fields from DOM
+  state.p.name=$('p_name').value; state.p.client=$('p_client').value;
+  state.p.designer=$('p_designer').value; state.p.date=$('p_date').value;
+  state.p.loc=$('p_loc').value; state.p.mode=$('p_mode').value;
+  state.p.todb=num($('p_todb').value); state.p.tidb=num($('p_tidb').value);
+  state.p.div=num($('p_div').value);
+  state.o={model:$('o_model').value,cap:num($('o_cap').value),mods:num($('o_mods').value),
+           crmin:num($('o_crmin').value),crmax:num($('o_crmax').value)};
+  state.c.len=num($('c_len').value); state.c.ht=num($('c_ht').value);
+  state.r={base:num($('r_base').value),type:$('r_type').value};
+  localStorage.setItem(KEY,JSON.stringify(state));
+}
+function loadState(){
+  try{const s=localStorage.getItem(KEY);state=s?JSON.parse(s):blank();}
+  catch(e){state=blank();}
+  if(!state.pipe)state=blank();
+}
+
+/* ---------------- render inputs from state ---------------- */
+function hydrate(){
+  $('p_name').value=state.p.name; $('p_client').value=state.p.client;
+  $('p_designer').value=state.p.designer; $('p_date').value=state.p.date;
+  $('p_loc').value=state.p.loc; $('p_mode').value=state.p.mode;
+  $('p_todb').value=state.p.todb; $('p_tidb').value=state.p.tidb; $('p_div').value=state.p.div;
+  $('o_model').value=state.o.model; $('o_cap').value=state.o.cap; $('o_mods').value=state.o.mods;
+  $('o_crmin').value=state.o.crmin; $('o_crmax').value=state.o.crmax;
+  $('c_len').value=state.c.len; $('c_ht').value=state.c.ht;
+  $('r_base').value=state.r.base; $('r_type').value=state.r.type;
+  renderRooms(); renderCurves(); renderSizes(); renderChg(); renderSegs();
+}
+
+/* ---------------- rooms ---------------- */
+function renderRooms(){
+  const b=$('roomBody'); b.innerHTML='';
+  state.rooms.forEach((r,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input value="${r.name??''}" onchange="upRoom(${i},'name',this.value)"></td>
+      <td class="num"><input type="number" value="${r.area}" onchange="upRoom(${i},'area',this.value)"></td>
+      <td class="num"><input type="number" value="${r.wm2}" onchange="upRoom(${i},'wm2',this.value)"></td>
+      <td class="num" id="est_${i}">—</td>
+      <td class="num"><input type="number" value="${r.load}" onchange="upRoom(${i},'load',this.value)"></td>
+      <td><input value="${r.model??''}" onchange="upRoom(${i},'model',this.value)"></td>
+      <td class="num"><input type="number" value="${r.cap}" onchange="upRoom(${i},'cap',this.value)"></td>
+      <td class="num"><input type="number" value="${r.qty}" onchange="upRoom(${i},'qty',this.value)"></td>
+      <td><button class="rowbtn" onclick="delRoom(${i})">×</button></td>`;
+    b.appendChild(tr);
+  });
+}
+function upRoom(i,k,v){state.rooms[i][k]=(k==='name'||k==='model')?v:num(v);save();recalc();}
+function addRoom(){state.rooms.push({name:'Room',area:15,wm2:120,est:0,load:1800,model:'',cap:2.2,qty:1});save();renderRooms();recalc();}
+function delRoom(i){state.rooms.splice(i,1);save();renderRooms();recalc();}
+function fillEstToDesign(){state.rooms.forEach(r=>{r.load=Math.round(num(r.area)*num(r.wm2));});save();renderRooms();recalc();}
+
+/* ---------------- correction curves ---------------- */
+function renderCurves(){
+  ['len','ht'].forEach(k=>{
+    const body=$(k+'Body'); body.innerHTML='';
+    const curve=k==='len'?state.c.lenCurve:state.c.htCurve;
+    curve.forEach((p,i)=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td class="num"><input type="number" value="${p[0]}" onchange="upCurve('${k}',${i},0,this.value)"></td>
+        <td class="num"><input type="number" step="0.001" value="${p[1]}" onchange="upCurve('${k}',${i},1,this.value)"></td>
+        <td><button class="rowbtn" onclick="delCurve('${k}',${i})">×</button></td>`;
+      body.appendChild(tr);
+    });
+  });
+}
+function curveOf(k){return k==='len'?state.c.lenCurve:state.c.htCurve;}
+function upCurve(k,i,j,v){curveOf(k)[i][j]=num(v);save();recalc();}
+function addCurve(k){curveOf(k).push([0,1.0]);save();renderCurves();recalc();}
+function delCurve(k,i){curveOf(k).splice(i,1);save();renderCurves();recalc();}
+
+/* ---------------- pipe sizing table ---------------- */
+function renderSizes(){
+  const b=$('sizeBody'); b.innerHTML='';
+  state.pipe.sizes.forEach((s,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="num"><input type="number" step="0.1" value="${s[0]}" onchange="upSize(${i},0,this.value)"></td>
+      <td class="num"><input type="number" step="0.01" value="${s[1]}" onchange="upSize(${i},1,this.value)"></td>
+      <td class="num"><input type="number" step="0.01" value="${s[2]}" onchange="upSize(${i},2,this.value)"></td>
+      <td><button class="rowbtn" onclick="delSize(${i})">×</button></td>`;
+    b.appendChild(tr);
+  });
+}
+function upSize(i,j,v){state.pipe.sizes[i][j]=num(v);save();recalc();}
+function addSize(){state.pipe.sizes.push([0,6.35,12.7]);save();renderSizes();recalc();}
+function delSize(i){state.pipe.sizes.splice(i,1);save();renderSizes();recalc();}
+
+/* ---------------- charge table ---------------- */
+function renderChg(){
+  const b=$('chgBody'); b.innerHTML='';
+  state.pipe.charge.forEach((c,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="num"><input type="number" step="0.01" value="${c[0]}" onchange="upChg(${i},0,this.value)"></td>
+      <td class="num"><input type="number" step="0.001" value="${c[1]}" onchange="upChg(${i},1,this.value)"></td>
+      <td><button class="rowbtn" onclick="delChg(${i})">×</button></td>`;
+    b.appendChild(tr);
+  });
+}
+function upChg(i,j,v){state.pipe.charge[i][j]=num(v);save();recalc();}
+function addChg(){state.pipe.charge.push([6.35,0.02]);save();renderChg();recalc();}
+function delChg(i){state.pipe.charge.splice(i,1);save();renderChg();recalc();}
+function chargeRate(od){
+  const row=state.pipe.charge.find(c=>Math.abs(num(c[0])-od)<0.01);
+  return row?num(row[1]):0;
+}
+
+/* ---------------- pipe segments ---------------- */
+function pickSize(cap){
+  const rows=[...state.pipe.sizes].map(s=>[num(s[0]),num(s[1]),num(s[2])]).sort((a,b)=>a[0]-b[0]);
+  for(const s of rows)if(cap<=s[0])return{liq:s[1],gas:s[2]};
+  return rows.length?{liq:rows[rows.length-1][1],gas:rows[rows.length-1][2]}:{liq:0,gas:0};
+}
+function renderSegs(){
+  const b=$('segBody'); b.innerHTML='';
+  state.pipe.segs.forEach((s,i)=>{
+    const cap=num(s[1]),len=num(s[2]);const sz=pickSize(cap);
+    const chg=len*chargeRate(sz.liq);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><input value="${s[0]??''}" onchange="upSeg(${i},0,this.value)"></td>
+      <td class="num"><input type="number" step="0.1" value="${s[1]}" onchange="upSeg(${i},1,this.value)"></td>
+      <td class="num"><input type="number" step="0.1" value="${s[2]}" onchange="upSeg(${i},2,this.value)"></td>
+      <td class="num">${fmt(sz.liq,2)}</td>
+      <td class="num">${fmt(sz.gas,2)}</td>
+      <td class="num">${fmt(chg,2)}</td>
+      <td><button class="rowbtn" onclick="delSeg(${i})">×</button></td>`;
+    b.appendChild(tr);
+  });
+}
+function upSeg(i,j,v){state.pipe.segs[i][j]=(j===0)?v:num(v);save();renderSegs();recalc();}
+function addSeg(){state.pipe.segs.push(['Segment',5.6,5]);save();renderSegs();recalc();}
+function delSeg(i){state.pipe.segs.splice(i,1);save();renderSegs();recalc();}
+
+/* ---------------- calculations ---------------- */
+function calc(){
+  const iduTotal=state.rooms.reduce((s,r)=>s+num(r.cap)*num(r.qty),0);      // kW
+  const loadTotal=state.rooms.reduce((s,r)=>s+num(r.load)*num(r.qty),0)/1000;// kW
+  const designLoad=loadTotal*num(state.p.div);
+  const oCap=num(state.o.cap)*Math.max(1,num(state.o.mods));
+  const cr=oCap>0?(iduTotal/oCap)*100:0;
+  const lenF=interp(state.c.lenCurve,num(state.c.len));
+  const htF=interp(state.c.htCurve,num(state.c.ht));
+  const corrF=lenF*htF;
+  const corrCap=oCap*corrF;
+  const addCharge=state.pipe.segs.reduce((s,seg)=>{
+    const sz=pickSize(num(seg[1]));return s+num(seg[2])*chargeRate(sz.liq);},0);
+  const totalCharge=num(state.r.base)+addCharge;
+  return {iduTotal,loadTotal,designLoad,oCap,cr,lenF,htF,corrF,corrCap,addCharge,totalCharge};
+}
+
+function statCard(k,v,u){return `<div class="stat"><div class="k">${k}</div><div class="v">${v} <span class="u">${u||''}</span></div></div>`;}
+
+function recalc(){
+  save();
+  const c=calc();
+  // load stats
+  $('loadStats').innerHTML=
+    statCard('Rooms',state.rooms.length,'')+
+    statCard('Connected indoor',fmt(c.iduTotal,1),'kW')+
+    statCard('Est. design load',fmt(c.designLoad,1),'kW');
+  // update est cells
+  state.rooms.forEach((r,i)=>{const el=$('est_'+i);if(el)el.textContent=fmt(num(r.area)*num(r.wm2),0)+' W';});
+  // CR stats
+  $('crStats').innerHTML=
+    statCard('Outdoor capacity',fmt(c.oCap,1),'kW')+
+    statCard('Connected indoor',fmt(c.iduTotal,1),'kW')+
+    statCard('Combination ratio',fmt(c.cr,1),'%');
+  const flag=$('crFlag');
+  if(c.oCap<=0){flag.innerHTML='';}
+  else if(c.cr<num(state.o.crmin)){
+    flag.innerHTML=`<div class="warnbar">Combination ratio ${fmt(c.cr,1)}% is <b>below</b> the minimum ${state.o.crmin}% — outdoor unit is oversized for the connected load. Consider a smaller outdoor unit.</div>`;
+  }else if(c.cr>num(state.o.crmax)){
+    flag.innerHTML=`<div class="warnbar">Combination ratio ${fmt(c.cr,1)}% <b>exceeds</b> the maximum ${state.o.crmax}% — outdoor unit is undersized; simultaneous full load cannot be met. Add capacity or reduce connected indoors.</div>`;
+  }else{
+    flag.innerHTML=`<div class="note">✓ Combination ratio ${fmt(c.cr,1)}% is within the allowable ${state.o.crmin}–${state.o.crmax}% window.</div>`;
+  }
+  // correction stats
+  $('corrStats').innerHTML=
+    statCard('Length factor',fmt(c.lenF,3),'')+
+    statCard('Height factor',fmt(c.htF,3),'')+
+    statCard('Corrected capacity',fmt(c.corrCap,1),'kW');
+  // charge stats
+  $('chargeStats').innerHTML=
+    statCard('Pre-charge',fmt(num(state.r.base),2),'kg')+
+    statCard('Additional (piping)',fmt(c.addCharge,2),'kg')+
+    statCard('Total charge',fmt(c.totalCharge,2),'kg');
+  renderSegs();
+}
+
+/* ---------------- summary / BOM ---------------- */
+function renderSummary(){
+  const c=calc();
+  const kv=(l,v)=>`<div class="kv"><span class="lbl">${l}</span><span class="val">${v}</span></div>`;
+  const crPill=c.cr<num(state.o.crmin)?`<span class="pill bad">${fmt(c.cr,1)}% low</span>`
+    :c.cr>num(state.o.crmax)?`<span class="pill bad">${fmt(c.cr,1)}% high</span>`
+    :`<span class="pill good">${fmt(c.cr,1)}% OK</span>`;
+  $('summaryBody').innerHTML=
+    `<div class="grid g2">
+      <div>
+        ${kv('Project',state.p.name||'—')}
+        ${kv('Client',state.p.client||'—')}
+        ${kv('Designer',state.p.designer||'—')}
+        ${kv('Date',state.p.date||'—')}
+        ${kv('Design conditions',state.p.todb+'°C out / '+state.p.tidb+'°C in')}
+        ${kv('Mode',state.p.mode)}
+      </div>
+      <div>
+        ${kv('Rooms / indoor units',state.rooms.length)}
+        ${kv('Connected indoor',fmt(c.iduTotal,1)+' kW')}
+        ${kv('Estimated design load',fmt(c.designLoad,1)+' kW')}
+        ${kv('Outdoor unit',(state.o.model||'—')+' ('+fmt(c.oCap,1)+' kW)')}
+        ${kv('Combination ratio',crPill)}
+        ${kv('Corrected capacity',fmt(c.corrCap,1)+' kW ('+fmt(c.corrF,3)+'×)')}
+        ${kv('Refrigerant charge',fmt(c.totalCharge,2)+' kg '+state.r.type)}
+      </div>
+    </div>`;
+  // BOM
+  const b=$('bomBody');b.innerHTML='';
+  const rows=[];
+  if(state.o.model)rows.push(['Outdoor unit',state.o.model,num(state.o.mods)||1]);
+  const idu={};
+  state.rooms.forEach(r=>{if(r.model){const k=r.model+'|'+r.cap;idu[k]=(idu[k]||0)+ (num(r.qty)||1);}});
+  Object.entries(idu).forEach(([k,q])=>{const[m,cap]=k.split('|');rows.push(['Indoor unit',m+' ('+cap+' kW)',q]);});
+  // pipe totals by OD
+  const pipeLiq={},pipeGas={};
+  state.pipe.segs.forEach(s=>{const sz=pickSize(num(s[1]));const L=num(s[2]);
+    pipeLiq[sz.liq]=(pipeLiq[sz.liq]||0)+L;pipeGas[sz.gas]=(pipeGas[sz.gas]||0)+L;});
+  Object.entries(pipeLiq).forEach(([od,L])=>rows.push(['Liquid pipe','Ø'+od+' mm',fmt(L,1)+' m']));
+  Object.entries(pipeGas).forEach(([od,L])=>rows.push(['Gas pipe','Ø'+od+' mm',fmt(L,1)+' m']));
+  rows.push(['Refrigerant',state.r.type,fmt(c.totalCharge,2)+' kg']);
+  rows.forEach(r=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${r[0]}</td><td>${r[1]}</td><td class="num">${r[2]}</td>`;b.appendChild(tr);});
+}
+
+/* ---------------- file io ---------------- */
+function saveFile(){
+  save();
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=(state.p.name||'vrf-project').replace(/[^\w\-]+/g,'_')+'.json';a.click();
+}
+function loadFile(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{state=JSON.parse(rd.result);if(!state.pipe)throw 0;
+    localStorage.setItem(KEY,JSON.stringify(state));hydrate();recalc();}
+    catch(e){alert('Could not read that file.');}};
+  rd.readAsText(f);ev.target.value='';
+}
+function exportCsv(){
+  const c=calc();
+  const lines=[['Field','Value']];
+  lines.push(['Project',state.p.name],['Client',state.p.client],['Designer',state.p.designer],
+    ['Date',state.p.date],['Mode',state.p.mode],
+    ['Connected indoor kW',fmt(c.iduTotal,1)],['Design load kW',fmt(c.designLoad,1)],
+    ['Outdoor model',state.o.model],['Outdoor kW',fmt(c.oCap,1)],
+    ['Combination ratio %',fmt(c.cr,1)],['Corrected capacity kW',fmt(c.corrCap,1)],
+    ['Refrigerant',state.r.type],['Total charge kg',fmt(c.totalCharge,2)]);
+  lines.push([],['Room','Design load W','Indoor model','Nominal kW','Qty']);
+  state.rooms.forEach(r=>lines.push([r.name,r.load,r.model,r.cap,r.qty]));
+  const csv=lines.map(r=>r.map(x=>`"${(x??'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=(state.p.name||'vrf-project').replace(/[^\w\-]+/g,'_')+'_summary.csv';a.click();
+}
+function resetAll(){if(confirm('Start a new project? Unsaved work will be lost.')){state=blank();localStorage.setItem(KEY,JSON.stringify(state));hydrate();recalc();}}
+
+/* ---------------- boot ---------------- */
+loadState();hydrate();recalc();
+</script>
+</body>
+</html>
