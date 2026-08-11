@@ -1,0 +1,219 @@
+<meta charset="utf-8">
+<title>دراسة المخزون والمشتريات — علب التروس</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#F1F4F3; --surface:#FFFFFF; --surface2:#E7EDEB; --ink:#10191B; --ink2:#42555A;
+  --muted:#6E8085; --line:#D2DBD9; --line2:#BCC9C6;
+  --accent:#0E6E62; --accent-soft:#D6E8E4;
+  --crit:#A6331B; --crit-soft:#F6DFD9;
+  --warn:#8A6110; --warn-soft:#F4E7CB;
+  --cold:#2E5F86; --cold-soft:#DBE7F1;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1315; --surface:#151E21; --surface2:#1E2A2D; --ink:#E6ECEA; --ink2:#AEBFBE;
+  --muted:#7E9295; --line:#2A3A3D; --line2:#3A4C50;
+  --accent:#4CB3A0; --accent-soft:#173430;
+  --crit:#E58067; --crit-soft:#3B1F18;
+  --warn:#D9AC5A; --warn-soft:#372B15;
+  --cold:#7FB0D6; --cold-soft:#17293A;
+}}
+:root[data-theme="dark"]{
+  --bg:#0D1315; --surface:#151E21; --surface2:#1E2A2D; --ink:#E6ECEA; --ink2:#AEBFBE;
+  --muted:#7E9295; --line:#2A3A3D; --line2:#3A4C50;
+  --accent:#4CB3A0; --accent-soft:#173430;
+  --crit:#E58067; --crit-soft:#3B1F18;
+  --warn:#D9AC5A; --warn-soft:#372B15;
+  --cold:#7FB0D6; --cold-soft:#17293A;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);
+  font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(18px,4vw,40px) 90px;
+  display:flex;flex-direction:column;gap:0}
+h1,h2,h3,.eyebrow,.kpi-v,.tag,th,.bar-lab{font-family:var(--sans)}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin:0}
+header.doc{border-bottom:3px solid var(--ink);padding-bottom:22px;margin-bottom:34px;
+  display:flex;flex-direction:column;gap:10px}
+h1{font-size:clamp(29px,4.6vw,46px);font-weight:800;letter-spacing:-.025em;line-height:1.08;
+  margin:0;text-wrap:balance}
+.sub{color:var(--ink2);font-size:17px;margin:0;max-width:62ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--mono);font-size:11.5px;
+  color:var(--muted);letter-spacing:.02em;padding-top:6px}
+section{padding:38px 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:16px}
+section:first-of-type{border-top:none;padding-top:0}
+h2{font-size:22px;font-weight:800;letter-spacing:-.015em;margin:0;display:flex;
+  align-items:baseline;gap:12px;text-wrap:balance}
+h2 .num{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);
+  letter-spacing:0;flex:none}
+h3{font-size:15px;font-weight:700;margin:14px 0 0;letter-spacing:-.005em}
+p{margin:0;max-width:74ch}
+ul{margin:0;padding-inline-start:1.2em;display:flex;flex-direction:column;gap:7px;max-width:74ch}
+li::marker{color:var(--accent)}
+strong{font-weight:700}
+.verdict{background:var(--surface);border:1px solid var(--line);border-inline-start:5px solid var(--crit);
+  padding:22px 24px;display:flex;flex-direction:column;gap:9px}
+.verdict .eyebrow{color:var(--crit)}
+.verdict p{font-size:18px;line-height:1.5}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line)}
+.kpi{background:var(--surface);padding:17px 18px;display:flex;flex-direction:column;gap:5px}
+.kpi-l{font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted)}
+.kpi-v{font-size:27px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+  line-height:1.05}
+.kpi-n{font-size:12.5px;color:var(--ink2);font-family:var(--sans);line-height:1.35}
+.kpi.bad .kpi-v{color:var(--crit)} .kpi.cold .kpi-v{color:var(--cold)}
+.kpi.good .kpi-v{color:var(--accent)}
+.scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-family:var(--sans);
+  font-variant-numeric:tabular-nums}
+th{background:var(--surface2);text-align:start;font-size:10.5px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);padding:9px 12px;
+  border-bottom:1px solid var(--line2);white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tr.tot td{background:var(--surface2);font-weight:800;border-top:2px solid var(--line2)}
+.n{text-align:end;font-family:var(--mono);font-size:12.5px}
+.tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:2px 7px;border-radius:2px;white-space:nowrap}
+.t-crit{background:var(--crit-soft);color:var(--crit)}
+.t-warn{background:var(--warn-soft);color:var(--warn)}
+.t-ok{background:var(--accent-soft);color:var(--accent)}
+.t-cold{background:var(--cold-soft);color:var(--cold)}
+.chart{background:var(--surface);border:1px solid var(--line);padding:22px 24px;
+  display:flex;flex-direction:column;gap:11px}
+.bar-row{display:grid;grid-template-columns:64px 1fr 66px;align-items:center;gap:12px}
+.bar-lab{font-size:12px;font-weight:700;color:var(--ink2)}
+.bar-track{position:relative;height:19px;background:var(--surface2);overflow:hidden}
+.bar-fill{height:100%;background:var(--cold);opacity:.85}
+.bar-fill.crit{background:var(--crit)} .bar-fill.warn{background:var(--warn)}
+.bar-fill.ok{background:var(--accent)}
+.bar-base{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55}
+.bar-val{font-family:var(--mono);font-size:12px;text-align:end;color:var(--ink2);
+  font-variant-numeric:tabular-nums}
+.chart-note{font-family:var(--sans);font-size:11.5px;color:var(--muted);
+  padding-top:6px;border-top:1px solid var(--line)}
+.cap{font-family:var(--sans);font-size:12px;color:var(--muted);max-width:74ch}
+.note{background:var(--surface);border:1px solid var(--line);border-inline-start:4px solid var(--warn);
+  padding:16px 19px;display:flex;flex-direction:column;gap:8px}
+.note .eyebrow{color:var(--warn)}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.card{background:var(--surface);border:1px solid var(--line);padding:19px 20px;
+  display:flex;flex-direction:column;gap:9px}
+.card.stop{border-top:4px solid var(--cold)}
+.card.go{border-top:4px solid var(--accent)}
+ol.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0;
+  border:1px solid var(--line);background:var(--surface)}
+ol.steps li{display:grid;grid-template-columns:44px 1fr;gap:0;border-bottom:1px solid var(--line)}
+ol.steps li:last-child{border-bottom:none}
+.step-n{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent);
+  background:var(--surface2);display:flex;align-items:center;justify-content:center}
+.step-b{padding:15px 18px;display:flex;flex-direction:column;gap:5px}
+.step-t{font-family:var(--sans);font-weight:700;font-size:14.5px}
+.step-d{font-size:14px;color:var(--ink2);line-height:1.5}
+footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);
+  font-family:var(--sans);font-size:11.5px;color:var(--muted);max-width:74ch;line-height:1.6}
+[dir="rtl"] .verdict,[dir="rtl"] .note{border-inline-start:none;border-inline-end:5px solid var(--crit)}
+[dir="rtl"] .note{border-inline-end:4px solid var(--warn)}
+@media (max-width:560px){
+  .bar-row{grid-template-columns:52px 1fr 56px;gap:8px}
+  body{font-size:15.5px}
+}
+</style>
+<div class="wrap" dir="rtl" lang="ar">
+<header class="doc">
+<p class="eyebrow">I-MAK &middot; IRAS &mdash; 2026</p>
+<h1>دراسة المخزون والمشتريات — علب التروس</h1>
+<p class="sub">مطابقة فاتورتَي الشراء من الصين مع دفتر طلبات الزبائن: ما الذي يجب شراؤه أكثر، وما الذي يجب التوقف عن شرائه، وهل المخزون كافٍ.</p>
+<div class="meta"><span>المورّد: HANGZHOU FIXEDSTAR</span><span>المشتري: I-MAK / IRAS</span><span>الفترة: ديسمبر 2025 – يوليو 2026</span><span>التاريخ: 11 أغسطس 2026</span></div>
+</header>
+<section>
+<div class="verdict"><p class="eyebrow">الخلاصة</p><p>المخزون <strong>ليس</strong> غير كافٍ — بل هو أكبر من الحاجة بنحو <strong>8 أضعاف</strong>. لديك <strong>12,900 علبة تروس</strong> مطلوبة من الصين مقابل <strong>1,623 سطر طلب</strong> من الزبائن. نحو <strong>420,612 دولار</strong> — أي 86٪ من قيمة البضاعة — فائض عن الطلب المسجَّل. يوجد نقص حقيقي لكنه لا يتجاوز <strong>143 قطعة بقيمة ≈5,040 دولار</strong>. المطلوب ليس الشراء أكثر، بل الإيقاف وإعادة التوازن وشراء تسع تركيبات فلنجات صغيرة فقط.</p></div>
+<div class="kpis">
+<div class="kpi cold"><span class="kpi-l">علب التروس المطلوبة</span><span class="kpi-v">12,900</span><span class="kpi-n">قطعة موزعة على 203 صنف</span></div>
+<div class="kpi good"><span class="kpi-l">أسطر طلبات الزبائن</span><span class="kpi-v">1,623</span><span class="kpi-n">من ملف SP_SIPARISLER</span></div>
+<div class="kpi bad"><span class="kpi-l">التغطية الإجمالية</span><span class="kpi-v">7.95×</span><span class="kpi-n">العرض ÷ الطلب</span></div>
+<div class="kpi bad"><span class="kpi-l">قيمة الفائض</span><span class="kpi-v">$420,612</span><span class="kpi-n">86٪ من قيمة البضاعة</span></div>
+<div class="kpi good"><span class="kpi-l">النقص الحقيقي</span><span class="kpi-v">$5,040</span><span class="kpi-n">143 قطعة، 9 تركيبات</span></div>
+<div class="kpi cold"><span class="kpi-l">إجمالي قيمة الشراء</span><span class="kpi-v">$495,100</span><span class="kpi-n">بعد حذف طلب مكرّر واحد</span></div>
+</div></section>
+<section>
+<h2><span class="num">01</span>ماذا تحتوي الملفات الثلاثة فعلياً</h2>
+<p>ملفا <em>Fixedstara</em> هما فاتورتان تجاريتان من Hangzhou Fixedstar إلى I-MAK. الملف الأول هو الفاتورة <strong>FS2606043L</strong> بتاريخ 9 يونيو 2026 بإجمالي <strong>238,991.25 دولار</strong>. الملف الثاني بلا رقم فاتورة، بتاريخ 17 يونيو 2026 وبإجمالي <strong>257,628.46 دولار</strong>. تمت قراءة كل سطر في الملفين وإعادة جمعه، وطابق الإجمالي المطبوع في الفاتورتين تماماً — أي أن استخراج البيانات مُتحقَّق منه.</p>
+<p>الملفان <strong>ليسا</strong> نسختين من بعضهما: كل منهما يغطي مراجع طلبات مختلفة، باستثناء واحد. الطلب <strong>FCM260701</strong> (أربعة أسطر فلنجات إدخال، 400 قطعة، 1,520 دولار) يظهر بشكل متطابق في الملفين وتم احتسابه مرة واحدة. أما الطلبان WX4847 و WX5008 فمقسّمان بين الملفين، كل ملف يحمل أسطراً مختلفة من الطلب نفسه — وهذا تكامل حقيقي وليس تكراراً.</p>
+<p>الملف الثالث <strong>SP_SIPARISLER</strong> هو دفتر طلبات الزبائن: 1,623 صفاً، كل صف سطر طلب واحد. يحتوي على ثلاثة أعمدة فقط — الموديل، والتحويل، وفلنجة IEC — والعمودان الأخيران فارغان في معظم الصفوف.</p>
+<div class="scroll"><table><thead><tr><th>الملف</th><th class="n">مرجع الطلب</th><th class="n">WX</th><th class="n">الأسطر</th><th class="n">القطع</th><th class="n">القيمة بالدولار</th><th class="n">الحالة</th></tr></thead><tbody><tr><td>1</td><td class="n">FCM251226</td><td class="n">WX4417</td><td class="n">12</td><td class="n">1,120</td><td class="n">33,525.00</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>1</td><td class="n">ADD ON DEC.30</td><td class="n">WX4422</td><td class="n">8</td><td class="n">99</td><td class="n">5,313.50</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>1</td><td class="n">ADD ON JAN.07</td><td class="n">WX4437</td><td class="n">47</td><td class="n">1,135</td><td class="n">89,139.30</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>1</td><td class="n">ADD ON MAR.02</td><td class="n">WX4734</td><td class="n">117</td><td class="n">1,083</td><td class="n">43,002.75</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>1</td><td class="n">ADD ON MAR.23</td><td class="n">WX4847</td><td class="n">47</td><td class="n">2,616</td><td class="n">60,625.70</td><td><span class="tag t-ok">مقسّم بين الملفين</span></td></tr><tr><td>1</td><td class="n">FCM260508</td><td class="n">WX5008</td><td class="n">2</td><td class="n">23</td><td class="n">5,865.00</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>1</td><td class="n">FCM260701</td><td class="n">WX5252</td><td class="n">4</td><td class="n">400</td><td class="n">1,520.00</td><td><span class="tag t-crit">مكرّر — مستبعَد</span></td></tr><tr><td>2</td><td class="n">FCM251226</td><td class="n">WX4847</td><td class="n">49</td><td class="n">2,446</td><td class="n">47,437.30</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>2</td><td class="n">ADD ON APR.14</td><td class="n">WX4909</td><td class="n">1</td><td class="n">500</td><td class="n">35,500.00</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>2</td><td class="n">FCM260508</td><td class="n">WX5008</td><td class="n">82</td><td class="n">1,747</td><td class="n">63,036.30</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>2</td><td class="n">FCM260601</td><td class="n">WX5112</td><td class="n">43</td><td class="n">1,759</td><td class="n">35,983.10</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>2</td><td class="n">FCM260603</td><td class="n">WX5123</td><td class="n">27</td><td class="n">680</td><td class="n">17,117.50</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>2</td><td class="n">FCM260616</td><td class="n">WX5174</td><td class="n">4</td><td class="n">650</td><td class="n">16,291.00</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr><td>2</td><td class="n">FCM260617</td><td class="n">WX5183</td><td class="n">135</td><td class="n">977</td><td class="n">35,867.26</td><td><span class="tag t-warn">تداخل داخلي — يُراجَع</span></td></tr><tr><td>2</td><td class="n">FCM260701 + SPECIAL</td><td class="n">WX5204</td><td class="n">5</td><td class="n">440</td><td class="n">6,396.00</td><td><span class="tag t-cold">محتسَب</span></td></tr><tr class="tot"><td>الإجمالي المحتسَب</td><td class="n"></td><td class="n"></td><td class="n">579</td><td class="n">15,275</td><td class="n">495,099.71</td><td class="n"></td></tr></tbody></table></div>
+</section>
+<section>
+<h2><span class="num">02</span>المنهجية والافتراض الوحيد المهم</h2>
+<p>ملف الزبائن <strong>لا يحتوي على عمود كمية</strong>، ولا تواريخ ولا أسعار ولا أسماء زبائن. لذلك عُومل كل صف من الصفوف الـ1,623 على أنه طلب لـ<strong>قطعة واحدة</strong>. هذا هو الافتراض الوحيد الذي تقوم عليه الدراسة، وإليك ما يحدث إن كان خاطئاً:</p>
+<div class="scroll"><table><thead><tr><th>إذا كان كل سطر طلب =</th><th class="n">إجمالي الطلب (قطعة)</th><th class="n">نسبة التغطية</th><th class="n">القراءة</th></tr></thead><tbody><tr><td>1</td><td class="n">1,623</td><td class="n">7.95×</td><td><span class="tag t-crit">فائض هائل</span></td></tr><tr><td>2</td><td class="n">3,246</td><td class="n">3.97×</td><td><span class="tag t-warn">فائض كبير</span></td></tr><tr><td>3</td><td class="n">4,869</td><td class="n">2.65×</td><td><span class="tag t-warn">فائض</span></td></tr><tr><td>5</td><td class="n">8,115</td><td class="n">1.59×</td><td><span class="tag t-ok">مريح</span></td></tr><tr><td>7.95</td><td class="n">12,903</td><td class="n">1.00×</td><td><span class="tag t-ok">متوازن تماماً</span></td></tr><tr><td>10</td><td class="n">16,230</td><td class="n">0.79×</td><td><span class="tag t-cold">نقص</span></td></tr></tbody></table></div>
+<p>نقطة التعادل هي <strong>7.95 قطعة لكل سطر طلب</strong>. لكي تكون المشتريات الحالية مبرَّرة، يجب أن يكون متوسط سطر الطلب ثماني قطع تقريباً. إذا استطعت تصدير عمود الكمية من نظامك، يتحول هذا التقرير من تقديري إلى دقيق — لكن حتى عند 3 قطع لكل سطر يبقى الشراء زائداً بمقدار 2.65 ضعفاً.</p>
+<div class="note"><p class="eyebrow">القيد الثاني</p><p>عمود التحويل معبّأ في <strong>134 صفاً فقط من 1,623</strong> — وكلها تحمل القيمة 7.5. وعمود فلنجة IEC معبّأ في <strong>275 صفاً فقط من 1,623</strong>. لذلك فالنتائج على مستوى المقاس قوية وموثوقة، أما النتائج على مستوى التحويل والفلنجة فهي إسقاطات من هذه العينات ومُعلَّمة على هذا الأساس.</p></div>
+</section>
+<section>
+<h2><span class="num">03</span>النتيجة على مستوى المقاس — العرض مقابل الطلب</h2>
+<p>كل موديل بلا استثناء مُشترى بكميات زائدة. <strong>SP50</strong> هو الأسوأ بالأرقام المطلقة — 4,474 قطعة مقابل 380 سطر طلب، أي فائض بقيمة 106,580 دولار. و<strong>SP75</strong> هو الأضيق عند 2.25× وهو الموديل الوحيد الذي يقترب فيه الطلب من العرض فعلياً. أما <strong>SP25</strong> فلديه 59 قطعة مطلوبة و<strong>صفر</strong> طلب مسجَّل من الزبائن.</p>
+<div class="scroll"><table><thead><tr><th>الموديل</th><th class="n">المطلوب</th><th class="n">الطلب</th><th class="n">التغطية</th><th class="n">الفائض</th><th class="n">سعر الوحدة</th><th class="n">قيمة الفائض</th><th class="n">الحكم</th></tr></thead><tbody><tr><td>SP25</td><td class="n">59</td><td class="n">0</td><td class="n">∞</td><td class="n">59</td><td class="n">$14.90</td><td class="n">$879</td><td><span class="tag t-crit">لا طلب</span></td></tr><tr><td>SP30</td><td class="n">1,103</td><td class="n">155</td><td class="n">7.12×</td><td class="n">948</td><td class="n">$15.04</td><td class="n">$14,260</td><td><span class="tag t-cold">فائض</span></td></tr><tr><td>SP40</td><td class="n">1,807</td><td class="n">255</td><td class="n">7.09×</td><td class="n">1,552</td><td class="n">$17.34</td><td class="n">$26,912</td><td><span class="tag t-cold">فائض</span></td></tr><tr><td>SP50</td><td class="n">4,474</td><td class="n">380</td><td class="n">11.77×</td><td class="n">4,094</td><td class="n">$26.03</td><td class="n">$106,580</td><td><span class="tag t-cold">فائض كبير</span></td></tr><tr><td>SP63</td><td class="n">3,106</td><td class="n">343</td><td class="n">9.06×</td><td class="n">2,763</td><td class="n">$35.60</td><td class="n">$98,371</td><td><span class="tag t-cold">فائض</span></td></tr><tr><td>SP75</td><td class="n">485</td><td class="n">216</td><td class="n">2.25×</td><td class="n">269</td><td class="n">$52.00</td><td class="n">$13,988</td><td><span class="tag t-warn">للمتابعة</span></td></tr><tr><td>SP90</td><td class="n">1,147</td><td class="n">153</td><td class="n">7.50×</td><td class="n">994</td><td class="n">$71.00</td><td class="n">$70,574</td><td><span class="tag t-cold">فائض</span></td></tr><tr><td>SP110</td><td class="n">334</td><td class="n">59</td><td class="n">5.66×</td><td class="n">275</td><td class="n">$115.83</td><td class="n">$31,852</td><td><span class="tag t-cold">فائض</span></td></tr><tr><td>SP130</td><td class="n">293</td><td class="n">51</td><td class="n">5.75×</td><td class="n">242</td><td class="n">$151.00</td><td class="n">$36,542</td><td><span class="tag t-cold">فائض</span></td></tr><tr><td>SP150</td><td class="n">92</td><td class="n">11</td><td class="n">8.36×</td><td class="n">81</td><td class="n">$255.00</td><td class="n">$20,655</td><td><span class="tag t-cold">فائض</span></td></tr><tr class="tot"><td>Σ</td><td class="n">12,900</td><td class="n">1,623</td><td class="n">7.95×</td><td class="n">11,277</td><td class="n"></td><td class="n">$420,612</td><td class="n"></td></tr></tbody></table></div>
+<div class="chart"><p class="eyebrow">نسبة التغطية حسب الموديل (الخط العمودي = التوازن 1.0×)</p>
+<div class="bar-row"><span class="bar-lab">SP25</span><span class="bar-track"><span class="bar-fill crit" style="width:100.0%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">∞</span></div>
+<div class="bar-row"><span class="bar-lab">SP30</span><span class="bar-track"><span class="bar-fill cold" style="width:59.3%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">7.12×</span></div>
+<div class="bar-row"><span class="bar-lab">SP40</span><span class="bar-track"><span class="bar-fill cold" style="width:59.1%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">7.09×</span></div>
+<div class="bar-row"><span class="bar-lab">SP50</span><span class="bar-track"><span class="bar-fill cold" style="width:98.1%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">11.77×</span></div>
+<div class="bar-row"><span class="bar-lab">SP63</span><span class="bar-track"><span class="bar-fill cold" style="width:75.5%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">9.06×</span></div>
+<div class="bar-row"><span class="bar-lab">SP75</span><span class="bar-track"><span class="bar-fill warn" style="width:18.8%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">2.25×</span></div>
+<div class="bar-row"><span class="bar-lab">SP90</span><span class="bar-track"><span class="bar-fill cold" style="width:62.5%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">7.50×</span></div>
+<div class="bar-row"><span class="bar-lab">SP110</span><span class="bar-track"><span class="bar-fill cold" style="width:47.2%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">5.66×</span></div>
+<div class="bar-row"><span class="bar-lab">SP130</span><span class="bar-track"><span class="bar-fill cold" style="width:47.9%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">5.75×</span></div>
+<div class="bar-row"><span class="bar-lab">SP150</span><span class="bar-track"><span class="bar-fill cold" style="width:69.7%"></span><span class="bar-base" style="inset-inline-start:8.33%"></span></span><span class="bar-val">8.36×</span></div>
+<p class="chart-note">الأعمدة محدودة بـ12×. SP75 هو الموديل الوحيد تحت 3× تغطية؛ ويستحوذ SP50 و SP63 وحدهما على 58.8٪ من القطع و326 ألف دولار.</p></div>
+</section>
+<section>
+<h2><span class="num">04</span>توزيع المحفظة — شراء بنِسَب خاطئة</h2>
+<p>بمعزل عن مشكلة الكمية الإجمالية، فإن <em>شكل</em> المشتريات لا يطابق شكل الطلب. يقارن الجدول حصة كل موديل من المشتريات بحصته من طلبات الزبائن.</p>
+<div class="scroll"><table><thead><tr><th>الموديل</th><th class="n">حصة الطلب</th><th class="n">حصة الشراء</th><th class="n">الفجوة</th><th class="n">قطع في غير محلها</th></tr></thead><tbody><tr><td>SP25</td><td class="n">0.0%</td><td class="n">0.5%</td><td class="n">+0.5</td><td class="n">+59</td></tr><tr><td>SP30</td><td class="n">9.6%</td><td class="n">8.6%</td><td class="n">−1.0</td><td class="n">−129</td></tr><tr><td>SP40</td><td class="n">15.7%</td><td class="n">14.0%</td><td class="n">−1.7</td><td class="n">−220</td></tr><tr><td>SP50</td><td class="n">23.4%</td><td class="n">34.7%</td><td class="n">+11.3</td><td class="n">+1,454</td></tr><tr><td>SP63</td><td class="n">21.1%</td><td class="n">24.1%</td><td class="n">+3.0</td><td class="n">+380</td></tr><tr><td>SP75</td><td class="n">13.3%</td><td class="n">3.8%</td><td class="n">−9.5</td><td class="n">−1,232</td></tr><tr><td>SP90</td><td class="n">9.4%</td><td class="n">8.9%</td><td class="n">−0.5</td><td class="n">−69</td></tr><tr><td>SP110</td><td class="n">3.6%</td><td class="n">2.6%</td><td class="n">−1.0</td><td class="n">−135</td></tr><tr><td>SP130</td><td class="n">3.1%</td><td class="n">2.3%</td><td class="n">−0.8</td><td class="n">−112</td></tr><tr><td>SP150</td><td class="n">0.7%</td><td class="n">0.7%</td><td class="n">+0.0</td><td class="n">+5</td></tr></tbody></table></div>
+<p>رقمان يحكمان كل شيء: <strong>SP50 زائد بمقدار 11.3 نقطة</strong> (≈1,454 قطعة زيادة)، و<strong>SP75 ناقص بمقدار 9.5 نقطة</strong> (≈1,232 قطعة أقل مما تستحقه حصته من الطلب). تحويل الطلبات المستقبلية من SP50 إلى SP75 يصلح التوزيع دون زيادة الإنفاق الإجمالي.</p>
+<h3>أين ذهبت الكميات، حسب التحويل</h3>
+<div class="scroll"><table><thead><tr><th>التحويل i</th><th class="n">القطع</th><th class="n">الحصة</th></tr></thead><tbody><tr><td>i = 100</td><td class="n">3,289</td><td class="n">25.5%</td></tr><tr><td>i = 50</td><td class="n">1,795</td><td class="n">13.9%</td></tr><tr><td>i = 40</td><td class="n">1,553</td><td class="n">12.0%</td></tr><tr><td>i = 15</td><td class="n">1,306</td><td class="n">10.1%</td></tr><tr><td>i = 20</td><td class="n">1,067</td><td class="n">8.3%</td></tr><tr><td>i = 30</td><td class="n">926</td><td class="n">7.2%</td></tr><tr><td>i = 25</td><td class="n">719</td><td class="n">5.6%</td></tr><tr><td>i = 7.5</td><td class="n">698</td><td class="n">5.4%</td></tr><tr><td>i = 80</td><td class="n">504</td><td class="n">3.9%</td></tr><tr><td>i = 10</td><td class="n">384</td><td class="n">3.0%</td></tr><tr><td>i = 60</td><td class="n">325</td><td class="n">2.5%</td></tr><tr><td>i = 5</td><td class="n">294</td><td class="n">2.3%</td></tr></tbody></table></div>
+<p>ربع كل ما تم شراؤه — <strong>3,289 قطعة عند i=100</strong> — موجود في أبطأ تحويل. ولا يقدّم ملف الزبائن أي دليل على التحويلات يدعم هذا التركيز.</p>
+</section>
+<section>
+<h2><span class="num">05</span>ما الذي نحتاج شراءه أكثر</h2>
+<p>بإسقاط الصفوف الـ275 التي تحمل فلنجة IEC على إجمالي طلب كل موديل، نحصل على قائمة النقص أدناه. وهي قائمة قصيرة ورخيصة: <strong>143 قطعة بنحو 5,040 دولار</strong>.</p>
+<div class="scroll"><table><thead><tr><th>الموديل</th><th class="n">الفلنجة (PAM)</th><th class="n">الحاجة المتوقعة</th><th class="n">المطلوب حالياً</th><th class="n">التغطية</th><th class="n">يُشترى</th><th class="n">التكلفة</th></tr></thead><tbody><tr><td>SP90</td><td class="n">112B14</td><td class="n">26</td><td class="n">8</td><td><span class="tag t-crit">0.31×</span></td><td class="n"><strong>18</strong></td><td class="n">$1,278</td></tr><tr><td>SP90</td><td class="n">80B14</td><td class="n">26</td><td class="n">5</td><td><span class="tag t-crit">0.20×</span></td><td class="n"><strong>21</strong></td><td class="n">$1,491</td></tr><tr><td>SP30</td><td class="n">80B14</td><td class="n">43</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td><td class="n"><strong>43</strong></td><td class="n">$647</td></tr><tr><td>SP50</td><td class="n">90B14</td><td class="n">27</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td><td class="n"><strong>27</strong></td><td class="n">$703</td></tr><tr><td>SP30</td><td class="n">90B14</td><td class="n">9</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td><td class="n"><strong>9</strong></td><td class="n">$135</td></tr><tr><td>SP40</td><td class="n">90B14</td><td class="n">8</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td><td class="n"><strong>8</strong></td><td class="n">$139</td></tr><tr><td>SP75</td><td class="n">71B14</td><td class="n">7</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td><td class="n"><strong>7</strong></td><td class="n">$364</td></tr><tr><td>SP63</td><td class="n">63B14</td><td class="n">6</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td><td class="n"><strong>6</strong></td><td class="n">$214</td></tr><tr><td>SP40</td><td class="n">80B14</td><td class="n">4</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td><td class="n"><strong>4</strong></td><td class="n">$69</td></tr><tr><td>SP63</td><td class="n">71B14</td><td class="n">66</td><td class="n">87</td><td><span class="tag t-warn">1.31×</span></td><td class="n">—</td><td class="n">—</td></tr><tr><td>SP75</td><td class="n">100B14</td><td class="n">37</td><td class="n">50</td><td><span class="tag t-warn">1.34×</span></td><td class="n">—</td><td class="n">—</td></tr><tr><td>SP75</td><td class="n">90B14</td><td class="n">97</td><td class="n">157</td><td><span class="tag t-warn">1.62×</span></td><td class="n">—</td><td class="n">—</td></tr><tr class="tot"><td>Σ</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n"><strong>143</strong></td><td class="n">$5,040</td></tr></tbody></table></div>
+<p>الصفوف التسعة ذات التغطية الصفرية أو شبه الصفرية هي فجوات حقيقية: SP90 بفلنجتَي 80B14 و112B14، وSP30 بـ80B14 و90B14، وSP50 بـ90B14، وSP40 بـ80B14 و90B14، وSP63 بـ63B14، وSP75 بـ71B14. لم يُطلب أي منها بكميات تُذكر.</p>
+<h3>التحويل 7.5 — التحويل الوحيد الذي يؤكده ملف الزبائن</h3>
+<p>134 صفاً من طلبات الزبائن تطلب i=7.5 صراحةً. ومقابلها: <strong>SP130 لديه صفر قطعة عند i=7.5</strong> (3 مطلوبة)، وSP75 لديه 6 مقابل 13 مطلوبة (0.46×)، وSP90 لديه 5 مقابل 7 (0.71×). أضف نحو <strong>12 قطعة</strong> هنا.</p>
+<div class="scroll"><table><thead><tr><th>الموديل</th><th class="n">الطلبات عند i=7.5</th><th class="n">المطلوب عند i=7.5</th><th class="n">التغطية</th></tr></thead><tbody><tr><td>SP30</td><td class="n">23</td><td class="n">125</td><td><span class="tag t-cold">5.43×</span></td></tr><tr><td>SP40</td><td class="n">22</td><td class="n">85</td><td><span class="tag t-cold">3.86×</span></td></tr><tr><td>SP50</td><td class="n">36</td><td class="n">276</td><td><span class="tag t-cold">7.67×</span></td></tr><tr><td>SP63</td><td class="n">27</td><td class="n">166</td><td><span class="tag t-cold">6.15×</span></td></tr><tr><td>SP75</td><td class="n">13</td><td class="n">6</td><td><span class="tag t-crit">0.46×</span></td></tr><tr><td>SP90</td><td class="n">7</td><td class="n">5</td><td><span class="tag t-crit">0.71×</span></td></tr><tr><td>SP110</td><td class="n">3</td><td class="n">10</td><td><span class="tag t-cold">3.33×</span></td></tr><tr><td>SP130</td><td class="n">3</td><td class="n">0</td><td><span class="tag t-crit">0.00×</span></td></tr></tbody></table></div>
+</section>
+<section>
+<h2><span class="num">06</span>ما الذي يجب التوقف عن شرائه</h2>
+<p>هذه التركيبات العشر تحمل تغطية بين 4.5× و25.6×. <strong>SP50 مع 71B14 وحده يحمل 3,127 قطعة مقابل حاجة متوقعة قدرها 122</strong> — أي خمسة وعشرون عاماً من الطلب بالمعدل الحالي.</p>
+<div class="scroll"><table><thead><tr><th>الموديل</th><th class="n">الفلنجة (PAM)</th><th class="n">الحاجة المتوقعة</th><th class="n">المطلوب حالياً</th><th class="n">التغطية</th></tr></thead><tbody><tr><td>SP50</td><td class="n">71B14</td><td class="n">122</td><td class="n">3,127</td><td><span class="tag t-cold">25.6×</span></td></tr><tr><td>SP50</td><td class="n">63B14</td><td class="n">9</td><td class="n">190</td><td><span class="tag t-cold">21.0×</span></td></tr><tr><td>SP90</td><td class="n">100B14</td><td class="n">42</td><td class="n">811</td><td><span class="tag t-cold">19.1×</span></td></tr><tr><td>SP63</td><td class="n">80B14</td><td class="n">138</td><td class="n">1,888</td><td><span class="tag t-cold">13.7×</span></td></tr><tr><td>SP40</td><td class="n">63B14</td><td class="n">61</td><td class="n">514</td><td><span class="tag t-cold">8.5×</span></td></tr><tr><td>SP63</td><td class="n">90B14</td><td class="n">133</td><td class="n">939</td><td><span class="tag t-cold">7.1×</span></td></tr><tr><td>SP40</td><td class="n">71B14</td><td class="n">182</td><td class="n">1,283</td><td><span class="tag t-cold">7.0×</span></td></tr><tr><td>SP30</td><td class="n">63B14</td><td class="n">103</td><td class="n">712</td><td><span class="tag t-cold">6.9×</span></td></tr><tr><td>SP130</td><td class="n">112B14</td><td class="n">51</td><td class="n">276</td><td><span class="tag t-cold">5.4×</span></td></tr><tr><td>SP50</td><td class="n">80B14</td><td class="n">222</td><td class="n">1,000</td><td><span class="tag t-cold">4.5×</span></td></tr></tbody></table></div>
+<div class="split">
+<div class="card stop"><p class="eyebrow" style="color:var(--cold)">أوقف تماماً</p><ul><li><strong>كل فلنجات B5</strong> — 706 قطعة بقيمة 51,006 دولار. لا يوجد ولا صف واحد من الـ275 صفاً يطلب B5؛ جميعها B14.</li><li><strong>SP25</strong> — 59 قطعة بقيمة 879 دولاراً. صفر طلب مسجَّل.</li><li><strong>طلبات SP50 و SP63 الجديدة</strong> — 7,580 قطعة مطلوبة أصلاً بقيمة 326 ألف دولار، أي 58.8٪ من المحفظة كاملة.</li></ul></div>
+<div class="card go"><p class="eyebrow">قلّص بقوة</p><ul><li><strong>التحويل i=100</strong> — 3,289 قطعة، ربع المخزون كله، في أبطأ تحويل وبلا دليل طلب.</li><li><strong>SP50 i=100 / 71B14</strong> — 1,946 قطعة بقيمة 50,596 دولاراً. أكبر صنف منفرد في الدفتر، مقابل إجمالي طلب SP50 البالغ 380 سطراً.</li><li><strong>الدفعات الصغيرة</strong> — 45 صنفاً بخمس قطع أو أقل: 174 قطعة فقط لكنها تجمّد 12,458 دولاراً وتتطلب إدارة 45 موقع تخزين منفصل.</li></ul></div>
+</div>
+<p class="cap">B5: SP63 90B5 135 &middot; SP50 80B5 92 &middot; SP75 90B5 86 &middot; SP150 132B5 83 &middot; SP90 100B5 81 &middot; SP50 71B5 65 &middot; SP30 63B5 41 &middot; SP90 90B5 35 &middot; SP63 80B5 30</p>
+</section>
+<section>
+<h2><span class="num">07</span>ملاحظات على جودة البيانات تحتاج معالجة</h2>
+<ul><li>الطلب <strong>FCM260701</strong> موجود بشكل متطابق في الملفين (400 قطعة، 1,520 دولاراً). احتُسب مرة واحدة هنا — تأكّد أنه فُوتر مرة واحدة.</li><li>داخل الملف الثاني، يتشارك القسمان <strong>WX5008</strong> و<strong>WX5183</strong> في 45 سطراً متطابقاً (موديل/تحويل/فلنجة/كمية) بمجموع <strong>287 قطعة</strong>. وإجمالي الفاتورة يجمعهما معاً. تحقّق أن هذا طلب متكرر فعلي وليس إدخالاً مزدوجاً.</li><li>ورقة قائمة التعبئة في الملف الثاني تفصّل <strong>60 صفاً فقط</strong> (WX4847 وWX4909) بينما يذكر تذييلها 65,795 كغم وزناً قائماً و94.84 متراً مكعباً و<strong>124 طبلية</strong>. التفصيل لا يغطي الشحنة كاملة.</li><li>في الملف الأول، السطر 43 مكتوب فيه <em>QTY:195</em> في الوصف لكنه مُفوتَر بـ<strong>162</strong> قطعة. اعتُمد الرقم المُفوتَر.</li><li>ورقة الفاتورة في الملف الثاني <strong>بلا رقم فاتورة</strong>، بينما تذكر قائمة التعبئة الخاصة به الرقم FS2606043L — وهو نفس رقم الملف الأول.</li><li>ملف الزبائن لا يحتوي على عمود كمية أو تاريخ أو سعر أو اسم زبون. إضافة الكمية والتاريخ هي أعلى تحسين قيمةً متاح.</li></ul>
+</section>
+<section>
+<h2><span class="num">08</span>خطة العمل</h2>
+<ol class="steps">
+<li><span class="step-n">01</span><span class="step-b"><span class="step-t">جمّد SP50 و SP63</span><span class="step-d">لا تضع أي طلبات جديدة على هذين الموديلين حتى ينزل المخزون تحت تغطية 2×. هذا وحده يحمي 326,000 دولار من رأس المال العامل.</span></span></li>
+<li><span class="step-n">02</span><span class="step-b"><span class="step-t">ألغِ أو أجّل ما لم يُشحن بعد</span><span class="step-d">أي جزء غير مشحون من أسطر i=100 و B5 — حتى 3,995 قطعة وبنحو 101,000 دولار مجتمعة — هو أرخص توفير متاح.</span></span></li>
+<li><span class="step-n">03</span><span class="step-b"><span class="step-t">ضع طلباً تصحيحياً واحداً صغيراً</span><span class="step-d">143 قطعة موزعة على تسع تركيبات فلنجات، إضافة إلى ~12 قطعة عند i=7.5. الإجمالي ≈5,040 دولاراً. هذا هو النقص الحقيقي كاملاً.</span></span></li>
+<li><span class="step-n">04</span><span class="step-b"><span class="step-t">أعِد التوازن نحو SP75</span><span class="step-d">يمثل SP75 13.3٪ من الطلب و3.8٪ فقط من المشتريات، وهو الموديل الوحيد تحت 3× تغطية. حوّل ميزانية SP50 المستقبلية إليه.</span></span></li>
+<li><span class="step-n">05</span><span class="step-b"><span class="step-t">أصلح بيانات الزبائن</span><span class="step-d">صدّر الكمية وتاريخ الطلب مع دفتر الطلبات. عندها تصبح نسب التغطية دقيقة بدل تقديرية، ويصبح المعدل الشهري قابلاً للحساب.</span></span></li>
+<li><span class="step-n">06</span><span class="step-b"><span class="step-t">طابِق التداخلين المُعلَّمين</span><span class="step-d">أكّد FCM260701 وتكرار WX5008/WX5183 مع المورّد قبل دفعة السداد القادمة.</span></span></li>
+</ol>
+</section>
+<footer>المصادر: Fixedstara Geçilen Siparişler 1 و2 (فاتورتان تجاريتان، الورقة <span style='font-family:var(--mono)'>inv</span>؛ والملف الثاني يحتوي أيضاً على الورقة <span style='font-family:var(--mono)'>pl</span>) وملف SP_SIPARISLER (الورقة <span style='font-family:var(--mono)'>REPORTLISTMAT</span>). تمت قراءة جميع أسطر الفواتير البالغة 583 سطراً برمجياً، وطابقت الإجماليات المُعاد حسابها الإجماليات المطبوعة 238,991.25 و257,628.46 دولاراً حتى السنت. أرقام الطلب تفترض قطعة واحدة لكل سطر طلب — انظر القسم 2. القيم FOB شنغهاي بالدولار الأمريكي.</footer>
+</div>
