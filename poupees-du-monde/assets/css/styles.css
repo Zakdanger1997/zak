@@ -190,6 +190,8 @@ html[dir="rtl"] .link-arrow::after{ content:" ←"; }
 .booking-intro .section-sub{ color:rgba(255,255,255,.85); margin-bottom:26px; }
 .btn-whatsapp{ margin-top:6px; }
 .booking-form{ background:var(--paper); color:var(--ink); border-radius:18px; padding:clamp(24px,4vw,38px); box-shadow:var(--shadow); }
+.calendly-wrap{ background:var(--paper); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); min-height:720px; }
+.calendly-wrap .calendly-inline-widget{ border-radius:18px; }
 .field{ margin-bottom:18px; }
 .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .field label{ display:block; font-size:.85rem; font-weight:600; margin-bottom:7px; color:var(--ink); }

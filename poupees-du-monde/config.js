@@ -13,6 +13,14 @@ window.SITE_CONFIG = {
   phoneDisplay: "+212 664-935740",          // trouvé publiquement — à confirmer
   email: "contact@poupeesdumonde.ma",       // « À CONFIRMER (email réel) »
 
+  // ---- Reservation calendar (Calendly) ----
+  // Paste your Calendly scheduling link here, e.g.
+  //   "https://calendly.com/poupeesdumonde/visite"
+  // When set, a live booking calendar replaces the simple form. Calendly then
+  // emails BOTH you and the visitor a confirmation automatically.
+  // Works with Cal.com links too. Leave empty to use the simple form below.
+  calendlyUrl: "",
+
   // Booking form delivery.
   // Easiest: create a free form at https://formspree.io (or https://web3forms.com)
   // and paste the endpoint URL here. If left empty, the form falls back to

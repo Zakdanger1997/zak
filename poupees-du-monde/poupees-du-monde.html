@@ -217,6 +217,8 @@ html[dir="rtl"] .link-arrow::after{ content:" ←"; }
 .booking-intro .section-sub{ color:rgba(255,255,255,.85); margin-bottom:26px; }
 .btn-whatsapp{ margin-top:6px; }
 .booking-form{ background:var(--paper); color:var(--ink); border-radius:18px; padding:clamp(24px,4vw,38px); box-shadow:var(--shadow); }
+.calendly-wrap{ background:var(--paper); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); min-height:720px; }
+.calendly-wrap .calendly-inline-widget{ border-radius:18px; }
 .field{ margin-bottom:18px; }
 .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .field label{ display:block; font-size:.85rem; font-weight:600; margin-bottom:7px; color:var(--ink); }
@@ -512,6 +514,8 @@ html[dir="rtl"] .lb-next{ transform:translateY(-50%) rotate(180deg); }
         </a>
       </div>
 
+      <div id="calendly-embed" class="calendly-wrap reveal" hidden></div>
+
       <form class="booking-form reveal" id="booking-form" novalidate>
         <div class="field">
           <label for="bf-name" data-i18n="book.name">Nom complet</label>
@@ -610,6 +614,14 @@ window.SITE_CONFIG = {
   whatsapp: "212664935740",                 // « À CONFIRMER que ce numéro a WhatsApp »
   phoneDisplay: "+212 664-935740",          // trouvé publiquement — à confirmer
   email: "contact@poupeesdumonde.ma",       // « À CONFIRMER (email réel) »
+
+  // ---- Reservation calendar (Calendly) ----
+  // Paste your Calendly scheduling link here, e.g.
+  //   "https://calendly.com/poupeesdumonde/visite"
+  // When set, a live booking calendar replaces the simple form. Calendly then
+  // emails BOTH you and the visitor a confirmation automatically.
+  // Works with Cal.com links too. Leave empty to use the simple form below.
+  calendlyUrl: "",
 
   // Booking form delivery.
   // Easiest: create a free form at https://formspree.io (or https://web3forms.com)
@@ -1174,6 +1186,24 @@ window.I18N = {
       btn.disabled = false; btn.textContent = original;
     }
   });
+
+  /* ---------------- Calendly reservation calendar ---------------- */
+  (function initCalendly() {
+    const url = CFG.calendlyUrl;
+    if (!url) return;                       // no link yet → keep the simple form
+    if (form) form.hidden = true;           // hide the fallback form
+    const wrap = $("#calendly-embed");
+    if (!wrap) return;
+    wrap.hidden = false;
+    const sep = url.includes("?") ? "&" : "?";
+    const full = url + sep + "hide_gdpr_banner=1";
+    wrap.innerHTML =
+      `<div class="calendly-inline-widget" data-url="${full}" style="min-width:320px;height:720px;"></div>`;
+    const s = document.createElement("script");
+    s.src = "https://assets.calendly.com/assets/external/widget.js";
+    s.async = true;
+    document.body.appendChild(s);
+  })();
 
   /* ---------------- Init ---------------- */
   $("#year").textContent = new Date().getFullYear();

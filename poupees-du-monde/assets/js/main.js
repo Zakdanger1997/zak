@@ -218,6 +218,24 @@
     }
   });
 
+  /* ---------------- Calendly reservation calendar ---------------- */
+  (function initCalendly() {
+    const url = CFG.calendlyUrl;
+    if (!url) return;                       // no link yet → keep the simple form
+    if (form) form.hidden = true;           // hide the fallback form
+    const wrap = $("#calendly-embed");
+    if (!wrap) return;
+    wrap.hidden = false;
+    const sep = url.includes("?") ? "&" : "?";
+    const full = url + sep + "hide_gdpr_banner=1";
+    wrap.innerHTML =
+      `<div class="calendly-inline-widget" data-url="${full}" style="min-width:320px;height:720px;"></div>`;
+    const s = document.createElement("script");
+    s.src = "https://assets.calendly.com/assets/external/widget.js";
+    s.async = true;
+    document.body.appendChild(s);
+  })();
+
   /* ---------------- Init ---------------- */
   $("#year").textContent = new Date().getFullYear();
   applyLang();
