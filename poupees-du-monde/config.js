@@ -44,16 +44,16 @@ window.SITE_CONFIG = {
    * Edit the time strings. Use "" for a closed day.
    * Labels are provided per language.                        */
   hours: [
-    { fr: "Lundi – Vendredi", en: "Monday – Friday",   ar: "الاثنين – الجمعة", time: "9h30 – 18h00" },
-    { fr: "Samedi",           en: "Saturday",          ar: "السبت",           time: "9h30 – 18h00" },
-    { fr: "Dimanche",         en: "Sunday",            ar: "الأحد",           time: "10h00 – 17h00" },
+    { fr: "Lundi – Vendredi", en: "Monday – Friday", ar: "الاثنين – الجمعة", es: "Lunes – Viernes", it: "Lunedì – Venerdì", ru: "Понедельник – Пятница", time: "9h30 – 18h00" },
+    { fr: "Samedi",           en: "Saturday",        ar: "السبت",           es: "Sábado",         it: "Sabato",          ru: "Суббота",              time: "9h30 – 18h00" },
+    { fr: "Dimanche",         en: "Sunday",          ar: "الأحد",           es: "Domingo",        it: "Domenica",        ru: "Воскресенье",          time: "10h00 – 17h00" },
   ], // « HORAIRES À CONFIRMER »
 
   /* --- Admission / prices -------------------------------- */
   prices: [
-    { fr: "Adulte",              en: "Adult",             ar: "بالغ",              value: "40 DH" },
-    { fr: "Enfant (–12 ans)",    en: "Child (under 12)",  ar: "طفل (أقل من 12)",   value: "20 DH" },
-    { fr: "Visite guidée / groupe", en: "Guided / group tour", ar: "زيارة موجّهة / مجموعة", value: "Sur demande" },
-  ], // « TARIFS À CONFIRMER »
+    { fr: "Adulte — Résident",     en: "Adult — Resident",     ar: "بالغ — مقيم",       es: "Adulto — Residente",    it: "Adulto — Residente",     ru: "Взрослый — резидент",   value: "20 DH" },
+    { fr: "Adulte — Non-résident", en: "Adult — Non-resident", ar: "بالغ — غير مقيم",   es: "Adulto — No residente", it: "Adulto — Non residente", ru: "Взрослый — нерезидент", value: "40 DH" },
+    { fr: "Enfant (–12 ans)",      en: "Child (under 12)",     ar: "طفل (أقل من 12)",   es: "Niño (–12 años)",       it: "Bambino (–12 anni)",     ru: "Ребёнок (до 12 лет)",   value: "10 DH" },
+  ],
 
 };

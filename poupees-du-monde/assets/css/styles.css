@@ -99,15 +99,31 @@ html[lang="ar"] .brand-name-sub{ letter-spacing:normal; }
 .nav-book{ margin-inline-start:6px; }
 
 .header-tools{ display:flex; align-items:center; gap:14px; }
-.lang-switch{ display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:rgba(255,255,255,.6); }
-.lang-switch button{
-  border:0; background:transparent; padding:7px 12px; font-family:var(--sans);
-  font-weight:600; font-size:.82rem; color:var(--ink-soft); cursor:pointer; transition:.2s;
+.lang-switch{ position:relative; }
+.lang-toggle{
+  display:flex; align-items:center; gap:7px; border:1px solid var(--line); border-radius:999px;
+  background:rgba(255,255,255,.6); padding:7px 13px; font-family:var(--sans); font-weight:600;
+  font-size:.82rem; color:var(--ink-soft); cursor:pointer; transition:.2s; min-width:52px; justify-content:center;
 }
-.lang-switch button.is-active{ background:var(--terracotta); color:#fff; }
-.site-header:not(.scrolled) .lang-switch{ background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.4); }
-.site-header:not(.scrolled) .lang-switch button{ color:#fff; }
-.site-header:not(.scrolled) .lang-switch button.is-active{ background:var(--terracotta); }
+.lang-toggle svg{ transition:transform .25s; opacity:.7; }
+.lang-switch.open .lang-toggle svg{ transform:rotate(180deg); }
+.site-header:not(.scrolled) .lang-toggle{ background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.4); color:#fff; }
+.lang-menu{
+  position:absolute; inset-block-start:calc(100% + 8px); inset-inline-end:0; min-width:150px;
+  list-style:none; margin:0; padding:6px; background:var(--paper); border:1px solid var(--line);
+  border-radius:12px; box-shadow:var(--shadow); opacity:0; visibility:hidden; transform:translateY(-6px);
+  transition:opacity .2s, transform .2s, visibility .2s; z-index:60;
+}
+.lang-switch.open .lang-menu{ opacity:1; visibility:visible; transform:none; }
+.lang-menu li{ list-style:none; }
+.lang-menu button{
+  display:block; width:100%; text-align:start; border:0; background:transparent; padding:9px 12px;
+  border-radius:8px; font-family:var(--sans); font-size:.9rem; font-weight:500; color:var(--ink);
+  cursor:pointer; transition:.15s;
+}
+.lang-menu button:hover{ background:var(--sand); }
+.lang-menu button.is-active{ background:var(--terracotta); color:#fff; }
+html[dir="rtl"] .lang-menu{ inset-inline-end:auto; inset-inline-start:0; }
 
 .hamburger{ display:none; flex-direction:column; gap:5px; width:42px; height:42px; border:0; background:transparent; cursor:pointer; align-items:center; justify-content:center; }
 .hamburger span{ width:24px; height:2px; background:var(--ink); transition:.3s; }

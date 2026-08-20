@@ -72,10 +72,19 @@
       </nav>
 
       <div class="header-tools">
-        <div class="lang-switch" role="group" aria-label="Language">
-          <button data-lang="fr" class="is-active">FR</button>
-          <button data-lang="en">EN</button>
-          <button data-lang="ar">ع</button>
+        <div class="lang-switch" id="lang-switch">
+          <button class="lang-toggle" id="lang-toggle" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+            <span id="lang-current">FR</span>
+            <svg viewBox="0 0 10 6" width="10" height="6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+          <ul class="lang-menu" id="lang-menu" role="listbox">
+            <li><button data-lang="fr" data-code="FR">Français</button></li>
+            <li><button data-lang="en" data-code="EN">English</button></li>
+            <li><button data-lang="es" data-code="ES">Español</button></li>
+            <li><button data-lang="it" data-code="IT">Italiano</button></li>
+            <li><button data-lang="ru" data-code="RU">Русский</button></li>
+            <li><button data-lang="ar" data-code="ع">العربية</button></li>
+          </ul>
         </div>
         <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
           <span></span><span></span><span></span>
@@ -272,6 +281,9 @@
           <select id="bf-lang" name="tour_language">
             <option value="fr" data-i18n="book.lang.fr">Français</option>
             <option value="en" data-i18n="book.lang.en">Anglais</option>
+            <option value="es" data-i18n="book.lang.es">Espagnol</option>
+            <option value="it" data-i18n="book.lang.it">Italien</option>
+            <option value="ru" data-i18n="book.lang.ru">Russe</option>
             <option value="ar" data-i18n="book.lang.ar">Arabe</option>
           </select>
         </div>

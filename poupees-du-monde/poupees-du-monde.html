@@ -132,15 +132,31 @@ html[lang="ar"] .brand-name-sub{ letter-spacing:normal; }
 .nav-book{ margin-inline-start:6px; }
 
 .header-tools{ display:flex; align-items:center; gap:14px; }
-.lang-switch{ display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; background:rgba(255,255,255,.6); }
-.lang-switch button{
-  border:0; background:transparent; padding:7px 12px; font-family:var(--sans);
-  font-weight:600; font-size:.82rem; color:var(--ink-soft); cursor:pointer; transition:.2s;
+.lang-switch{ position:relative; }
+.lang-toggle{
+  display:flex; align-items:center; gap:7px; border:1px solid var(--line); border-radius:999px;
+  background:rgba(255,255,255,.6); padding:7px 13px; font-family:var(--sans); font-weight:600;
+  font-size:.82rem; color:var(--ink-soft); cursor:pointer; transition:.2s; min-width:52px; justify-content:center;
 }
-.lang-switch button.is-active{ background:var(--terracotta); color:#fff; }
-.site-header:not(.scrolled) .lang-switch{ background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.4); }
-.site-header:not(.scrolled) .lang-switch button{ color:#fff; }
-.site-header:not(.scrolled) .lang-switch button.is-active{ background:var(--terracotta); }
+.lang-toggle svg{ transition:transform .25s; opacity:.7; }
+.lang-switch.open .lang-toggle svg{ transform:rotate(180deg); }
+.site-header:not(.scrolled) .lang-toggle{ background:rgba(0,0,0,.25); border-color:rgba(255,255,255,.4); color:#fff; }
+.lang-menu{
+  position:absolute; inset-block-start:calc(100% + 8px); inset-inline-end:0; min-width:150px;
+  list-style:none; margin:0; padding:6px; background:var(--paper); border:1px solid var(--line);
+  border-radius:12px; box-shadow:var(--shadow); opacity:0; visibility:hidden; transform:translateY(-6px);
+  transition:opacity .2s, transform .2s, visibility .2s; z-index:60;
+}
+.lang-switch.open .lang-menu{ opacity:1; visibility:visible; transform:none; }
+.lang-menu li{ list-style:none; }
+.lang-menu button{
+  display:block; width:100%; text-align:start; border:0; background:transparent; padding:9px 12px;
+  border-radius:8px; font-family:var(--sans); font-size:.9rem; font-weight:500; color:var(--ink);
+  cursor:pointer; transition:.15s;
+}
+.lang-menu button:hover{ background:var(--sand); }
+.lang-menu button.is-active{ background:var(--terracotta); color:#fff; }
+html[dir="rtl"] .lang-menu{ inset-inline-end:auto; inset-inline-start:0; }
 
 .hamburger{ display:none; flex-direction:column; gap:5px; width:42px; height:42px; border:0; background:transparent; cursor:pointer; align-items:center; justify-content:center; }
 .hamburger span{ width:24px; height:2px; background:var(--ink); transition:.3s; }
@@ -355,10 +371,19 @@ html[dir="rtl"] .lb-next{ transform:translateY(-50%) rotate(180deg); }
       </nav>
 
       <div class="header-tools">
-        <div class="lang-switch" role="group" aria-label="Language">
-          <button data-lang="fr" class="is-active">FR</button>
-          <button data-lang="en">EN</button>
-          <button data-lang="ar">ع</button>
+        <div class="lang-switch" id="lang-switch">
+          <button class="lang-toggle" id="lang-toggle" aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+            <span id="lang-current">FR</span>
+            <svg viewBox="0 0 10 6" width="10" height="6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+          <ul class="lang-menu" id="lang-menu" role="listbox">
+            <li><button data-lang="fr" data-code="FR">Français</button></li>
+            <li><button data-lang="en" data-code="EN">English</button></li>
+            <li><button data-lang="es" data-code="ES">Español</button></li>
+            <li><button data-lang="it" data-code="IT">Italiano</button></li>
+            <li><button data-lang="ru" data-code="RU">Русский</button></li>
+            <li><button data-lang="ar" data-code="ع">العربية</button></li>
+          </ul>
         </div>
         <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
           <span></span><span></span><span></span>
@@ -555,6 +580,9 @@ html[dir="rtl"] .lb-next{ transform:translateY(-50%) rotate(180deg); }
           <select id="bf-lang" name="tour_language">
             <option value="fr" data-i18n="book.lang.fr">Français</option>
             <option value="en" data-i18n="book.lang.en">Anglais</option>
+            <option value="es" data-i18n="book.lang.es">Espagnol</option>
+            <option value="it" data-i18n="book.lang.it">Italien</option>
+            <option value="ru" data-i18n="book.lang.ru">Russe</option>
             <option value="ar" data-i18n="book.lang.ar">Arabe</option>
           </select>
         </div>
@@ -655,17 +683,17 @@ window.SITE_CONFIG = {
    * Edit the time strings. Use "" for a closed day.
    * Labels are provided per language.                        */
   hours: [
-    { fr: "Lundi – Vendredi", en: "Monday – Friday",   ar: "الاثنين – الجمعة", time: "9h30 – 18h00" },
-    { fr: "Samedi",           en: "Saturday",          ar: "السبت",           time: "9h30 – 18h00" },
-    { fr: "Dimanche",         en: "Sunday",            ar: "الأحد",           time: "10h00 – 17h00" },
+    { fr: "Lundi – Vendredi", en: "Monday – Friday", ar: "الاثنين – الجمعة", es: "Lunes – Viernes", it: "Lunedì – Venerdì", ru: "Понедельник – Пятница", time: "9h30 – 18h00" },
+    { fr: "Samedi",           en: "Saturday",        ar: "السبت",           es: "Sábado",         it: "Sabato",          ru: "Суббота",              time: "9h30 – 18h00" },
+    { fr: "Dimanche",         en: "Sunday",          ar: "الأحد",           es: "Domingo",        it: "Domenica",        ru: "Воскресенье",          time: "10h00 – 17h00" },
   ], // « HORAIRES À CONFIRMER »
 
   /* --- Admission / prices -------------------------------- */
   prices: [
-    { fr: "Adulte",              en: "Adult",             ar: "بالغ",              value: "40 DH" },
-    { fr: "Enfant (–12 ans)",    en: "Child (under 12)",  ar: "طفل (أقل من 12)",   value: "20 DH" },
-    { fr: "Visite guidée / groupe", en: "Guided / group tour", ar: "زيارة موجّهة / مجموعة", value: "Sur demande" },
-  ], // « TARIFS À CONFIRMER »
+    { fr: "Adulte — Résident",     en: "Adult — Resident",     ar: "بالغ — مقيم",       es: "Adulto — Residente",    it: "Adulto — Residente",     ru: "Взрослый — резидент",   value: "20 DH" },
+    { fr: "Adulte — Non-résident", en: "Adult — Non-resident", ar: "بالغ — غير مقيم",   es: "Adulto — No residente", it: "Adulto — Non residente", ru: "Взрослый — нерезидент", value: "40 DH" },
+    { fr: "Enfant (–12 ans)",      en: "Child (under 12)",     ar: "طفل (أقل من 12)",   es: "Niño (–12 años)",       it: "Bambino (–12 anni)",     ru: "Ребёнок (до 12 лет)",   value: "10 DH" },
+  ],
 
 };
 
@@ -761,6 +789,9 @@ window.I18N = {
     "book.lang.fr": "Français",
     "book.lang.en": "Anglais",
     "book.lang.ar": "Arabe",
+    "book.lang.es": "Espagnol",
+    "book.lang.it": "Italien",
+    "book.lang.ru": "Russe",
     "book.msg": "Message (facultatif)",
     "book.msgph": "Une question, une occasion particulière, un groupe scolaire…",
     "book.submit": "Envoyer la demande",
@@ -858,6 +889,9 @@ window.I18N = {
     "book.lang.fr": "French",
     "book.lang.en": "English",
     "book.lang.ar": "Arabic",
+    "book.lang.es": "Spanish",
+    "book.lang.it": "Italian",
+    "book.lang.ru": "Russian",
     "book.msg": "Message (optional)",
     "book.msgph": "A question, a special occasion, a school group…",
     "book.submit": "Send request",
@@ -954,6 +988,9 @@ window.I18N = {
     "book.lang.fr": "الفرنسية",
     "book.lang.en": "الإنجليزية",
     "book.lang.ar": "العربية",
+    "book.lang.es": "الإسبانية",
+    "book.lang.it": "الإيطالية",
+    "book.lang.ru": "الروسية",
     "book.msg": "رسالة (اختياري)",
     "book.msgph": "سؤال، مناسبة خاصة، مجموعة مدرسية…",
     "book.submit": "إرسال الطلب",
@@ -971,6 +1008,279 @@ window.I18N = {
     "foot.follow": "تابعنا",
     "foot.rights": "جميع الحقوق محفوظة.",
     "foot.made": "مجموعة خاصة · معرض عرائس العالم",
+  },
+
+  es: {
+    "doc.title": "Poupées du Monde — Museo de muñecas, Medina de Rabat",
+    "doc.desc": "Una colección privada de más de 2500 muñecas con trajes folclóricos de más de 90 países, en un riad histórico de la Medina de Rabat. Visitas y reservas.",
+    "nav.home": "Inicio",
+    "nav.story": "Nuestra historia",
+    "nav.collection": "La colección",
+    "nav.gallery": "Galería",
+    "nav.info": "Información",
+    "nav.book": "Reservar una visita",
+    "nav.contact": "Contacto",
+    "hero.kicker": "Museo de muñecas · Medina de Rabat",
+    "hero.title": "Un viaje alrededor del mundo,<br>una muñeca a la vez",
+    "hero.sub": "Más de 2500 muñecas con trajes tradicionales de más de 90 países, reunidas en un riad centenario en el corazón de la medina.",
+    "hero.cta1": "Reservar una visita",
+    "hero.cta2": "Descubrir la colección",
+    "hero.scroll": "Desplázate",
+    "stat.dolls": "muñecas",
+    "stat.countries": "países representados",
+    "stat.riad": "riad histórico",
+    "stat.riadv": "1",
+    "story.kicker": "Nuestra historia",
+    "story.title": "Una colección nacida de la pasión por las culturas del mundo",
+    "story.p1": "Poupées du Monde es una colección privada reunida a lo largo de décadas: más de 2500 muñecas vestidas con auténticos trajes folclóricos de más de 90 países de los cinco continentes.",
+    "story.p2": "La exposición se encuentra en una casa tradicional marroquí. Se accede por un pintoresco patio-jardín, un remanso de paz lejos del bullicio de la medina, antes de recorrer las salas de la planta baja.",
+    "story.p3": "En la planta superior, una sección reúne más muñecas y delicadas miniaturas realizadas por la artista residente, la Sra. Haffar: escenas de la vida, tiendas y oficios recreados con un detalle asombroso.",
+    "story.tag1": "Colección privada",
+    "story.tag2": "Riad de la medina",
+    "story.tag3": "Miniaturas hechas a mano",
+    "exp.kicker": "La colección",
+    "exp.title": "Lo que vas a descubrir",
+    "exp.sub": "Tres universos por explorar, del patio sombreado a las vitrinas de los cinco continentes.",
+    "exp.c1.t": "Muñecas de los cinco continentes",
+    "exp.c1.d": "Trajes de Asia, América Latina, Europa y África: cada muñeca cuenta una región, una fiesta, un arte textil.",
+    "exp.c2.t": "El patio-jardín del riad",
+    "exp.c2.d": "Azulejos zellige, puertas talladas y vegetación: el marco marroquí que acoge la colección es una obra de arte en sí misma.",
+    "exp.c3.t": "Las miniaturas de la Sra. Haffar",
+    "exp.c3.d": "Una panadería, una jabonería, artesanos trabajando… dioramas minuciosos que recrean la vida de los zocos en miniatura.",
+    "gal.kicker": "Galería",
+    "gal.title": "Un vistazo a la colección",
+    "gal.sub": "Haz clic en una imagen para ampliarla.",
+    "gal.entrance": "La entrada tallada del riad",
+    "gal.courtyard": "El patio-jardín",
+    "gal.renaissance": "Muñeca con traje renacentista",
+    "gal.asia": "Muñecas de Asia en el patio",
+    "gal.ecuador": "Muñecas de Ecuador",
+    "gal.thuringia": "Muñeca de Turingia (Alemania)",
+    "gal.folk": "Muñeca con traje folclórico",
+    "gal.bakery": "Miniatura: la panadería",
+    "gal.soap": "Miniatura: la jabonería",
+    "gal.birdcage": "Jaula de pájaros pintada a mano",
+    "info.kicker": "Información",
+    "info.title": "Prepara tu visita",
+    "info.hours": "Horario de apertura",
+    "info.prices": "Tarifas",
+    "info.address": "Dirección",
+    "info.contact": "Contacto",
+    "info.mapbtn": "Ver en Google Maps",
+    "info.note": "Los horarios y las tarifas pueden variar; recomendamos reservar con antelación, especialmente para grupos.",
+    "book.kicker": "Reserva",
+    "book.title": "Reserva tu visita",
+    "book.sub": "Rellena el formulario y te confirmaremos la cita, o reserva al instante por WhatsApp.",
+    "book.name": "Nombre completo",
+    "book.email": "Correo electrónico",
+    "book.phone": "Teléfono (opcional)",
+    "book.date": "Fecha deseada",
+    "book.people": "Número de visitantes",
+    "book.lang": "Idioma de la visita",
+    "book.lang.fr": "Francés",
+    "book.lang.en": "Inglés",
+    "book.lang.ar": "Árabe",
+    "book.lang.es": "Español",
+    "book.lang.it": "Italiano",
+    "book.lang.ru": "Ruso",
+    "book.msg": "Mensaje (opcional)",
+    "book.msgph": "Una pregunta, una ocasión especial, un grupo escolar…",
+    "book.submit": "Enviar solicitud",
+    "book.or": "o",
+    "book.whatsapp": "Reservar por WhatsApp",
+    "book.success": "¡Gracias! Tu solicitud se ha enviado. Te responderemos muy pronto.",
+    "book.error": "Algo salió mal. Inténtalo de nuevo o contáctanos por WhatsApp.",
+    "book.sending": "Enviando…",
+    "book.reqname": "Por favor, introduce tu nombre.",
+    "book.reqemail": "Por favor, introduce un correo válido.",
+    "foot.tag": "Museo de muñecas del mundo — Medina de Rabat, Marruecos.",
+    "foot.explore": "Explorar",
+    "foot.visit": "Visitar",
+    "foot.follow": "Síguenos",
+    "foot.rights": "Todos los derechos reservados.",
+    "foot.made": "Colección privada · Exposición Poupées du Monde",
+  },
+
+  it: {
+    "doc.title": "Poupées du Monde — Museo delle bambole, Medina di Rabat",
+    "doc.desc": "Una collezione privata di oltre 2500 bambole in costumi folkloristici di più di 90 paesi, in un riad storico nella Medina di Rabat. Visite e prenotazioni.",
+    "nav.home": "Home",
+    "nav.story": "La nostra storia",
+    "nav.collection": "La collezione",
+    "nav.gallery": "Galleria",
+    "nav.info": "Informazioni",
+    "nav.book": "Prenota una visita",
+    "nav.contact": "Contatti",
+    "hero.kicker": "Museo delle bambole · Medina di Rabat",
+    "hero.title": "Un viaggio intorno al mondo,<br>una bambola alla volta",
+    "hero.sub": "Oltre 2500 bambole in costumi tradizionali di più di 90 paesi, riunite in un riad secolare nel cuore della medina.",
+    "hero.cta1": "Prenota una visita",
+    "hero.cta2": "Scopri la collezione",
+    "hero.scroll": "Scorri",
+    "stat.dolls": "bambole",
+    "stat.countries": "paesi rappresentati",
+    "stat.riad": "riad storico",
+    "stat.riadv": "1",
+    "story.kicker": "La nostra storia",
+    "story.title": "Una collezione nata dalla passione per le culture del mondo",
+    "story.p1": "Poupées du Monde è una collezione privata raccolta nel corso di decenni: oltre 2500 bambole vestite con autentici costumi folkloristici di più di 90 paesi dei cinque continenti.",
+    "story.p2": "L'esposizione si trova in una tradizionale casa marocchina. Vi si accede attraverso un pittoresco patio-giardino, un'oasi di pace lontano dal trambusto della medina, prima di percorrere le sale al piano terra.",
+    "story.p3": "Al piano superiore, una sezione riunisce altre bambole e delicate miniature realizzate dall'artista residente, la signora Haffar: scene di vita, botteghe e mestieri ricreati con un dettaglio sorprendente.",
+    "story.tag1": "Collezione privata",
+    "story.tag2": "Riad della medina",
+    "story.tag3": "Miniature fatte a mano",
+    "exp.kicker": "La collezione",
+    "exp.title": "Cosa scoprirai",
+    "exp.sub": "Tre mondi da esplorare, dal patio ombreggiato alle vetrine dei cinque continenti.",
+    "exp.c1.t": "Bambole dei cinque continenti",
+    "exp.c1.d": "Costumi da Asia, America Latina, Europa e Africa: ogni bambola racconta una regione, una festa, un'arte tessile.",
+    "exp.c2.t": "Il patio-giardino del riad",
+    "exp.c2.d": "Zellige, porte intagliate e verde: la cornice marocchina che accoglie la collezione è un'opera d'arte a sé.",
+    "exp.c3.t": "Le miniature della signora Haffar",
+    "exp.c3.d": "Un forno, una saponeria, artigiani al lavoro… diorami minuziosi che ricreano la vita dei souk in miniatura.",
+    "gal.kicker": "Galleria",
+    "gal.title": "Uno sguardo alla collezione",
+    "gal.sub": "Tocca un'immagine per ingrandirla.",
+    "gal.entrance": "L'ingresso intagliato del riad",
+    "gal.courtyard": "Il patio-giardino",
+    "gal.renaissance": "Bambola in costume rinascimentale",
+    "gal.asia": "Bambole asiatiche nel patio",
+    "gal.ecuador": "Bambole dell'Ecuador",
+    "gal.thuringia": "Bambola della Turingia (Germania)",
+    "gal.folk": "Bambola in costume folkloristico",
+    "gal.bakery": "Miniatura: il forno",
+    "gal.soap": "Miniatura: la saponeria",
+    "gal.birdcage": "Gabbia per uccelli dipinta a mano",
+    "info.kicker": "Informazioni",
+    "info.title": "Prepara la tua visita",
+    "info.hours": "Orari di apertura",
+    "info.prices": "Tariffe",
+    "info.address": "Indirizzo",
+    "info.contact": "Contatti",
+    "info.mapbtn": "Vedi su Google Maps",
+    "info.note": "Orari e tariffe possono variare; consigliamo di prenotare in anticipo, soprattutto per i gruppi.",
+    "book.kicker": "Prenotazione",
+    "book.title": "Prenota la tua visita",
+    "book.sub": "Compila il modulo e ti confermeremo l'appuntamento, oppure prenota subito su WhatsApp.",
+    "book.name": "Nome completo",
+    "book.email": "Email",
+    "book.phone": "Telefono (facoltativo)",
+    "book.date": "Data desiderata",
+    "book.people": "Numero di visitatori",
+    "book.lang": "Lingua della visita",
+    "book.lang.fr": "Francese",
+    "book.lang.en": "Inglese",
+    "book.lang.ar": "Arabo",
+    "book.lang.es": "Spagnolo",
+    "book.lang.it": "Italiano",
+    "book.lang.ru": "Russo",
+    "book.msg": "Messaggio (facoltativo)",
+    "book.msgph": "Una domanda, un'occasione speciale, una gita scolastica…",
+    "book.submit": "Invia richiesta",
+    "book.or": "oppure",
+    "book.whatsapp": "Prenota su WhatsApp",
+    "book.success": "Grazie! La tua richiesta è stata inviata. Ti risponderemo al più presto.",
+    "book.error": "Qualcosa è andato storto. Riprova o contattaci su WhatsApp.",
+    "book.sending": "Invio…",
+    "book.reqname": "Inserisci il tuo nome.",
+    "book.reqemail": "Inserisci un'email valida.",
+    "foot.tag": "Museo delle bambole del mondo — Medina di Rabat, Marocco.",
+    "foot.explore": "Esplora",
+    "foot.visit": "Visita",
+    "foot.follow": "Seguici",
+    "foot.rights": "Tutti i diritti riservati.",
+    "foot.made": "Collezione privata · Esposizione Poupées du Monde",
+  },
+
+  ru: {
+    "doc.title": "Poupées du Monde — Музей кукол, медина Рабата",
+    "doc.desc": "Частная коллекция из более чем 2500 кукол в народных костюмах из более чем 90 стран, в историческом риаде в медине Рабата. Посещения и бронирование.",
+    "nav.home": "Главная",
+    "nav.story": "Наша история",
+    "nav.collection": "Коллекция",
+    "nav.gallery": "Галерея",
+    "nav.info": "Информация",
+    "nav.book": "Забронировать визит",
+    "nav.contact": "Контакты",
+    "hero.kicker": "Музей кукол · медина Рабата",
+    "hero.title": "Путешествие вокруг света,<br>кукла за куклой",
+    "hero.sub": "Более 2500 кукол в традиционных костюмах из более чем 90 стран, собранные в старинном риаде в сердце медины.",
+    "hero.cta1": "Забронировать визит",
+    "hero.cta2": "Открыть коллекцию",
+    "hero.scroll": "Прокрутите",
+    "stat.dolls": "кукол",
+    "stat.countries": "стран представлено",
+    "stat.riad": "исторический риад",
+    "stat.riadv": "1",
+    "story.kicker": "Наша история",
+    "story.title": "Коллекция, рождённая любовью к культурам мира",
+    "story.p1": "Poupées du Monde — частная коллекция, собранная за десятилетия: более 2500 кукол в подлинных народных костюмах из более чем 90 стран пяти континентов.",
+    "story.p2": "Экспозиция расположена в традиционном марокканском доме. Вход через живописный внутренний двор-сад — тихий уголок вдали от суеты медины, — а затем залы на первом этаже.",
+    "story.p3": "На верхнем этаже собраны другие куклы и изящные миниатюры работы художницы-резидента госпожи Хаффар: сцены быта, лавки и ремёсла, воссозданные с поразительной точностью.",
+    "story.tag1": "Частная коллекция",
+    "story.tag2": "Риад в медине",
+    "story.tag3": "Миниатюры ручной работы",
+    "exp.kicker": "Коллекция",
+    "exp.title": "Что вы увидите",
+    "exp.sub": "Три мира для знакомства — от тенистого двора до витрин пяти континентов.",
+    "exp.c1.t": "Куклы пяти континентов",
+    "exp.c1.d": "Костюмы Азии, Латинской Америки, Европы и Африки — каждая кукла рассказывает о регионе, празднике, текстильном ремесле.",
+    "exp.c2.t": "Двор-сад риада",
+    "exp.c2.d": "Зеллидж, резные двери и зелень: марокканский интерьер, где размещена коллекция, — само по себе произведение искусства.",
+    "exp.c3.t": "Миниатюры госпожи Хаффар",
+    "exp.c3.d": "Пекарня, мыловарня, ремесленники за работой… тщательные диорамы, воссоздающие жизнь базаров в миниатюре.",
+    "gal.kicker": "Галерея",
+    "gal.title": "Взгляд на коллекцию",
+    "gal.sub": "Нажмите на изображение, чтобы увеличить.",
+    "gal.entrance": "Резной вход в риад",
+    "gal.courtyard": "Двор-сад",
+    "gal.renaissance": "Кукла в костюме эпохи Возрождения",
+    "gal.asia": "Азиатские куклы во дворе",
+    "gal.ecuador": "Куклы из Эквадора",
+    "gal.thuringia": "Кукла из Тюрингии (Германия)",
+    "gal.folk": "Кукла в народном костюме",
+    "gal.bakery": "Миниатюра: пекарня",
+    "gal.soap": "Миниатюра: мыловарня",
+    "gal.birdcage": "Расписная клетка для птиц",
+    "info.kicker": "Информация",
+    "info.title": "Планируйте визит",
+    "info.hours": "Часы работы",
+    "info.prices": "Стоимость",
+    "info.address": "Адрес",
+    "info.contact": "Контакты",
+    "info.mapbtn": "Открыть в Google Maps",
+    "info.note": "Часы работы и цены могут меняться — рекомендуем бронировать заранее, особенно для групп.",
+    "book.kicker": "Бронирование",
+    "book.title": "Забронируйте визит",
+    "book.sub": "Заполните форму, и мы подтвердим время, или забронируйте мгновенно в WhatsApp.",
+    "book.name": "Полное имя",
+    "book.email": "Эл. почта",
+    "book.phone": "Телефон (необязательно)",
+    "book.date": "Желаемая дата",
+    "book.people": "Количество посетителей",
+    "book.lang": "Язык экскурсии",
+    "book.lang.fr": "Французский",
+    "book.lang.en": "Английский",
+    "book.lang.ar": "Арабский",
+    "book.lang.es": "Испанский",
+    "book.lang.it": "Итальянский",
+    "book.lang.ru": "Русский",
+    "book.msg": "Сообщение (необязательно)",
+    "book.msgph": "Вопрос, особый повод, школьная группа…",
+    "book.submit": "Отправить заявку",
+    "book.or": "или",
+    "book.whatsapp": "Забронировать в WhatsApp",
+    "book.success": "Спасибо! Ваша заявка отправлена. Мы скоро свяжемся с вами.",
+    "book.error": "Что-то пошло не так. Попробуйте снова или напишите нам в WhatsApp.",
+    "book.sending": "Отправка…",
+    "book.reqname": "Пожалуйста, укажите ваше имя.",
+    "book.reqemail": "Пожалуйста, введите корректный адрес эл. почты.",
+    "foot.tag": "Музей кукол мира — медина Рабата, Марокко.",
+    "foot.explore": "Обзор",
+    "foot.visit": "Посещение",
+    "foot.follow": "Мы в соцсетях",
+    "foot.rights": "Все права защищены.",
+    "foot.made": "Частная коллекция · Экспозиция Poupées du Monde",
   },
 };
 
@@ -1009,18 +1319,34 @@ window.I18N = {
     // <title> + meta description
     if (dict["doc.title"]) document.title = dict["doc.title"];
 
-    // active state on switch
-    $$(".lang-switch button").forEach((b) =>
-      b.classList.toggle("is-active", b.dataset.lang === lang)
-    );
+    // active state + current label on the language dropdown
+    const menuBtns = $$("#lang-menu button");
+    menuBtns.forEach((b) => b.classList.toggle("is-active", b.dataset.lang === lang));
+    const active = menuBtns.find((b) => b.dataset.lang === lang);
+    const cur = $("#lang-current");
+    if (cur && active) cur.textContent = active.dataset.code || lang.toUpperCase();
 
     renderConfigContent();
     localStorage.setItem("pdm_lang", lang);
   }
 
-  $$(".lang-switch button").forEach((btn) =>
-    btn.addEventListener("click", () => { lang = btn.dataset.lang; applyLang(); })
+  const langSwitch = $("#lang-switch"), langToggle = $("#lang-toggle");
+  function closeLangMenu() {
+    if (langSwitch) langSwitch.classList.remove("open");
+    if (langToggle) langToggle.setAttribute("aria-expanded", "false");
+  }
+  if (langToggle) langToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = !langSwitch.classList.contains("open");
+    langSwitch.classList.toggle("open", open);
+    langToggle.setAttribute("aria-expanded", String(open));
+  });
+  $$("#lang-menu button").forEach((btn) =>
+    btn.addEventListener("click", () => { lang = btn.dataset.lang; applyLang(); closeLangMenu(); })
   );
+  document.addEventListener("click", (e) => {
+    if (langSwitch && !langSwitch.contains(e.target)) closeLangMenu();
+  });
 
   /* ---------------- Inject config-driven content ---------------- */
   function pickLabel(obj) { return obj[lang] || obj.fr || obj.en || ""; }

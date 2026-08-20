@@ -31,18 +31,34 @@
     // <title> + meta description
     if (dict["doc.title"]) document.title = dict["doc.title"];
 
-    // active state on switch
-    $$(".lang-switch button").forEach((b) =>
-      b.classList.toggle("is-active", b.dataset.lang === lang)
-    );
+    // active state + current label on the language dropdown
+    const menuBtns = $$("#lang-menu button");
+    menuBtns.forEach((b) => b.classList.toggle("is-active", b.dataset.lang === lang));
+    const active = menuBtns.find((b) => b.dataset.lang === lang);
+    const cur = $("#lang-current");
+    if (cur && active) cur.textContent = active.dataset.code || lang.toUpperCase();
 
     renderConfigContent();
     localStorage.setItem("pdm_lang", lang);
   }
 
-  $$(".lang-switch button").forEach((btn) =>
-    btn.addEventListener("click", () => { lang = btn.dataset.lang; applyLang(); })
+  const langSwitch = $("#lang-switch"), langToggle = $("#lang-toggle");
+  function closeLangMenu() {
+    if (langSwitch) langSwitch.classList.remove("open");
+    if (langToggle) langToggle.setAttribute("aria-expanded", "false");
+  }
+  if (langToggle) langToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = !langSwitch.classList.contains("open");
+    langSwitch.classList.toggle("open", open);
+    langToggle.setAttribute("aria-expanded", String(open));
+  });
+  $$("#lang-menu button").forEach((btn) =>
+    btn.addEventListener("click", () => { lang = btn.dataset.lang; applyLang(); closeLangMenu(); })
   );
+  document.addEventListener("click", (e) => {
+    if (langSwitch && !langSwitch.contains(e.target)) closeLangMenu();
+  });
 
   /* ---------------- Inject config-driven content ---------------- */
   function pickLabel(obj) { return obj[lang] || obj.fr || obj.en || ""; }
