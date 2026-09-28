@@ -11,3 +11,9 @@ gcc-steel-leads/section3_email_only_export.csv
 gcc-steel-leads/rejection_and_reserve_log.csv
 gcc-steel-leads/GCC_Steel_Leads_ALL_IN_ONE_200.csv
 gcc-steel-leads/GCC_Steel_Leads_ALL_IN_ONE_200.xlsx
+# GCC cement leads – contact-level PII never committed (public repo)
+gcc-cement-leads/*.xlsx
+gcc-cement-leads/1_*.csv
+gcc-cement-leads/2_*.csv
+gcc-cement-leads/3_*.csv
+gcc-cement-leads/4_*.csv
