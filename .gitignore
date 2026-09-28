@@ -1,2 +1,11 @@
 node_modules/
 .DS_Store
+
+# GCC steel lead files containing personal contact data – kept out of the public repo
+gcc-steel-leads/GCC_Steel_ColdCall_Database.xlsx
+gcc-steel-leads/section1_top50_coldcall_targets.csv
+gcc-steel-leads/section1b_top50_phone_contacts.csv
+gcc-steel-leads/section2_database_200_netnew_contacts.csv
+gcc-steel-leads/section2b_master_32_fields.csv
+gcc-steel-leads/section3_email_only_export.csv
+gcc-steel-leads/rejection_and_reserve_log.csv

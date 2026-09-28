@@ -1,0 +1,66 @@
+Metric,Value
+Total companies researched (Apollo company search pool),856
+Companies passing SIC/NAICS/keyword steel screen,306
+Companies qualified after manual review (searched for contacts),195
+"Companies with at least one verified, relevant, net-new contact",115
+Companies in final 200-contact database,115
+"Total prospects researched (people search results, verified-email filter)",531
+Prospects pre-selected for enrichment,248
+Existing Apollo contacts found among prospects (person ID / email / LinkedIn / name+company),0
+Existing contacts removed,0
+Duplicate contacts removed,0
+Enrichment misses (no Apollo match),2
+Unverified / unavailable emails removed,1
+Wrong-industry contacts removed after enrichment,9
+Net-new qualified contacts with Apollo-verified email,231
+Held in reserve (over the 200 cap / more than 3 per company),31
+Final contacts delivered,200
+Final contacts with verified email,200
+Final contacts with any phone,162
+Final contacts with direct/mobile phone (Apollo reveal),39
+Final contacts with company phone only,122
+Phone reveals attempted / successful,50 / 40
+Apollo credits used (lead credits),634 (22 company searches + 246 email enrichments + 49 re-match on reveal + ~320 phone reveals at 8 each)
+Existing GCC contacts in account checked against,347
+,
+Final qualified contacts by country,
+Saudi Arabia,104
+United Arab Emirates,66
+Qatar,8
+Kuwait,5
+Oman,9
+Bahrain,8
+,
+Final companies by country,
+Saudi Arabia,56
+United Arab Emirates,39
+Qatar,8
+Kuwait,3
+Oman,5
+Bahrain,4
+,
+Tier distribution,
+TIER A,119
+TIER B,66
+TIER C,15
+,
+Companies excluded – breakdown,
+Too small (<50 employees; filtered at search level),Filtered by Apollo headcount filter (51+); not counted individually
+Companies with 50-99 employees kept (genuine plants; scored lower on fit/scale),34
+Too large (EMSTEEL / Emirates Steel Arkan),1
+Distributor/trader,54
+"Wrong industry (aluminium, glass, cables, shipyards, cement, holdings, contractors, consultancies, other)",496
+"Manually excluded after code screen (marginal steel relevance, aluminium extruders, doors/facades, PEB-only contractors, etc.)",112
+"Wrong industry discovered after enrichment (HVAC ducts, architectural metal, cable trays, BMU)",6
+No Apollo record,0
+"No suitable verified contact (qualified company, no relevant title with Apollo-verified email)",72
+"Duplicate company records consolidated (Jindal Shadeed/Jindal Steel Oman, Al Jazeera/Jazeera Steel, EMSTEEL x3, Foulath/Bahrain Steel/SULB, Tenaris x2, Al Tuwairqi/Watani, Solb/Solb Tihama)",7 groups
+,
+Existing-contact rejection log,
+Existing Apollo contacts encountered,0
+Existing contacts excluded,0
+Duplicate emails excluded,0
+Duplicate LinkedIn profiles excluded,0
+Duplicate name/company matches excluded,0
+Existing contacts in account used for exclusion,754
+Existing accounts in account (companies) noted,8
