@@ -1,0 +1,25 @@
+{
+  "name": "rea",
+  "version": "6.7.0",
+  "description": "REA (Reverse Engineer Anything): MCP server plus workflow skill for analyzing native binaries, Electron/JavaScript apps, .NET assemblies, Android APKs, firmware, and websites.",
+  "author": {
+    "name": "morluto"
+  },
+  "homepage": "https://github.com/morluto/rea",
+  "repository": "https://github.com/morluto/rea",
+  "license": "MIT",
+  "keywords": [
+    "reverse-engineering",
+    "binary-analysis",
+    "decompiler",
+    "mcp-server",
+    "ghidra",
+    "hopper",
+    "ida",
+    "electron",
+    "javascript-analysis",
+    "static-analysis"
+  ],
+  "skills": "./skills",
+  "mcpServers": "./.mcp.json"
+}

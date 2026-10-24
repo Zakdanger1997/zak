@@ -41,12 +41,22 @@ salesably-marketplace/
 │       ├── follow-up-emails/
 │       ├── multithread-outreach/
 │       └── sales-orchestrator/
+├── rea/                     # REA plugin (MCP server + 1 skill, vendored from morluto/rea)
+│   ├── .claude-plugin/
+│   │   └── plugin.json
+│   ├── .mcp.json            # Launches `npx -y rea-agents@<version> mcp`
+│   ├── LICENSE              # Upstream MIT license
+│   ├── README.md
+│   └── skills/
+│       └── reverse-engineer-anything/   # SKILL.md + references/ copied from upstream
 └── README.md                # Marketplace installation instructions
 ```
 
 ## Key Concepts
 
 **Marketplace vs Plugin**: The root directory is a marketplace container. Individual plugins (like `marketing-skills`, `sales-skills`) live in subdirectories with their own `plugin.json`.
+
+**Vendored plugins**: `rea/` wraps the upstream [morluto/rea](https://github.com/morluto/rea) project. Its skill folder is a verbatim copy of upstream `.agents/skills/reverse-engineer-anything/`; to upgrade, bump the pinned `rea-agents` version in `rea/.mcp.json` and `rea/.claude-plugin/plugin.json`, then re-copy the skill folder. Do not hand-edit the copied SKILL.md.
 
 **Skills**: Each skill is a markdown file (`SKILL.md`) with YAML frontmatter containing `name` and `description`. The markdown body provides detailed instructions Claude uses when the skill is invoked.
 

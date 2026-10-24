@@ -19,6 +19,14 @@
       "description": "9 specialized sales skills: deal qualification, prospect research, call preparation, and stakeholder engagement.",
       "source": "./sales-skills",
       "category": "sales"
+    },
+    {
+      "name": "rea",
+      "description": "REA (Reverse Engineer Anything): MCP server plus workflow skill for analyzing binaries, Electron/JavaScript apps, .NET assemblies, APKs, firmware, and websites.",
+      "source": "./rea",
+      "category": "engineering",
+      "homepage": "https://github.com/morluto/rea",
+      "license": "MIT"
     }
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://anthropic.com/schemas/mcp-config.json",
+  "mcpServers": {
+    "rea": {
+      "command": "npx",
+      "args": ["-y", "rea-agents@6.7.0", "mcp"]
+    }
+  }
+}
