@@ -25,6 +25,8 @@ Built by [Salesably.ai](https://salesably.ai).
 | **[sales-skills](./sales-skills)** | 9 specialized sales skills: deal qualification, prospect research, call preparation, and stakeholder engagement |
 | **[rea](./rea)** | REA (Reverse Engineer Anything): MCP server plus workflow skill for analyzing binaries, Electron/JavaScript apps, .NET assemblies, APKs, firmware, and websites |
 
+The repository also hosts **[imak-reduktor-secim](./imak-reduktor-secim)**, a stand-alone browser-based gearbox selection program for i.Mak Redüktör built from their public catalogue tables (not a Claude Code plugin; open `imak-reduktor-secim/index.html`).
+
 ## Installation
 
 1. **Add the marketplace:**

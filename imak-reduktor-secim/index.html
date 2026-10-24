@@ -1,0 +1,852 @@
+<title>i.Mak Redüktör Seçimi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a dark steel header band, a four-step rail, one working card per step, results as a dense engineering table. */
+:root {
+  --bg: #eef0f3;            /* cool steel-grey ground */
+  --panel: #ffffff;
+  --panel-2: #f6f7f9;
+  --fg: #1a1f26;
+  --muted: #5e6873;
+  --line: #d3d9e0;
+  --line-strong: #aab3bd;
+  --accent: #920000;        /* i.Mak red */
+  --accent-ink: #ffffff;
+  --accent-soft: #f6e6e6;
+  --band: #23292f;          /* header steel */
+  --band-ink: #f2f4f6;
+  --ok: #1d7a3d;
+  --ok-soft: #e3f3e8;
+  --warn: #9a5b00;
+  --warn-soft: #fbefd9;
+  --bad: #b3261e;
+  --bad-soft: #fbe4e2;
+  --focus: #2c5aa0;
+  --display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --body: "Barlow", "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14181c; --panel: #1d2227; --panel-2: #242a30; --fg: #e6eaee; --muted: #9ba5af;
+    --line: #313941; --line-strong: #4a545e; --accent: #e0574a; --accent-ink: #14181c; --accent-soft: #3a2422;
+    --band: #0f1316; --band-ink: #f2f4f6; --ok: #5fc27f; --ok-soft: #1c3324; --warn: #e1a94a; --warn-soft: #3a2f16;
+    --bad: #ef7b72; --bad-soft: #40201e; --focus: #7aa7e8; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14181c; --panel: #1d2227; --panel-2: #242a30; --fg: #e6eaee; --muted: #9ba5af;
+  --line: #313941; --line-strong: #4a545e; --accent: #e0574a; --accent-ink: #14181c; --accent-soft: #3a2422;
+  --band: #0f1316; --band-ink: #f2f4f6; --ok: #5fc27f; --ok-soft: #1c3324; --warn: #e1a94a; --warn-soft: #3a2f16;
+  --bad: #ef7b72; --bad-soft: #40201e; --focus: #7aa7e8; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--band); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: 0.01em; }
+h1 { font-size: 1.9rem; font-weight: 600; line-height: 1.05; }
+h2 { font-size: 1.35rem; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+a { color: var(--accent); }
+.num, td.n, .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* header band */
+.band { background: var(--band); color: var(--band-ink); }
+.band .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding-block: 16px; }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.mark { font-family: var(--display); font-weight: 700; font-size: 1.6rem; letter-spacing: 0.02em; background: var(--accent); color: #fff; padding: 2px 10px; border-radius: 3px; }
+.brand p { margin: 2px 0 0; color: #b7c0c9; font-size: 0.9rem; }
+.band .tools { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid #4a545e; border-radius: 4px; overflow: hidden; }
+.seg button { background: transparent; color: var(--band-ink); border: 0; padding: 6px 12px; font: inherit; font-weight: 600; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--band-ink); color: var(--band); }
+.seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+
+/* step rail */
+.rail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-block: 18px 14px; }
+.rail button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; border: 1px solid var(--line); border-bottom: 3px solid var(--line-strong); background: var(--panel); color: var(--fg); padding: 10px 12px; font: inherit; cursor: pointer; border-radius: 4px; min-width: 0; }
+.rail button .k { font-family: var(--display); font-size: 0.85rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.rail button .t { font-family: var(--display); font-size: 1.15rem; font-weight: 600; line-height: 1.1; }
+.rail button[aria-current="step"] { border-bottom-color: var(--accent); }
+.rail button.done .k::after { content: " ✓"; color: var(--ok); }
+.rail button:focus-visible { outline: 2px solid var(--focus); }
+
+/* summary strip */
+.strip { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 10px 14px; border: 1px dashed var(--line-strong); border-radius: 4px; background: var(--panel-2); margin-bottom: 14px; font-size: 0.92rem; }
+.strip span b { font-family: var(--mono); font-weight: 500; }
+.strip .lbl { color: var(--muted); }
+
+/* cards and forms */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 18px; min-width: 0; }
+.strip { min-width: 0; }
+.card + .card { margin-top: 14px; }
+.card header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+.card header p { margin: 0; color: var(--muted); max-width: 65ch; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px 18px; }
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field > label, .field > .lab { font-weight: 600; font-size: 0.9rem; }
+.field .hint { color: var(--muted); font-size: 0.82rem; }
+select, input[type="number"], input[type="text"], textarea { font: inherit; color: var(--fg); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 4px; padding: 8px 10px; width: 100%; min-width: 0; }
+input[type="number"] { font-family: var(--mono); }
+select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.inline input[type="number"] { width: 9em; }
+.unit { color: var(--muted); font-size: 0.9rem; }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.choices label { border: 1px solid var(--line-strong); border-radius: 4px; padding: 6px 10px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; background: var(--panel); }
+.choices input { margin: 0; }
+.choices label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.famgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.fam { border: 1px solid var(--line-strong); border-radius: 5px; padding: 10px 12px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; background: var(--panel); min-width: 0; }
+.fam input { position: absolute; opacity: 0; pointer-events: none; }
+.fam:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+.fam:has(input:focus-visible) { outline: 2px solid var(--focus); }
+.fam .code { font-family: var(--display); font-size: 1.3rem; font-weight: 700; }
+.fam .name { font-size: 0.9rem; }
+.fam .rng { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+.fam.off { opacity: 0.55; cursor: default; }
+.kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+.kpi div { background: var(--panel-2); border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 0 4px 4px 0; }
+.kpi .v { font-family: var(--mono); font-size: 1.35rem; font-weight: 500; }
+.kpi .l { color: var(--muted); font-size: 0.82rem; }
+.nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 16px; }
+button.btn { font: inherit; font-weight: 600; border-radius: 4px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--line-strong); background: var(--panel); color: var(--fg); }
+button.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.btn.small { padding: 5px 10px; font-size: 0.85rem; font-weight: 500; }
+.note { color: var(--muted); font-size: 0.86rem; margin: 10px 0 0; max-width: 75ch; }
+.badge { display: inline-block; border-radius: 3px; padding: 1px 7px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.03em; }
+.badge.ok { background: var(--ok-soft); color: var(--ok); }
+.badge.warn { background: var(--warn-soft); color: var(--warn); }
+.badge.bad { background: var(--bad-soft); color: var(--bad); }
+.badge.cls { background: var(--panel-2); color: var(--fg); border: 1px solid var(--line-strong); font-family: var(--mono); }
+
+/* reference tables */
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { font-family: var(--display); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.8rem; color: var(--muted); border-bottom: 2px solid var(--line-strong); }
+td.n, th.n { text-align: right; }
+td.hl { background: var(--accent-soft); font-weight: 600; }
+.results tbody tr { cursor: pointer; }
+.results tbody tr:hover { background: var(--panel-2); }
+.results tbody tr[aria-selected="true"] { background: var(--accent-soft); }
+.results tbody tr.rec td:first-child { border-left: 3px solid var(--accent); }
+.results tbody tr.dim { color: var(--muted); }
+
+/* detail sheet */
+.sheet { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px 24px; }
+.sheet > div { min-width: 0; }
+.sheet .desig { font-family: var(--display); font-size: 1.8rem; font-weight: 700; line-height: 1.05; }
+.sheet .sub { color: var(--muted); margin: 4px 0 12px; }
+dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0; font-size: 0.92rem; min-width: 0; }
+dd { min-width: 0; overflow-wrap: anywhere; }
+dt { color: var(--muted); }
+dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.variants { display: flex; flex-direction: column; gap: 6px; }
+.variants div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; min-width: 0; }
+.variants .code { font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
+pre.spec { background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; font-family: var(--mono); font-size: 0.82rem; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.empty { padding: 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line-strong); border-radius: 4px; }
+footer.foot { color: var(--muted); font-size: 0.82rem; padding-block: 24px 30px; max-width: 80ch; }
+footer.foot p { margin: 6px 0; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--band); color: var(--band-ink); padding: 8px 14px; border-radius: 4px; font-size: 0.9rem; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+@media (max-width: 720px) {
+  .rail { grid-template-columns: repeat(2, 1fr); }
+  .sheet { grid-template-columns: 1fr; }
+  h1 { font-size: 1.5rem; }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div class="brand">
+      <span class="mark">i.Mak</span>
+      <div>
+        <h1 data-i18n="title">Redüktör Seçim Programı</h1>
+        <p data-i18n="subtitle">IR · IRK · YP · IRS · IRSD · S serileri — katalog güç/devir tablolarından seçim</p>
+      </div>
+    </div>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Language">
+        <button type="button" id="lang-tr" aria-pressed="true">TR</button>
+        <button type="button" id="lang-en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="rail" aria-label="Steps">
+    <button type="button" data-step="1" aria-current="step"><span class="k" data-i18n="step1k">Adım 1</span><span class="t" data-i18n="step1">Çalışma koşulları</span></button>
+    <button type="button" data-step="2"><span class="k" data-i18n="step2k">Adım 2</span><span class="t" data-i18n="step2">Tahrik verileri</span></button>
+    <button type="button" data-step="3"><span class="k" data-i18n="step3k">Adım 3</span><span class="t" data-i18n="step3">Kuvvetler ve opsiyonlar</span></button>
+    <button type="button" data-step="4"><span class="k" data-i18n="step4k">Adım 4</span><span class="t" data-i18n="step4">Sonuç</span></button>
+  </nav>
+
+  <div class="strip" id="strip" aria-live="polite"></div>
+
+  <!-- STEP 1 -->
+  <section class="card" id="step-1">
+    <header>
+      <h2 data-i18n="s1h">Uygulama ve çalışma koşulları</h2>
+      <p data-i18n="s1p">Servis faktörü (fs), i.Mak kataloğundaki yükleme karakteristiği tablosundan tahrik makinesi, günlük çalışma süresi ve makinenin yük sınıfına göre belirlenir.</p>
+    </header>
+    <div class="grid">
+      <div class="field">
+        <label for="appGroup" data-i18n="appGroup">Uygulama grubu</label>
+        <select id="appGroup"></select>
+      </div>
+      <div class="field">
+        <label for="app" data-i18n="app">Tahrik edilen makine</label>
+        <select id="app"></select>
+        <span class="hint" id="appCls"></span>
+      </div>
+      <div class="field">
+        <span class="lab" data-i18n="loadClass">Yük sınıfı</span>
+        <div class="choices" id="loadChoices">
+          <label><input type="radio" name="load" value="U"> <span data-i18n="loadU">U · Düzgün yük</span></label>
+          <label><input type="radio" name="load" value="M" checked> <span data-i18n="loadM">M · Orta darbeli</span></label>
+          <label><input type="radio" name="load" value="H"> <span data-i18n="loadH">H · Ağır darbeli</span></label>
+        </div>
+        <span class="hint" data-i18n="loadHint">Makine seçildiğinde katalog sınıfı otomatik gelir; gerekirse değiştirin.</span>
+      </div>
+      <div class="field">
+        <label for="prime" data-i18n="prime">Tahrik makinesi</label>
+        <select id="prime">
+          <option value="motor" data-i18n="primeMotor">Elektrik motoru / türbin</option>
+          <option value="p46" data-i18n="primeP46">Pistonlu motor, 4–6 silindir</option>
+          <option value="p12" data-i18n="primeP12">Pistonlu motor, 1–2 silindir</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="hours" data-i18n="hours">Günlük çalışma süresi</label>
+        <select id="hours">
+          <option value="0">0 – 3 h</option>
+          <option value="1" selected>3 – 10 h</option>
+          <option value="2">10 – 24 h</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fsOverride" data-i18n="fsOverride">Servis faktörü (elle)</label>
+        <div class="inline"><input type="number" id="fsOverride" min="0.5" max="5" step="0.05" placeholder="—"> <span class="unit" data-i18n="fsOverrideHint">boş bırakılırsa tablo değeri kullanılır</span></div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div><div class="v" id="fsVal">1.25</div><div class="l" data-i18n="fsReq">Gerekli servis faktörü fs</div></div>
+      <div><div class="v" id="clsVal">M</div><div class="l" data-i18n="clsL">Yük sınıfı</div></div>
+    </div>
+    <h3 style="margin-top:18px" data-i18n="fsTableH">Servis faktörü tablosu (i.Mak kataloğu)</h3>
+    <div class="tbl"><table id="fsTable"></table></div>
+    <div class="nav"><span></span><button type="button" class="btn primary" data-go="2" data-i18n="next">İleri</button></div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card" id="step-2" hidden>
+    <header>
+      <h2 data-i18n="s2h">Redüktör ailesi ve tahrik verileri</h2>
+      <p data-i18n="s2p">Seçim, katalogdaki güç/devir tablolarının satırlarından yapılır: çıkış devri toleransa uyan ve servis faktörü yeterli olan satırlar listelenir.</p>
+    </header>
+    <div class="field" style="margin-bottom:14px">
+      <span class="lab" data-i18n="family">Redüktör ailesi</span>
+      <div class="famgrid" id="famgrid"></div>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <span class="lab" data-i18n="drive">Tahrik şekli</span>
+        <div class="choices">
+          <label><input type="radio" name="drive" value="motor" checked> <span data-i18n="driveMotor">Motorlu redüktör</span></label>
+          <label><input type="radio" name="drive" value="unit"> <span data-i18n="driveUnit">Motorsuz redüktör (giriş devri ile)</span></label>
+        </div>
+      </div>
+      <div class="field" id="fInputMode">
+        <span class="lab" data-i18n="given">Verilen büyüklük</span>
+        <div class="choices">
+          <label><input type="radio" name="given" value="P1" checked> <span>P1 [kW]</span></label>
+          <label><input type="radio" name="given" value="M2"> <span>M2 [Nm]</span></label>
+        </div>
+      </div>
+      <div class="field" id="fP1">
+        <label for="p1" data-i18n="p1">Motor gücü P1</label>
+        <div class="inline"><select id="p1"></select><span class="unit">kW</span></div>
+      </div>
+      <div class="field" id="fM2">
+        <label for="m2" data-i18n="m2">Gerekli çıkış momenti M2</label>
+        <div class="inline"><input type="number" id="m2" min="1" step="1" value="500"><span class="unit">Nm</span></div>
+      </div>
+      <div class="field">
+        <label for="n2" data-i18n="n2">Çıkış devri n2</label>
+        <div class="inline"><input type="number" id="n2" min="0.01" step="0.1" value="50"><span class="unit">d/d</span></div>
+      </div>
+      <div class="field">
+        <label for="tol" data-i18n="tol">Devir toleransı</label>
+        <div class="inline"><input type="number" id="tol" min="1" max="50" step="1" value="10"><span class="unit">± %</span></div>
+      </div>
+      <div class="field" id="fPoles">
+        <label for="poles" data-i18n="poles">Motor kutup sayısı</label>
+        <select id="poles">
+          <option value="4" selected data-i18n="poles4">4 kutup (1500 d/d)</option>
+          <option value="6" data-i18n="poles6">6 kutup (1000 d/d)</option>
+          <option value="2" data-i18n="poles2">2 kutup (3000 d/d)</option>
+          <option value="8" data-i18n="poles8">8 kutup (750 d/d)</option>
+          <option value="any" data-i18n="polesAny">Fark etmez</option>
+        </select>
+      </div>
+      <div class="field" id="fN1">
+        <label for="n1" data-i18n="n1">Giriş devri n1</label>
+        <select id="n1"></select>
+      </div>
+      <div class="field">
+        <label for="hz" data-i18n="hz">Şebeke</label>
+        <select id="hz">
+          <option value="50">50 Hz – 400 V</option>
+          <option value="60">60 Hz – 460 V</option>
+        </select>
+        <span class="hint" id="hzHint" data-i18n="hzHint">60 Hz seçildiğinde 50 Hz tablo değerleri devir ve güçte ×1,2 ile ölçeklenir (yaklaşık).</span>
+      </div>
+      <div class="field" id="fIE">
+        <label for="ie" data-i18n="ie">Motor verim sınıfı</label>
+        <select id="ie"><option>IE2</option><option selected>IE3</option><option>IE4</option></select>
+      </div>
+    </div>
+    <div class="nav"><button type="button" class="btn" data-go="1" data-i18n="back">Geri</button><button type="button" class="btn primary" data-go="3" data-i18n="next">İleri</button></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card" id="step-3" hidden>
+    <header>
+      <h2 data-i18n="s3h">Çıkış kuvvetleri ve opsiyonlar</h2>
+      <p data-i18n="s3p">Radyal kuvvet kontrolü isteğe bağlıdır; hesaplanan kuvvet kataloğun mil ortasındaki izin verilen radyal yük değeri ile karşılaştırılır.</p>
+    </header>
+    <div class="grid">
+      <div class="field">
+        <span class="lab" data-i18n="mount">Montaj şekli</span>
+        <div class="choices">
+          <label><input type="radio" name="mount" value="any" checked> <span data-i18n="mountAny">Fark etmez</span></label>
+          <label><input type="radio" name="mount" value="A"> <span data-i18n="mountA">Ayaklı</span></label>
+          <label><input type="radio" name="mount" value="F"> <span data-i18n="mountF">Flanşlı</span></label>
+          <label><input type="radio" name="mount" value="AF"> <span data-i18n="mountAF">Ayaklı + flanşlı</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lab" data-i18n="radial">Radyal kuvvet kontrolü</span>
+        <div class="choices">
+          <label><input type="radio" name="radial" value="none" checked> <span data-i18n="radialNone">Yapma</span></label>
+          <label><input type="radio" name="radial" value="calc"> <span data-i18n="radialCalc">Hesapla</span></label>
+          <label><input type="radio" name="radial" value="own"> <span data-i18n="radialOwn">Kendi değerim</span></label>
+        </div>
+      </div>
+      <div class="field" id="fConn">
+        <label for="conn" data-i18n="conn">Çıkış mili bağlantı elemanı</label>
+        <select id="conn">
+          <option value="1.0" data-i18n="connCoupling">Kaplin (radyal yük yok sayılır)</option>
+          <option value="1.15" data-i18n="connGear">Dişli çark · fz 1,15</option>
+          <option value="1.4" data-i18n="connChain">Zincir dişlisi · fz 1,40</option>
+          <option value="1.5" data-i18n="connTiming">Triger kayış · fz 1,50</option>
+          <option value="1.75" data-i18n="connV" selected>V kayış · fz 1,75</option>
+          <option value="2.5" data-i18n="connFlat">Düz / gerdirme makaralı kayış · fz 2,50</option>
+        </select>
+      </div>
+      <div class="field" id="fD0">
+        <label for="d0" data-i18n="d0">Bağlantı elemanı bölüm dairesi d0</label>
+        <div class="inline"><input type="number" id="d0" min="10" step="1" value="200"><span class="unit">mm</span></div>
+      </div>
+      <div class="field" id="fFrOwn">
+        <label for="frOwn" data-i18n="frOwn">Radyal kuvvet FR</label>
+        <div class="inline"><input type="number" id="frOwn" min="0" step="10" value="2000"><span class="unit">N</span></div>
+      </div>
+      <div class="field">
+        <label for="mpos" data-i18n="mpos">Montaj pozisyonu</label>
+        <select id="mpos"><option>M1</option><option>M2</option><option>M3</option><option>M4</option><option>M5</option><option>M6</option></select>
+      </div>
+      <div class="field">
+        <span class="lab" data-i18n="opts">Opsiyonlar</span>
+        <div class="choices">
+          <label><input type="checkbox" id="optBrake"> <span data-i18n="optBrake">Fren</span></label>
+          <label><input type="checkbox" id="optBackstop"> <span data-i18n="optBackstop">Geri dönüşsüz rulman</span></label>
+          <label><input type="checkbox" id="optEncoder"> <span data-i18n="optEncoder">Enkoder</span></label>
+          <label><input type="checkbox" id="optFan"> <span data-i18n="optFan">Cebri soğutma fanı</span></label>
+        </div>
+      </div>
+      <div class="field" id="fBrakeV">
+        <label for="brakeV" data-i18n="brakeV">Fren gerilimi</label>
+        <select id="brakeV"><option>24 V DC</option><option>220 V AC</option></select>
+      </div>
+    </div>
+    <div class="nav"><button type="button" class="btn" data-go="2" data-i18n="back">Geri</button><button type="button" class="btn primary" data-go="4" data-i18n="showResults">Sonuçları göster</button></div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="card" id="step-4" hidden>
+    <header>
+      <h2 data-i18n="s4h">Uygun redüktörler</h2>
+      <p id="resultSummary"></p>
+    </header>
+    <div class="inline" style="margin-bottom:10px">
+      <label class="inline"><input type="checkbox" id="showNear"> <span data-i18n="showNear">Servis faktörü yetersiz satırları da göster</span></label>
+      <span class="unit" id="count"></span>
+    </div>
+    <div class="tbl results"><table id="results"></table></div>
+    <div id="detail" style="margin-top:18px"></div>
+    <div class="nav"><button type="button" class="btn" data-go="3" data-i18n="back">Geri</button><button type="button" class="btn" id="reset" data-i18n="reset">Yeni seçim</button></div>
+  </section>
+
+  <footer class="foot">
+    <p id="footSrc"></p>
+    <p data-i18n="footDisc">Bu araç i.Mak'ın yayınladığı katalog tablolarından okunan değerlerle ön seçim yapar; nihai seçim, montaj pozisyonu, yağlama ve termik kontroller için i.Mak teknik ekibine veya resmi i-Guide uygulamasına danışın.</p>
+    <p><a href="https://iguide.imakreduktor.com/?lang=en" target="_blank" rel="noopener">i-Guide (resmi seçim uygulaması)</a> · <a href="https://www.imakreduktor.com/catalogs/" target="_blank" rel="noopener" data-i18n="footCat">Kataloglar</a> · <a href="https://www.imakreduktor.com/" target="_blank" rel="noopener">imakreduktor.com</a></p>
+  </footer>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="data/applications.js"></script>
+<script src="data/catalog.js"></script>
+<script>
+(function () {
+  'use strict';
+  const CAT = window.IMAK_CATALOG || { groups: [], sources: {}, generated: '' };
+  const APPS = window.IMAK_APPLICATIONS || [];
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+  // ---------- family metadata (ranges from the i.Mak 2026 summary catalogue) ----------
+  const PDF = {
+    IR: 'https://www.imakreduktor.com/wp-content/uploads/2026/07/IR_Katalog_2026_Rev.01.pdf',
+    IRK: 'https://www.imakreduktor.com/wp-content/uploads/2026/02/IRK-Katalog-web.pdf',
+    YP: 'https://www.imakreduktor.com/wp-content/uploads/2026/08/YP-Katalog-2026-Rev.02.pdf',
+    IRS: 'https://www.imakreduktor.com/wp-content/uploads/2026/07/IRS_IRSD_Katalog_2026_Rev.01.pdf',
+  };
+  const FAMILIES = [
+    { f: 'IR',   tr: 'Helisel dişli motorlu redüktör', en: 'Helical geared motor', rng: '90 – 18 000 Nm · 0,12 – 160 kW' },
+    { f: 'IRK',  tr: 'Konik helisel dişli redüktör', en: 'Helical-bevel geared motor', rng: '180 – 18 000 Nm · 0,12 – 200 kW' },
+    { f: 'YP',   tr: 'Paralel milli helisel redüktör', en: 'Parallel-shaft helical geared motor', rng: '130 – 18 000 Nm · 0,12 – 200 kW' },
+    { f: 'IRS',  tr: 'Sonsuz vidalı redüktör (döküm)', en: 'Worm geared motor (cast iron)', rng: '240 – 12 500 Nm · 0,12 – 22 kW' },
+    { f: 'IRSD', tr: 'Helisel + sonsuz vidalı redüktör', en: 'Helical-worm geared motor', rng: '125 – 7 000 Nm · 0,09 – 11 kW' },
+    { f: 'S',    tr: 'Alüminyum gövdeli sonsuz redüktör', en: 'Aluminium-housing worm geared motor', rng: '21 – 1 500 Nm · 0,12 – 15 kW' },
+  ];
+  const OTHER = [
+    ['IRC', 'Vinç tahrik redüktörü', 'Hoist drive gear unit'], ['MA / MK', 'Monoblok redüktör', 'Monobloc gear unit'],
+    ['IRNX / IRO', 'Mil üstü redüktör', 'Shaft-mounted gear unit'], ['A / AE', 'Endüstriyel redüktör', 'Industrial gear unit'],
+    ['IPR / IPRK', 'Planet redüktör', 'Planetary gear unit'], ['4DS · AD · ADK · ADS', 'Özel tip redüktörler', 'Special-purpose gear units'],
+  ];
+  const FS = { // [hours row][U, M, H]  — i.Mak catalogue "Service factor" table
+    motor: [[0.8, 1, 1.5], [1, 1.25, 1.75], [1.25, 1.5, 2]],
+    p46:   [[1, 1.25, 2], [1.25, 1.5, 2], [1.5, 1.75, 2]],
+    p12:   [[1.25, 1.5, 2], [1.5, 1.75, 2.25], [1.75, 2, 2.5]],
+  };
+  const HOURS = ['0 – 3 h', '3 – 10 h', '10 – 24 h'];
+  const SYNC = { 2: 3000, 4: 1500, 6: 1000, 8: 750 };
+
+  // ---------- i18n ----------
+  const I18N = {
+    tr: {
+      title: 'Redüktör Seçim Programı', subtitle: 'IR · IRK · YP · IRS · IRSD · S serileri — katalog güç/devir tablolarından seçim',
+      step1k: 'Adım 1', step2k: 'Adım 2', step3k: 'Adım 3', step4k: 'Adım 4',
+      step1: 'Çalışma koşulları', step2: 'Tahrik verileri', step3: 'Kuvvetler ve opsiyonlar', step4: 'Sonuç',
+      s1h: 'Uygulama ve çalışma koşulları', s1p: 'Servis faktörü (fs), i.Mak kataloğundaki yükleme karakteristiği tablosundan tahrik makinesi, günlük çalışma süresi ve makinenin yük sınıfına göre belirlenir.',
+      appGroup: 'Uygulama grubu', app: 'Tahrik edilen makine', loadClass: 'Yük sınıfı', loadU: 'U · Düzgün yük', loadM: 'M · Orta darbeli', loadH: 'H · Ağır darbeli',
+      loadHint: 'Makine seçildiğinde katalog sınıfı otomatik gelir; gerekirse değiştirin.', prime: 'Tahrik makinesi', primeMotor: 'Elektrik motoru / türbin',
+      primeP46: 'Pistonlu motor, 4–6 silindir', primeP12: 'Pistonlu motor, 1–2 silindir', hours: 'Günlük çalışma süresi', fsOverride: 'Servis faktörü (elle)',
+      fsOverrideHint: 'boş bırakılırsa tablo değeri kullanılır', fsReq: 'Gerekli servis faktörü fs', clsL: 'Yük sınıfı', fsTableH: 'Servis faktörü tablosu (i.Mak kataloğu)',
+      next: 'İleri', back: 'Geri', showResults: 'Sonuçları göster', reset: 'Yeni seçim',
+      s2h: 'Redüktör ailesi ve tahrik verileri', s2p: 'Seçim, katalogdaki güç/devir tablolarının satırlarından yapılır: çıkış devri toleransa uyan ve servis faktörü yeterli olan satırlar listelenir.',
+      family: 'Redüktör ailesi', drive: 'Tahrik şekli', driveMotor: 'Motorlu redüktör', driveUnit: 'Motorsuz redüktör (giriş devri ile)', given: 'Verilen büyüklük',
+      p1: 'Motor gücü P1', m2: 'Gerekli çıkış momenti M2', n2: 'Çıkış devri n2', tol: 'Devir toleransı', poles: 'Motor kutup sayısı',
+      poles4: '4 kutup (1500 d/d)', poles6: '6 kutup (1000 d/d)', poles2: '2 kutup (3000 d/d)', poles8: '8 kutup (750 d/d)', polesAny: 'Fark etmez',
+      n1: 'Giriş devri n1', hz: 'Şebeke', hzHint: '60 Hz seçildiğinde 50 Hz tablo değerleri devir ve güçte ×1,2 ile ölçeklenir (yaklaşık).', ie: 'Motor verim sınıfı',
+      s3h: 'Çıkış kuvvetleri ve opsiyonlar', s3p: 'Radyal kuvvet kontrolü isteğe bağlıdır; hesaplanan kuvvet kataloğun mil ortasındaki izin verilen radyal yük değeri ile karşılaştırılır.',
+      mount: 'Montaj şekli', mountAny: 'Fark etmez', mountA: 'Ayaklı', mountF: 'Flanşlı', mountAF: 'Ayaklı + flanşlı', radial: 'Radyal kuvvet kontrolü',
+      radialNone: 'Yapma', radialCalc: 'Hesapla', radialOwn: 'Kendi değerim', conn: 'Çıkış mili bağlantı elemanı', connCoupling: 'Kaplin (radyal yük yok sayılır)',
+      connGear: 'Dişli çark · fz 1,15', connChain: 'Zincir dişlisi · fz 1,40', connTiming: 'Triger kayış · fz 1,50', connV: 'V kayış · fz 1,75', connFlat: 'Düz / gerdirme makaralı kayış · fz 2,50',
+      d0: 'Bağlantı elemanı bölüm dairesi d0', frOwn: 'Radyal kuvvet FR', mpos: 'Montaj pozisyonu', opts: 'Opsiyonlar', optBrake: 'Fren', optBackstop: 'Geri dönüşsüz rulman',
+      optEncoder: 'Enkoder', optFan: 'Cebri soğutma fanı', brakeV: 'Fren gerilimi', s4h: 'Uygun redüktörler', showNear: 'Servis faktörü yetersiz satırları da göster',
+      footDisc: "Bu araç i.Mak'ın yayınladığı katalog tablolarından okunan değerlerle ön seçim yapar; nihai seçim, montaj pozisyonu, yağlama ve termik kontroller için i.Mak teknik ekibine veya resmi i-Guide uygulamasına danışın.",
+      footCat: 'Kataloglar',
+      // dynamic
+      cls: 'Katalog yük sınıfı', hoursCol: 'Günlük çalışma', primeCol: 'Tahrik', fsL: 'fs', iL: 'i ≈', m2L: 'M2', p1L: 'P1', n2L: 'n2', famL: 'Aile', driveL: 'Tahrik', unitL: 'motorsuz',
+      colFam: 'Aile', colType: 'Tip', colSize: 'Boyut', colMotor: 'Motor', colP1: 'P1 [kW]', colI: 'i', colN2: 'n2 [d/d]', colM2: 'M2 [Nm]', colFs: 'fs', colFr: 'FR [N]', colKg: 'kg', colPg: 'Katalog s.',
+      colP1req: 'Gerekli P1 [kW]', colM2n: 'M2n [Nm]', colFrIn: 'FR giriş [N]',
+      rec: 'Önerilen', near: 'fs yetersiz', frBad: 'FR aşıldı',
+      none: 'Bu toleransta uygun satır bulunamadı. Toleransı artırın, başka bir aile seçin veya motor gücünü değiştirin.',
+      noData: 'Katalog verisi yüklenemedi (data/catalog.js). Dosyaların aynı dizinde olduğundan emin olun.',
+      found: (n, t) => `${n} uygun satır (${t} aday incelendi).`,
+      sumMotor: (p) => `Motorlu seçim · P1 = ${p} kW`, sumM2: (m) => `Motorlu seçim · M2 ≥ ${m} Nm`, sumUnit: (m, n1) => `Motorsuz seçim · M2 ≥ ${m} Nm · n1 = ${n1} d/d`,
+      dSize: 'Boyut', dPrimary: 'Ön kademe', dMotor: 'Motor', dRatio: 'Tahvil oranı i', dWorm: 'Sonsuz vida oranı', dN2: 'Çıkış devri n2', dM2: 'Çıkış momenti M2', dFs: 'Servis faktörü fs',
+      dFsReq: 'Gerekli fs', dFr: 'İzin verilen radyal yük FR', dFrReq: 'Hesaplanan radyal yük', dP1: 'Motor gücü P1', dP1req: 'Gerekli giriş gücü P1', dN1: 'Giriş devri n1', dDev: 'Devir sapması',
+      dPoles: 'kutup', variants: 'Montaj varyantları (ağırlık · katalog ölçü sayfası)', table: 'Katalog tablosu (PDF sayfası)', copy: 'Özeti kopyala', copied: 'Kopyalandı',
+      copyFail: 'Kopyalanamadı; metni seçip kopyalayın.', spec: 'Seçim özeti', m: 'motorlu', foot: (d) => `Veri kaynağı: i.Mak resmi katalogları (IR 2026 Rev.01, IRK 2026, YP 2026 Rev.02, IRS/IRSD 2026 Rev.01). Veri derleme tarihi: ${d}.`,
+      unitP1: 'Tablo P1 (M2n için)', other: 'Diğer seriler (katalogdan seçilir)', dM2req: 'Gerekli M2', okFs: 'fs yeterli', okFr: 'FR uygun', okN2: 'n2 toleransta',
+      mountLegend: { A: 'ayaklı', F: 'flanşlı', AF: 'ayaklı + flanşlı', B: 'B tipi (karıştırıcı flanşı)', P: 'IEC motor adaptörü', M: 'motorlu', FL: 'flanşlı' },
+    },
+    en: {
+      title: 'Gearbox Selection Program', subtitle: 'IR · IRK · YP · IRS · IRSD · S series — selection from the catalogue power/speed tables',
+      step1k: 'Step 1', step2k: 'Step 2', step3k: 'Step 3', step4k: 'Step 4',
+      step1: 'Operating conditions', step2: 'Drive data', step3: 'Forces and options', step4: 'Result',
+      s1h: 'Application and operating conditions', s1p: 'The service factor (fs) comes from the load-characteristics table in the i.Mak catalogue: prime mover, daily operating hours and the load class of the driven machine.',
+      appGroup: 'Application group', app: 'Driven machine', loadClass: 'Load class', loadU: 'U · Uniform load', loadM: 'M · Moderate shock', loadH: 'H · Heavy shock',
+      loadHint: 'The catalogue class is filled in when a machine is picked; change it if needed.', prime: 'Prime mover', primeMotor: 'Electric motor / turbine',
+      primeP46: 'Piston engine, 4–6 cylinders', primeP12: 'Piston engine, 1–2 cylinders', hours: 'Daily operating hours', fsOverride: 'Service factor (manual)',
+      fsOverrideHint: 'leave empty to use the table value', fsReq: 'Required service factor fs', clsL: 'Load class', fsTableH: 'Service factor table (i.Mak catalogue)',
+      next: 'Next', back: 'Back', showResults: 'Show results', reset: 'New selection',
+      s2h: 'Gearbox family and drive data', s2p: 'Selection is made from the rows of the catalogue power/speed tables: rows whose output speed is within tolerance and whose service factor is sufficient are listed.',
+      family: 'Gearbox family', drive: 'Drive', driveMotor: 'Geared motor', driveUnit: 'Gear unit without motor (by input speed)', given: 'Given quantity',
+      p1: 'Motor power P1', m2: 'Required output torque M2', n2: 'Output speed n2', tol: 'Speed tolerance', poles: 'Motor poles',
+      poles4: '4 poles (1500 rpm)', poles6: '6 poles (1000 rpm)', poles2: '2 poles (3000 rpm)', poles8: '8 poles (750 rpm)', polesAny: 'Any',
+      n1: 'Input speed n1', hz: 'Supply', hzHint: 'With 60 Hz the 50 Hz table values are scaled ×1.2 in speed and power (approximate).', ie: 'Motor efficiency class',
+      s3h: 'Output forces and options', s3p: 'The radial force check is optional; the calculated force is compared with the permissible radial load at mid-shaft given in the catalogue.',
+      mount: 'Mounting', mountAny: 'Any', mountA: 'Foot', mountF: 'Flange', mountAF: 'Foot + flange', radial: 'Radial force check',
+      radialNone: 'Skip', radialCalc: 'Calculate', radialOwn: 'My own value', conn: 'Output shaft transmission element', connCoupling: 'Coupling (no radial load)',
+      connGear: 'Gear wheel · fz 1.15', connChain: 'Chain sprocket · fz 1.40', connTiming: 'Timing belt · fz 1.50', connV: 'V-belt · fz 1.75', connFlat: 'Flat / tensioned belt · fz 2.50',
+      d0: 'Pitch diameter of the element d0', frOwn: 'Radial force FR', mpos: 'Mounting position', opts: 'Options', optBrake: 'Brake', optBackstop: 'Backstop',
+      optEncoder: 'Encoder', optFan: 'Forced cooling fan', brakeV: 'Brake voltage', s4h: 'Suitable gear units', showNear: 'Also show rows with insufficient service factor',
+      footDisc: 'This tool pre-selects from values read out of the catalogue tables published by i.Mak; for the final selection, mounting position, lubrication and thermal checks consult the i.Mak technical team or the official i-Guide application.',
+      footCat: 'Catalogues',
+      cls: 'Catalogue load class', hoursCol: 'Daily hours', primeCol: 'Prime mover', fsL: 'fs', iL: 'i ≈', m2L: 'M2', p1L: 'P1', n2L: 'n2', famL: 'Family', driveL: 'Drive', unitL: 'no motor',
+      colFam: 'Family', colType: 'Type', colSize: 'Size', colMotor: 'Motor', colP1: 'P1 [kW]', colI: 'i', colN2: 'n2 [rpm]', colM2: 'M2 [Nm]', colFs: 'fs', colFr: 'FR [N]', colKg: 'kg', colPg: 'Cat. page',
+      colP1req: 'Required P1 [kW]', colM2n: 'M2n [Nm]', colFrIn: 'FR input [N]',
+      rec: 'Recommended', near: 'fs too low', frBad: 'FR exceeded',
+      none: 'No row fits within this tolerance. Widen the tolerance, pick another family or change the motor power.',
+      noData: 'Catalogue data could not be loaded (data/catalog.js). Make sure the files sit in the same folder.',
+      found: (n, t) => `${n} suitable rows (${t} candidates examined).`,
+      sumMotor: (p) => `Geared motor · P1 = ${p} kW`, sumM2: (m) => `Geared motor · M2 ≥ ${m} Nm`, sumUnit: (m, n1) => `Gear unit · M2 ≥ ${m} Nm · n1 = ${n1} rpm`,
+      dSize: 'Size', dPrimary: 'Primary stage', dMotor: 'Motor', dRatio: 'Ratio i', dWorm: 'Worm ratio', dN2: 'Output speed n2', dM2: 'Output torque M2', dFs: 'Service factor fs',
+      dFsReq: 'Required fs', dFr: 'Permissible radial load FR', dFrReq: 'Calculated radial load', dP1: 'Motor power P1', dP1req: 'Required input power P1', dN1: 'Input speed n1', dDev: 'Speed deviation',
+      dPoles: 'poles', variants: 'Mounting variants (weight · catalogue dimension page)', table: 'Catalogue table (PDF page)', copy: 'Copy summary', copied: 'Copied',
+      copyFail: 'Could not copy; select the text and copy it.', spec: 'Selection summary', m: 'with motor', foot: (d) => `Data source: official i.Mak catalogues (IR 2026 Rev.01, IRK 2026, YP 2026 Rev.02, IRS/IRSD 2026 Rev.01). Data compiled on ${d}.`,
+      unitP1: 'Table P1 (at M2n)', other: 'Other series (select from catalogue)', dM2req: 'Required M2', okFs: 'fs sufficient', okFr: 'FR ok', okN2: 'n2 within tolerance',
+      mountLegend: { A: 'foot', F: 'flange', AF: 'foot + flange', B: 'B type (agitator flange)', P: 'IEC motor adapter', M: 'with motor', FL: 'flange' },
+    },
+  };
+  let lang = 'tr';
+  const t = (k) => I18N[lang][k];
+  const fmt = (v, d) => (v === null || v === undefined || Number.isNaN(v)) ? '—' : Number(v).toLocaleString(lang === 'tr' ? 'tr-TR' : 'en-GB', { maximumFractionDigits: d === undefined ? 2 : d, minimumFractionDigits: 0 });
+  const fmtN2 = (v) => fmt(v, v < 10 ? 2 : (v < 100 ? 1 : 0));
+
+  // ---------- state ----------
+  const S = {
+    step: 1, appGroup: 0, app: 0, load: 'M', prime: 'motor', hours: 1, fsOverride: '',
+    fam: 'IR', drive: 'motor', given: 'P1', p1: '', m2: 500, n2: 50, tol: 10, poles: '4', n1: '', hz: '50', ie: 'IE3',
+    mount: 'any', radial: 'none', conn: '1.75', d0: 200, frOwn: 2000, mpos: 'M1', optBrake: false, optBackstop: false, optEncoder: false, optFan: false, brakeV: '24 V DC',
+    showNear: false, sel: null,
+  };
+  try { Object.assign(S, JSON.parse(localStorage.getItem('imak-secim') || '{}')); } catch (e) { /* storage unavailable */ }
+  try { lang = localStorage.getItem('imak-lang') || lang; } catch (e) { /* ignore */ }
+  const save = () => { try { localStorage.setItem('imak-secim', JSON.stringify(S)); localStorage.setItem('imak-lang', lang); } catch (e) { /* ignore */ } };
+
+  // ---------- helpers ----------
+  function sizeKey(z) { // '93' -> 9.3 ; '103' -> 10.3 ; '721' -> 7.25
+    const s = String(z);
+    if (s.length === 2) return parseInt(s[0], 10) + parseInt(s[1], 10) / 10;
+    if (s.length === 3 && s[0] === '1') return parseInt(s.slice(0, 2), 10) + parseInt(s[2], 10) / 10;
+    if (s.length === 3) return parseInt(s[0], 10) + parseInt(s[1], 10) / 10 + 0.05;
+    return parseInt(s, 10);
+  }
+  function famPrefix(f) { return f; }
+  function typeMount(type, fam) { // mounting letters of a type code
+    let rest = type.replace(/^IRSD|^IRS|^IRK|^IR|^YP|^S/, '');
+    rest = rest.replace(/-FL$/, 'F').replace(/P/g, '').replace(/M$/, '');
+    if (rest === 'AF') return 'AF';
+    if (rest === 'A') return 'A';
+    if (rest === 'F') return 'F';
+    if (rest === 'B') return 'F';
+    return rest || 'A';
+  }
+  function decodeType(type) {
+    const fam = ['IRSD', 'IRS', 'IRK', 'IR', 'YP', 'S'].find((p) => type.startsWith(p)) || '';
+    let rest = type.slice(fam.length);
+    const parts = [];
+    if (rest.endsWith('-FL')) { parts.push(t('mountLegend').FL); rest = rest.slice(0, -3); }
+    if (rest.startsWith('AF')) { parts.push(t('mountLegend').AF); rest = rest.slice(2); }
+    else if (rest.startsWith('A')) { parts.push(t('mountLegend').A); rest = rest.slice(1); }
+    else if (rest.startsWith('F')) { parts.push(t('mountLegend').F); rest = rest.slice(1); }
+    else if (rest.startsWith('B')) { parts.push(t('mountLegend').B); rest = rest.slice(1); }
+    if (rest.startsWith('P')) { parts.push(t('mountLegend').P); rest = rest.slice(1); }
+    if (rest.startsWith('M')) { parts.push(t('mountLegend').M); }
+    return parts.join(', ');
+  }
+  function fsRequired() {
+    const o = parseFloat(String(S.fsOverride).replace(',', '.'));
+    if (!Number.isNaN(o) && o > 0) return o;
+    return FS[S.prime][S.hours][{ U: 0, M: 1, H: 2 }[S.load]];
+  }
+  function radialRequired(m2) {
+    if (S.radial === 'own') return Number(S.frOwn) || 0;
+    if (S.radial === 'calc') { const fz = Number(S.conn); if (fz <= 1.0) return 0; return 2000 * m2 * fz / Math.max(1, Number(S.d0)); }
+    return 0;
+  }
+  function availablePowers() {
+    const set = new Set();
+    CAT.groups.forEach((g) => { if (g.k === 'motor' && g.f === S.fam && (S.poles === 'any' || String(g.pl) === S.poles)) set.add(g.p1); });
+    return Array.from(set).sort((a, b) => a - b);
+  }
+  function availableN1() {
+    const set = new Set();
+    CAT.groups.forEach((g) => { if (g.k === 'unit' && g.f === S.fam && g.n1) set.add(g.n1); });
+    return Array.from(set).sort((a, b) => b - a);
+  }
+  function famHas(f, kind) { return CAT.groups.some((g) => g.f === f && g.k === kind); }
+
+  // ---------- selection ----------
+  function select() {
+    const fs = fsRequired();
+    const scale = S.hz === '60' ? 1.2 : 1;
+    const n2req = Number(S.n2) || 0, tol = (Number(S.tol) || 0) / 100;
+    const m2req = Number(S.m2) || 0;
+    const out = []; let examined = 0;
+    for (const g of CAT.groups) {
+      if (g.f !== S.fam || g.k !== S.drive) continue;
+      if (S.drive === 'motor' && S.poles !== 'any' && String(g.pl) !== S.poles) continue;
+      if (S.drive === 'motor' && S.given === 'P1' && S.p1 !== '' && g.p1 !== Number(S.p1)) continue;
+      if (S.drive === 'unit' && S.n1 !== '' && String(g.n1) !== String(S.n1)) continue;
+      const types = S.mount === 'any' ? g.t : g.t.filter((ty) => typeMount(ty, g.f) === S.mount);
+      if (!types.length) continue;
+      for (const r of g.r) {
+        examined++;
+        let c;
+        if (g.k === 'motor') {
+          const n2 = r[0] * scale, i = r[1], sf = r[2], m2 = r[3], fr = r[4];
+          if (Math.abs(n2 - n2req) > tol * n2req) continue;
+          let fsAct, fsOk, m2Ok = true;
+          if (S.given === 'P1') { fsAct = sf; fsOk = sf >= fs - 1e-9; }
+          else { fsAct = m2 * sf / m2req; m2Ok = m2 >= m2req; fsOk = m2Ok && fsAct >= fs - 1e-9; }
+          const frReq = radialRequired(S.given === 'P1' ? m2 : m2req);
+          c = { g, types, n2, i, iw: r[5], sf, fsAct, m2, fr, p1: g.p1 * scale, frReq, frOk: frReq <= fr, fsOk: fsOk && m2Ok, dev: (n2 - n2req) / n2req };
+        } else {
+          const p1t = r[0], n2 = r[1], i = r[2], m2n = r[3], frIn = r[4], fr = r[5];
+          if (Math.abs(n2 - n2req) > tol * n2req) continue;
+          const fsAct = m2n / m2req;
+          const frReq = radialRequired(m2req);
+          c = { g, types, n2, i, sf: 1, fsAct, m2: m2n, fr, frIn, p1: p1t, p1req: p1t * m2req / m2n, frReq, frOk: frReq <= fr, fsOk: fsAct >= fs - 1e-9, dev: (n2 - n2req) / n2req };
+        }
+        c.ok = c.fsOk && c.frOk;
+        out.push(c);
+      }
+    }
+    out.sort((a, b) => (b.ok - a.ok) || (sizeKey(a.g.z) - sizeKey(b.g.z)) || ((a.p1req || a.p1) - (b.p1req || b.p1)) || (Math.abs(a.dev) - Math.abs(b.dev)));
+    return { list: out, examined, fs };
+  }
+
+  // ---------- rendering ----------
+  function applyI18n() {
+    $$('[data-i18n]').forEach((el) => { const v = t(el.dataset.i18n); if (typeof v === 'string') el.textContent = v; });
+    $('#lang-tr').setAttribute('aria-pressed', lang === 'tr');
+    $('#lang-en').setAttribute('aria-pressed', lang === 'en');
+    document.documentElement.lang = lang;
+    $('#footSrc').textContent = t('foot')(CAT.generated || '—');
+  }
+  function renderApps() {
+    const ag = $('#appGroup'), ap = $('#app');
+    ag.innerHTML = APPS.map((c, i) => `<option value="${i}">${c[lang]}</option>`).join('');
+    ag.value = Math.min(S.appGroup, APPS.length - 1);
+    const items = (APPS[ag.value] || { items: [] }).items;
+    ap.innerHTML = items.map((it, i) => `<option value="${i}">${it[lang]}</option>`).join('');
+    ap.value = Math.min(S.app, items.length - 1);
+    const it = items[ap.value];
+    $('#appCls').textContent = it ? `${t('cls')}: ${it.cls}` : '';
+  }
+  function renderFsTable() {
+    const tb = $('#fsTable');
+    const head = `<thead><tr><th>${t('primeCol')}</th><th>${t('hoursCol')}</th><th class="n">U</th><th class="n">M</th><th class="n">H</th></tr></thead>`;
+    const names = { motor: t('primeMotor'), p46: t('primeP46'), p12: t('primeP12') };
+    let body = '';
+    for (const pm of ['motor', 'p46', 'p12']) {
+      FS[pm].forEach((row, h) => {
+        body += `<tr>${h === 0 ? `<td rowspan="3">${names[pm]}</td>` : ''}<td>${HOURS[h]}</td>` + row.map((v, ci) => {
+          const hl = pm === S.prime && h === S.hours && ci === { U: 0, M: 1, H: 2 }[S.load] && !S.fsOverride;
+          return `<td class="n${hl ? ' hl' : ''}">${fmt(v)}</td>`;
+        }).join('') + '</tr>';
+      });
+    }
+    tb.innerHTML = head + `<tbody>${body}</tbody>`;
+    $('#fsVal').textContent = fmt(fsRequired());
+    $('#clsVal').textContent = S.load;
+  }
+  function renderFamilies() {
+    const grid = $('#famgrid');
+    grid.innerHTML = FAMILIES.map((f) => {
+      const has = famHas(f.f, 'motor') || famHas(f.f, 'unit');
+      return `<label class="fam${has ? '' : ' off'}"><input type="radio" name="fam" value="${f.f}" ${S.fam === f.f ? 'checked' : ''} ${has ? '' : 'disabled'}><span class="code">${f.f}</span><span class="name">${f[lang]}</span><span class="rng">${f.rng}</span></label>`;
+    }).join('') + `<div class="fam off"><span class="name" style="font-weight:600">${t('other')}</span>${OTHER.map((o) => `<span class="rng">${o[0]} · ${lang === 'tr' ? o[1] : o[2]}</span>`).join('')}</div>`;
+  }
+  function renderDriveFields() {
+    const motor = S.drive === 'motor';
+    $('#fInputMode').hidden = !motor; $('#fPoles').hidden = !motor; $('#fIE').hidden = !motor; $('#fN1').hidden = motor;
+    $('#fP1').hidden = !(motor && S.given === 'P1'); $('#fM2').hidden = motor && S.given === 'P1';
+    const p1 = $('#p1'); const pw = availablePowers();
+    p1.innerHTML = pw.map((p) => `<option value="${p}">${fmt(p)}</option>`).join('');
+    if (!pw.includes(Number(S.p1))) S.p1 = pw.length ? String(pw.find((p) => p >= 1.5) ?? pw[0]) : '';
+    p1.value = S.p1;
+    const n1 = $('#n1'); const n1s = availableN1();
+    n1.innerHTML = n1s.map((v) => `<option value="${v}">${v} ${lang === 'tr' ? 'd/d' : 'rpm'}</option>`).join('');
+    if (!n1s.map(String).includes(String(S.n1))) S.n1 = n1s.length ? String(n1s[0]) : '';
+    n1.value = S.n1;
+    const driveUnitRadio = document.querySelector('input[name="drive"][value="unit"]');
+    driveUnitRadio.disabled = !famHas(S.fam, 'unit');
+    if (driveUnitRadio.disabled && S.drive === 'unit') { S.drive = 'motor'; document.querySelector('input[name="drive"][value="motor"]').checked = true; renderDriveFields(); }
+  }
+  function renderForceFields() {
+    $('#fConn').hidden = S.radial !== 'calc'; $('#fD0').hidden = S.radial !== 'calc'; $('#fFrOwn').hidden = S.radial !== 'own';
+    $('#fBrakeV').hidden = !S.optBrake;
+  }
+  function renderStrip() {
+    const fs = fsRequired();
+    const n2 = Number(S.n2) || 0;
+    const parts = [`<span><span class="lbl">${t('fsL')}</span> <b>${fmt(fs)}</b></span>`, `<span><span class="lbl">${t('famL')}</span> <b>${S.fam}</b></span>`];
+    if (S.drive === 'motor') {
+      const n1 = S.poles === 'any' ? null : SYNC[S.poles] * (S.hz === '60' ? 1.2 : 1);
+      if (S.given === 'P1' && S.p1 !== '') parts.push(`<span><span class="lbl">${t('p1L')}</span> <b>${fmt(Number(S.p1))} kW</b></span>`);
+      else parts.push(`<span><span class="lbl">${t('m2L')}</span> <b>${fmt(Number(S.m2))} Nm</b></span>`);
+      parts.push(`<span><span class="lbl">${t('n2L')}</span> <b>${fmt(n2)} ±${S.tol}%</b></span>`);
+      if (n1 && n2) parts.push(`<span><span class="lbl">${t('iL')}</span> <b>${fmt(n1 * 0.95 / n2, 1)}</b></span>`);
+    } else {
+      parts.push(`<span><span class="lbl">${t('driveL')}</span> <b>${t('unitL')}</b></span>`, `<span><span class="lbl">${t('m2L')}</span> <b>${fmt(Number(S.m2))} Nm</b></span>`, `<span><span class="lbl">${t('n2L')}</span> <b>${fmt(n2)} ±${S.tol}%</b></span>`);
+      if (S.n1 && n2) parts.push(`<span><span class="lbl">${t('iL')}</span> <b>${fmt(Number(S.n1) / n2, 1)}</b></span>`);
+    }
+    $('#strip').innerHTML = parts.join('');
+  }
+  function renderResults() {
+    const res = select();
+    const shown = res.list.filter((c) => c.ok || (S.showNear && c.frOk));
+    $('#resultSummary').textContent = S.drive === 'unit' ? t('sumUnit')(fmt(Number(S.m2)), S.n1) : (S.given === 'P1' ? t('sumMotor')(fmt(Number(S.p1))) : t('sumM2')(fmt(Number(S.m2))));
+    $('#count').textContent = t('found')(res.list.filter((c) => c.ok).length, res.examined);
+    const tb = $('#results');
+    if (!CAT.groups.length) { tb.innerHTML = ''; $('#detail').innerHTML = `<div class="empty">${t('noData')}</div>`; return; }
+    if (!shown.length) { tb.innerHTML = ''; $('#detail').innerHTML = `<div class="empty">${t('none')}</div>`; S.sel = null; return; }
+    const unit = S.drive === 'unit';
+    const head = `<thead><tr><th>${t('colType')}</th><th>${t('colSize')}</th>${unit ? `<th class="n">${t('colP1req')}</th>` : `<th>${t('colMotor')}</th><th class="n">${t('colP1')}</th>`}<th class="n">${t('colI')}</th><th class="n">${t('colN2')}</th><th class="n">${unit ? t('colM2n') : t('colM2')}</th><th class="n">${t('colFs')}</th><th class="n">${t('colFr')}</th><th class="n">${t('colKg')}</th><th></th></tr></thead>`;
+    const rows = shown.slice(0, 80).map((c, idx) => {
+      const badge = !c.fsOk ? `<span class="badge warn">${t('near')}</span>` : (!c.frOk ? `<span class="badge bad">${t('frBad')}</span>` : (idx === 0 ? `<span class="badge ok">${t('rec')}</span>` : ''));
+      const size = c.g.z + (c.g.pr ? ` / ${c.g.pr}` : '');
+      return `<tr data-idx="${idx}" class="${idx === 0 && c.ok ? 'rec' : ''}${c.ok ? '' : ' dim'}" aria-selected="${S.sel === idx}"><td>${c.types[0]}${c.types.length > 1 ? ` <span class="unit">+${c.types.length - 1}</span>` : ''}</td><td class="num">${size}</td>${unit ? `<td class="n">${fmt(c.p1req, 2)}</td>` : `<td>${c.g.m}</td><td class="n">${fmt(c.p1)}</td>`}<td class="n">${fmt(c.i, c.i < 100 ? 2 : 0)}</td><td class="n">${fmtN2(c.n2)}</td><td class="n">${fmt(c.m2, 0)}</td><td class="n">${fmt(c.fsAct, 2)}</td><td class="n">${fmt(c.fr, 0)}</td><td class="n">${c.g.kg[0] || '—'}</td><td>${badge}</td></tr>`;
+    }).join('');
+    tb.innerHTML = head + `<tbody>${rows}</tbody>`;
+    if (S.sel === null || S.sel >= shown.length) S.sel = 0;
+    $$('#results tbody tr').forEach((tr) => tr.setAttribute('aria-selected', String(Number(tr.dataset.idx) === S.sel)));
+    renderDetail(shown[S.sel], res.fs);
+  }
+  function renderDetail(c, fs) {
+    const unit = c.g.k === 'unit';
+    const fam = c.g.f, pdf = PDF[c.g.s];
+    const desig = `${c.types[0]} ${c.g.z}${c.g.pr ? ' / ' + c.g.pr : ''}${unit ? '' : ' – ' + c.g.m}`;
+    const n2req = Number(S.n2);
+    const checks = [
+      `<span class="badge ${c.fsOk ? 'ok' : 'warn'}">${t('okFs')}: ${fmt(c.fsAct, 2)} ≥ ${fmt(fs)}</span>`,
+      `<span class="badge ok">${t('okN2')}: ${fmtN2(c.n2)} (${c.dev >= 0 ? '+' : ''}${fmt(c.dev * 100, 1)} %)</span>`,
+    ];
+    if (c.frReq > 0) checks.push(`<span class="badge ${c.frOk ? 'ok' : 'bad'}">${t('okFr')}: ${fmt(c.frReq, 0)} ≤ ${fmt(c.fr, 0)} N</span>`);
+    const dl = [];
+    dl.push([t('dSize'), c.g.z]);
+    if (c.g.pr) dl.push([t('dPrimary'), c.g.pr]);
+    if (!unit) dl.push([t('dMotor'), `${c.g.m} · ${fmt(c.p1)} kW · ${c.g.pl} ${t('dPoles')} · ${S.ie}`]);
+    else { dl.push([t('dN1'), `${c.g.n1} ${lang === 'tr' ? 'd/d' : 'rpm'}`]); dl.push([t('dP1req'), `${fmt(c.p1req, 2)} kW`]); dl.push([t('unitP1'), `${fmt(c.p1, 2)} kW`]); }
+    dl.push([t('dRatio'), fmt(c.i, c.i < 100 ? 2 : 0)]);
+    if (c.iw) dl.push([t('dWorm'), fmt(c.iw, 2)]);
+    dl.push([t('dN2'), `${fmtN2(c.n2)} ${lang === 'tr' ? 'd/d' : 'rpm'}`]);
+    dl.push([unit ? t('colM2n') : t('dM2'), `${fmt(c.m2, 0)} Nm`]);
+    if (S.given === 'M2' || unit) dl.push([t('dM2req'), `${fmt(Number(S.m2), 0)} Nm`]);
+    dl.push([t('dFs'), fmt(c.fsAct, 2)]); dl.push([t('dFsReq'), fmt(fs)]);
+    dl.push([t('dFr'), `${fmt(c.fr, 0)} N`]);
+    if (unit && c.frIn) dl.push([t('colFrIn'), `${fmt(c.frIn, 0)} N`]);
+    if (c.frReq > 0) dl.push([t('dFrReq'), `${fmt(c.frReq, 0)} N`]);
+    const variants = c.g.t.map((ty, k) => `<div><span><span class="code">${ty}</span> <span class="unit">${decodeType(ty)}</span></span><span class="num">${c.g.kg[k] ? c.g.kg[k] + ' kg' : ''}${c.g.pg[k] ? ' · s. ' + c.g.pg[k] : ''}</span></div>`).join('');
+    const opts = [S.optBrake ? `${t('optBrake')} ${S.brakeV}` : '', S.optBackstop ? t('optBackstop') : '', S.optEncoder ? t('optEncoder') : '', S.optFan ? t('optFan') : ''].filter(Boolean);
+    const spec = [
+      `i.Mak ${fam} – ${t('spec')}`,
+      `${desig}`,
+      ...dl.map(([k, v]) => `${k}: ${v}`),
+      `${t('mpos')}: ${S.mpos}`,
+      `${t('hz')}: ${S.hz} Hz`,
+      opts.length ? `${t('opts')}: ${opts.join(', ')}` : '',
+      `${t('loadClass')}: ${S.load} · ${t('hours')}: ${HOURS[S.hours]} · ${t('prime')}: ${t({ motor: 'primeMotor', p46: 'primeP46', p12: 'primeP12' }[S.prime])}`,
+      `${t('table')}: ${pdf}#page=${c.g.cp}`,
+    ].filter(Boolean).join('\n');
+    $('#detail').innerHTML = `<div class="sheet">
+      <div>
+        <div class="desig">${desig}</div>
+        <div class="sub">${FAMILIES.find((f) => f.f === fam)[lang]} · ${c.types.map(decodeType)[0]}</div>
+        <div class="inline" style="margin-bottom:12px">${checks.join('')}</div>
+        <dl>${dl.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+        <p class="note"><a href="${pdf}#page=${c.g.cp}" target="_blank" rel="noopener">${t('table')} ${c.g.cp}</a></p>
+      </div>
+      <div>
+        <h3>${t('variants')}</h3>
+        <div class="variants" style="margin:8px 0 16px">${variants}</div>
+        <div class="inline" style="justify-content:space-between;margin-bottom:6px"><h3>${t('spec')}</h3><button type="button" class="btn small" id="copySpec">${t('copy')}</button></div>
+        <pre class="spec" id="specText">${spec.replace(/</g, '&lt;')}</pre>
+      </div>
+    </div>`;
+    $('#copySpec').addEventListener('click', () => {
+      const txt = $('#specText').textContent;
+      const done = () => toast(t('copied'));
+      const fail = () => { const r = document.createRange(); r.selectNodeContents($('#specText')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast(t('copyFail')); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, fail); else fail();
+    });
+  }
+  let toastTimer;
+  function toast(msg) { const el = $('#toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1800); }
+
+  function showStep(n) {
+    S.step = n;
+    [1, 2, 3, 4].forEach((k) => { $(`#step-${k}`).hidden = k !== n; });
+    $$('.rail button').forEach((b) => { const k = Number(b.dataset.step); b.setAttribute('aria-current', k === n ? 'step' : 'false'); b.classList.toggle('done', k < n); });
+    if (n === 4) renderResults();
+    renderStrip(); save();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+  function renderAll() { applyI18n(); renderApps(); renderFsTable(); renderFamilies(); renderDriveFields(); renderForceFields(); renderStrip(); if (S.step === 4) renderResults(); }
+
+  // ---------- wiring ----------
+  function bind() {
+    $('#lang-tr').addEventListener('click', () => { lang = 'tr'; save(); renderAll(); });
+    $('#lang-en').addEventListener('click', () => { lang = 'en'; save(); renderAll(); });
+    $$('.rail button').forEach((b) => b.addEventListener('click', () => showStep(Number(b.dataset.step))));
+    $$('[data-go]').forEach((b) => b.addEventListener('click', () => showStep(Number(b.dataset.go))));
+    $('#appGroup').addEventListener('change', (e) => { S.appGroup = Number(e.target.value); S.app = 0; renderApps(); pickLoad(); });
+    $('#app').addEventListener('change', (e) => { S.app = Number(e.target.value); renderApps(); pickLoad(); });
+    $$('input[name="load"]').forEach((r) => r.addEventListener('change', (e) => { S.load = e.target.value; renderFsTable(); renderStrip(); save(); }));
+    $('#prime').addEventListener('change', (e) => { S.prime = e.target.value; renderFsTable(); renderStrip(); save(); });
+    $('#hours').addEventListener('change', (e) => { S.hours = Number(e.target.value); renderFsTable(); renderStrip(); save(); });
+    $('#fsOverride').addEventListener('input', (e) => { S.fsOverride = e.target.value; renderFsTable(); renderStrip(); save(); });
+    $('#famgrid').addEventListener('change', (e) => { if (e.target.name === 'fam') { S.fam = e.target.value; renderDriveFields(); renderStrip(); save(); } });
+    $$('input[name="drive"]').forEach((r) => r.addEventListener('change', (e) => { S.drive = e.target.value; renderDriveFields(); renderStrip(); save(); }));
+    $$('input[name="given"]').forEach((r) => r.addEventListener('change', (e) => { S.given = e.target.value; renderDriveFields(); renderStrip(); save(); }));
+    $('#p1').addEventListener('change', (e) => { S.p1 = e.target.value; renderStrip(); save(); });
+    $('#n1').addEventListener('change', (e) => { S.n1 = e.target.value; renderStrip(); save(); });
+    ['m2', 'n2', 'tol', 'd0', 'frOwn'].forEach((id) => $('#' + id).addEventListener('input', (e) => { S[id] = e.target.value; renderStrip(); save(); }));
+    $('#poles').addEventListener('change', (e) => { S.poles = e.target.value; renderDriveFields(); renderStrip(); save(); });
+    $('#hz').addEventListener('change', (e) => { S.hz = e.target.value; renderStrip(); save(); });
+    $('#ie').addEventListener('change', (e) => { S.ie = e.target.value; save(); });
+    $$('input[name="mount"]').forEach((r) => r.addEventListener('change', (e) => { S.mount = e.target.value; save(); }));
+    $$('input[name="radial"]').forEach((r) => r.addEventListener('change', (e) => { S.radial = e.target.value; renderForceFields(); save(); }));
+    $('#conn').addEventListener('change', (e) => { S.conn = e.target.value; save(); });
+    $('#mpos').addEventListener('change', (e) => { S.mpos = e.target.value; save(); });
+    $('#brakeV').addEventListener('change', (e) => { S.brakeV = e.target.value; save(); });
+    ['optBrake', 'optBackstop', 'optEncoder', 'optFan'].forEach((id) => $('#' + id).addEventListener('change', (e) => { S[id] = e.target.checked; renderForceFields(); save(); }));
+    $('#showNear').addEventListener('change', (e) => { S.showNear = e.target.checked; S.sel = null; renderResults(); save(); });
+    $('#results').addEventListener('click', (e) => { const tr = e.target.closest('tr[data-idx]'); if (!tr) return; S.sel = Number(tr.dataset.idx); renderResults(); });
+    $('#reset').addEventListener('click', () => { try { localStorage.removeItem('imak-secim'); } catch (err) { /* ignore */ } location.reload(); });
+  }
+  function pickLoad() {
+    const it = ((APPS[S.appGroup] || {}).items || [])[S.app];
+    if (it) { S.load = it.cls; const r = document.querySelector(`input[name="load"][value="${it.cls}"]`); if (r) r.checked = true; }
+    renderFsTable(); renderStrip(); save();
+  }
+  function restoreControls() {
+    const set = (sel, v) => { const el = document.querySelector(sel); if (el) el.value = v; };
+    const chk = (name, v) => { const el = document.querySelector(`input[name="${name}"][value="${v}"]`); if (el) el.checked = true; };
+    chk('load', S.load); set('#prime', S.prime); set('#hours', String(S.hours)); set('#fsOverride', S.fsOverride);
+    chk('drive', S.drive); chk('given', S.given); set('#m2', S.m2); set('#n2', S.n2); set('#tol', S.tol); set('#poles', S.poles); set('#hz', S.hz); set('#ie', S.ie);
+    chk('mount', S.mount); chk('radial', S.radial); set('#conn', S.conn); set('#d0', S.d0); set('#frOwn', S.frOwn); set('#mpos', S.mpos); set('#brakeV', S.brakeV);
+    ['optBrake', 'optBackstop', 'optEncoder', 'optFan'].forEach((id) => { $('#' + id).checked = !!S[id]; });
+    $('#showNear').checked = !!S.showNear;
+  }
+
+  restoreControls();
+  bind();
+  renderAll();
+  showStep(S.step || 1);
+})();
+</script>
