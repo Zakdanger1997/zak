@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>الجيربوكس بيشتغل إزاي؟</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap">
+<link rel="stylesheet" href="fonts/Cairo-local.css">
+<style>
+  html, body { margin: 0; background: #1b1713; height: 100%; }
+  body { display: flex; align-items: center; justify-content: center; }
+  #wrap { position: relative; height: 100vh; aspect-ratio: 9 / 16; max-width: 100vw; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(27,23,19,0.55); color: #fbf8f1; font-family: Cairo, sans-serif; font-weight: 700; font-size: 28px; cursor: pointer; border: 0; }
+  #play span { width: 96px; height: 96px; border-radius: 50%; background: #b3362a; display: grid; place-items: center; font-size: 40px; }
+  #bar { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(255,255,255,0.25); }
+  #bar i { display: block; height: 100%; width: 0; background: #b3362a; }
+  #warm { position: absolute; left: -9999px; font-family: Cairo; font-weight: 900; }
+</style>
+</head>
+<body>
+<div id="warm">تحميل الخط<span style="font-weight:700">تحميل</span></div>
+<div id="wrap"><canvas id="c" width="1080" height="1920"></canvas><button id="play" type="button"><span>▶</span>شغّل الفيديو (دقيقة ونص)</button><div id="bar"><i id="fill"></i></div><audio id="au" src="voice.mp3" preload="auto"></audio></div>
+<script>
+// ---------- timeline (injected by build) ----------
+const TL = {"scenes": [{"n": 1, "dur": 11.368, "lead": 0.4, "audio": "audio/line01.mp3", "offset": 0.4, "words": [{"t0": 0.1, "t1": 0.575, "w": "الموتور"}, {"t0": 0.575, "t1": 1.049, "w": "ده"}, {"t0": 1.049, "t1": 1.524, "w": "بيلف"}, {"t0": 1.524, "t1": 1.998, "w": "ألف"}, {"t0": 1.998, "t1": 2.473, "w": "وأربعمية"}, {"t0": 2.473, "t1": 2.947, "w": "لفة"}, {"t0": 2.947, "t1": 3.421, "w": "في"}, {"t0": 3.421, "t1": 3.896, "w": "الدقيقة."}, {"t0": 3.846, "t1": 4.311, "w": "السير"}, {"t0": 4.311, "t1": 4.777, "w": "اللي"}, {"t0": 4.777, "t1": 5.242, "w": "قدامك"}, {"t0": 5.242, "t1": 5.708, "w": "عايز"}, {"t0": 5.708, "t1": 6.173, "w": "خمسين"}, {"t0": 6.173, "t1": 6.639, "w": "لفة"}, {"t0": 6.639, "t1": 7.104, "w": "بس"}, {"t0": 7.104, "t1": 7.569, "w": "وقوة"}, {"t0": 7.569, "t1": 8.035, "w": "تشيل"}, {"t0": 8.035, "t1": 8.5, "w": "طن،"}, {"t0": 8.5, "t1": 8.966, "w": "فمين"}, {"t0": 8.966, "t1": 9.431, "w": "بيعمل"}, {"t0": 9.431, "t1": 9.897, "w": "الحوار"}, {"t0": 9.897, "t1": 10.362, "w": "ده؟"}], "text": "الموتور ده بيلف ألف وأربعمية لفة في الدقيقة. السير اللي قدامك عايز خمسين لفة بس وقوة تشيل طن، فمين بيعمل الحوار ده؟"}, {"n": 2, "dur": 10.432, "lead": 0.4, "audio": "audio/line02.mp3", "offset": 11.768, "words": [{"t0": 0.1, "t1": 0.568, "w": "افتكر"}, {"t0": 0.568, "t1": 1.036, "w": "عجلة"}, {"t0": 1.036, "t1": 1.504, "w": "السباق،"}, {"t0": 1.504, "t1": 1.972, "w": "لما"}, {"t0": 1.972, "t1": 2.441, "w": "تنقل"}, {"t0": 2.441, "t1": 2.909, "w": "على"}, {"t0": 2.909, "t1": 3.377, "w": "الترس"}, {"t0": 3.377, "t1": 3.845, "w": "الصغير"}, {"t0": 3.845, "t1": 4.313, "w": "قدام"}, {"t0": 4.313, "t1": 4.781, "w": "والكبير"}, {"t0": 4.781, "t1": 5.249, "w": "ورا"}, {"t0": 5.249, "t1": 5.717, "w": "بتطلع"}, {"t0": 5.717, "t1": 6.185, "w": "الطلعة"}, {"t0": 6.185, "t1": 6.653, "w": "براحة"}, {"t0": 6.653, "t1": 7.122, "w": "بس"}, {"t0": 7.122, "t1": 7.59, "w": "ببطء،"}, {"t0": 7.59, "t1": 8.058, "w": "ودي"}, {"t0": 8.058, "t1": 8.526, "w": "بالظبط"}, {"t0": 8.526, "t1": 8.994, "w": "فكرة"}, {"t0": 8.994, "t1": 9.462, "w": "الجيربوكس."}], "text": "افتكر عجلة السباق، لما تنقل على الترس الصغير قدام والكبير ورا بتطلع الطلعة براحة بس ببطء، ودي بالظبط فكرة الجيربوكس."}, {"n": 3, "dur": 9.904, "lead": 0.4, "audio": "audio/line03.mp3", "offset": 22.2, "words": [{"t0": 0.1, "t1": 0.542, "w": "جوه"}, {"t0": 0.542, "t1": 0.983, "w": "الجيربوكس"}, {"t0": 0.983, "t1": 1.425, "w": "ترس"}, {"t0": 1.425, "t1": 1.867, "w": "صغير"}, {"t0": 1.867, "t1": 2.308, "w": "بيدوّر"}, {"t0": 2.308, "t1": 2.75, "w": "واحد"}, {"t0": 2.75, "t1": 3.192, "w": "أكبر"}, {"t0": 3.192, "t1": 3.634, "w": "منه،"}, {"t0": 3.634, "t1": 4.075, "w": "لو"}, {"t0": 4.075, "t1": 4.517, "w": "الصغير"}, {"t0": 4.517, "t1": 4.959, "w": "عشرين"}, {"t0": 4.959, "t1": 5.4, "w": "سنة"}, {"t0": 5.4, "t1": 5.842, "w": "والكبير"}, {"t0": 5.842, "t1": 6.284, "w": "ستين"}, {"t0": 6.284, "t1": 6.725, "w": "فالكبير"}, {"t0": 6.725, "t1": 7.167, "w": "بيلف"}, {"t0": 7.167, "t1": 7.609, "w": "أبطأ"}, {"t0": 7.609, "t1": 8.051, "w": "بتلات"}, {"t0": 8.051, "t1": 8.492, "w": "مرات"}, {"t0": 8.492, "t1": 8.934, "w": "بالظبط."}], "text": "جوه الجيربوكس ترس صغير بيدوّر واحد أكبر منه، لو الصغير عشرين سنة والكبير ستين فالكبير بيلف أبطأ بتلات مرات بالظبط."}, {"n": 4, "dur": 9.88, "lead": 0.4, "audio": "audio/line04.mp3", "offset": 32.104, "words": [{"t0": 0.1, "t1": 0.52, "w": "وكل"}, {"t0": 0.52, "t1": 0.94, "w": "ما"}, {"t0": 0.94, "t1": 1.36, "w": "السرعة"}, {"t0": 1.36, "t1": 1.78, "w": "تقل"}, {"t0": 1.78, "t1": 2.2, "w": "القوة"}, {"t0": 2.2, "t1": 2.621, "w": "تزيد"}, {"t0": 2.621, "t1": 3.041, "w": "بنفس"}, {"t0": 3.041, "t1": 3.461, "w": "النسبة،"}, {"t0": 3.461, "t1": 3.881, "w": "قسمت"}, {"t0": 3.881, "t1": 4.301, "w": "السرعة"}, {"t0": 4.301, "t1": 4.721, "w": "على"}, {"t0": 4.721, "t1": 5.141, "w": "تلاتة"}, {"t0": 5.141, "t1": 5.561, "w": "يبقى"}, {"t0": 5.561, "t1": 5.981, "w": "ضربت"}, {"t0": 5.981, "t1": 6.401, "w": "العزم"}, {"t0": 6.401, "t1": 6.822, "w": "في"}, {"t0": 6.822, "t1": 7.242, "w": "نفس"}, {"t0": 7.242, "t1": 7.662, "w": "الرقم"}, {"t0": 7.662, "t1": 8.082, "w": "لأن"}, {"t0": 8.082, "t1": 8.502, "w": "الطاقة"}, {"t0": 8.502, "t1": 8.922, "w": "مبتضيعش."}], "text": "وكل ما السرعة تقل القوة تزيد بنفس النسبة، قسمت السرعة على تلاتة يبقى ضربت العزم في نفس الرقم لأن الطاقة مبتضيعش."}, {"n": 5, "dur": 10.864, "lead": 0.4, "audio": "audio/line05.mp3", "offset": 41.984, "words": [{"t0": 0.1, "t1": 0.566, "w": "موتور"}, {"t0": 0.566, "t1": 1.033, "w": "واحد"}, {"t0": 1.033, "t1": 1.499, "w": "ونص"}, {"t0": 1.499, "t1": 1.966, "w": "كيلووات"}, {"t0": 1.966, "t1": 2.432, "w": "بيطلع"}, {"t0": 2.432, "t1": 2.899, "w": "عشرة"}, {"t0": 2.899, "t1": 3.365, "w": "نيوتن"}, {"t0": 3.365, "t1": 3.831, "w": "متر"}, {"t0": 3.831, "t1": 4.298, "w": "بس،"}, {"t0": 4.298, "t1": 4.764, "w": "وبعد"}, {"t0": 4.764, "t1": 5.231, "w": "جيربوكس"}, {"t0": 5.231, "t1": 5.697, "w": "بتخفيض"}, {"t0": 5.697, "t1": 6.164, "w": "تلاتين"}, {"t0": 6.164, "t1": 6.63, "w": "مرة"}, {"t0": 6.63, "t1": 7.096, "w": "بيطلع"}, {"t0": 7.096, "t1": 7.563, "w": "تقريباً"}, {"t0": 7.563, "t1": 8.029, "w": "تلاتمية"}, {"t0": 8.029, "t1": 8.496, "w": "نيوتن"}, {"t0": 8.496, "t1": 8.962, "w": "متر"}, {"t0": 8.962, "t1": 9.429, "w": "على"}, {"t0": 9.429, "t1": 9.895, "w": "السير."}], "text": "موتور واحد ونص كيلووات بيطلع عشرة نيوتن متر بس، وبعد جيربوكس بتخفيض تلاتين مرة بيطلع تقريباً تلاتمية نيوتن متر على السير."}, {"n": 6, "dur": 10.216, "lead": 0.4, "audio": "audio/line06.mp3", "offset": 52.848, "words": [{"t0": 0.1, "t1": 0.536, "w": "أسنان"}, {"t0": 0.536, "t1": 0.971, "w": "الأتراس"}, {"t0": 0.971, "t1": 1.407, "w": "مش"}, {"t0": 1.407, "t1": 1.842, "w": "مستقيمة،"}, {"t0": 1.842, "t1": 2.278, "w": "دي"}, {"t0": 2.278, "t1": 2.713, "w": "مايلة"}, {"t0": 2.713, "t1": 3.149, "w": "شوية"}, {"t0": 3.149, "t1": 3.584, "w": "واسمها"}, {"t0": 3.584, "t1": 4.02, "w": "حلزونية،"}, {"t0": 4.02, "t1": 4.455, "w": "كذا"}, {"t0": 4.455, "t1": 4.891, "w": "سنة"}, {"t0": 4.891, "t1": 5.326, "w": "بتشتبك"}, {"t0": 5.326, "t1": 5.762, "w": "في"}, {"t0": 5.762, "t1": 6.197, "w": "نفس"}, {"t0": 6.197, "t1": 6.633, "w": "اللحظة"}, {"t0": 6.633, "t1": 7.068, "w": "فالصوت"}, {"t0": 7.068, "t1": 7.504, "w": "أهدى"}, {"t0": 7.504, "t1": 7.939, "w": "والحمل"}, {"t0": 7.939, "t1": 8.375, "w": "اللي"}, {"t0": 8.375, "t1": 8.81, "w": "تشيله"}, {"t0": 8.81, "t1": 9.246, "w": "أعلى."}], "text": "أسنان الأتراس مش مستقيمة، دي مايلة شوية واسمها حلزونية، كذا سنة بتشتبك في نفس اللحظة فالصوت أهدى والحمل اللي تشيله أعلى."}, {"n": 7, "dur": 10.24, "lead": 0.4, "audio": "audio/line07.mp3", "offset": 63.064, "words": [{"t0": 0.1, "t1": 0.537, "w": "الأتراس"}, {"t0": 0.537, "t1": 0.973, "w": "دي"}, {"t0": 0.973, "t1": 1.41, "w": "من"}, {"t0": 1.41, "t1": 1.847, "w": "صلب"}, {"t0": 1.847, "t1": 2.283, "w": "متقسي"}, {"t0": 2.283, "t1": 2.72, "w": "لتمنية"}, {"t0": 2.72, "t1": 3.157, "w": "وخمسين"}, {"t0": 3.157, "t1": 3.593, "w": "روكويل"}, {"t0": 3.593, "t1": 4.03, "w": "وبتعوم"}, {"t0": 4.03, "t1": 4.467, "w": "في"}, {"t0": 4.467, "t1": 4.903, "w": "حمام"}, {"t0": 4.903, "t1": 5.34, "w": "زيت،"}, {"t0": 5.34, "t1": 5.777, "w": "والزيت"}, {"t0": 5.777, "t1": 6.213, "w": "ده"}, {"t0": 6.213, "t1": 6.65, "w": "بيتغير"}, {"t0": 6.65, "t1": 7.087, "w": "كل"}, {"t0": 7.087, "t1": 7.523, "w": "ستة"}, {"t0": 7.523, "t1": 7.96, "w": "آلاف"}, {"t0": 7.96, "t1": 8.397, "w": "ساعة"}, {"t0": 8.397, "t1": 8.833, "w": "شغل"}, {"t0": 8.833, "t1": 9.27, "w": "تقريباً."}], "text": "الأتراس دي من صلب متقسي لتمنية وخمسين روكويل وبتعوم في حمام زيت، والزيت ده بيتغير كل ستة آلاف ساعة شغل تقريباً."}, {"n": 8, "dur": 9.952, "lead": 0.4, "audio": "audio/line08.mp3", "offset": 73.304, "words": [{"t0": 0.1, "t1": 0.522, "w": "ناس"}, {"t0": 0.522, "t1": 0.944, "w": "كتير"}, {"t0": 0.944, "t1": 1.365, "w": "فاكرة"}, {"t0": 1.365, "t1": 1.787, "w": "إن"}, {"t0": 1.787, "t1": 2.209, "w": "الحل"}, {"t0": 2.209, "t1": 2.631, "w": "موتور"}, {"t0": 2.631, "t1": 3.052, "w": "أكبر،"}, {"t0": 3.052, "t1": 3.474, "w": "لأ،"}, {"t0": 3.474, "t1": 3.896, "w": "الصغير"}, {"t0": 3.896, "t1": 4.318, "w": "مع"}, {"t0": 4.318, "t1": 4.739, "w": "جيربوكس"}, {"t0": 4.739, "t1": 5.161, "w": "بيديك"}, {"t0": 5.161, "t1": 5.583, "w": "نفس"}, {"t0": 5.583, "t1": 6.005, "w": "العزم"}, {"t0": 6.005, "t1": 6.426, "w": "بتمن"}, {"t0": 6.426, "t1": 6.848, "w": "أرخص"}, {"t0": 6.848, "t1": 7.27, "w": "وكهرباء"}, {"t0": 7.27, "t1": 7.692, "w": "أقل"}, {"t0": 7.692, "t1": 8.113, "w": "بكتير"}, {"t0": 8.113, "t1": 8.535, "w": "في"}, {"t0": 8.535, "t1": 8.957, "w": "الآخر."}], "text": "ناس كتير فاكرة إن الحل موتور أكبر، لأ، الصغير مع جيربوكس بيديك نفس العزم بتمن أرخص وكهرباء أقل بكتير في الآخر."}, {"n": 9, "dur": 10.672, "lead": 0.4, "audio": "audio/line09.mp3", "offset": 83.256, "words": [{"t0": 0.1, "t1": 0.58, "w": "ببساطة"}, {"t0": 0.58, "t1": 1.06, "w": "الجيربوكس"}, {"t0": 1.06, "t1": 1.54, "w": "بياخد"}, {"t0": 1.54, "t1": 2.021, "w": "لفات"}, {"t0": 2.021, "t1": 2.501, "w": "كتير"}, {"t0": 2.501, "t1": 2.981, "w": "بقوة"}, {"t0": 2.981, "t1": 3.461, "w": "صغيرة"}, {"t0": 3.461, "t1": 3.941, "w": "ويطلعلك"}, {"t0": 3.941, "t1": 4.421, "w": "دورات"}, {"t0": 4.421, "t1": 4.901, "w": "قليلة"}, {"t0": 4.901, "t1": 5.382, "w": "بعزم"}, {"t0": 5.382, "t1": 5.862, "w": "جبار،"}, {"t0": 5.862, "t1": 6.342, "w": "وكده"}, {"t0": 6.342, "t1": 6.822, "w": "موتور"}, {"t0": 6.822, "t1": 7.302, "w": "قد"}, {"t0": 7.302, "t1": 7.782, "w": "الإيد"}, {"t0": 7.782, "t1": 8.263, "w": "بيحرك"}, {"t0": 8.263, "t1": 8.743, "w": "سير"}, {"t0": 8.743, "t1": 9.223, "w": "بطول"}, {"t0": 9.223, "t1": 9.703, "w": "الأوضة."}], "text": "ببساطة الجيربوكس بياخد لفات كتير بقوة صغيرة ويطلعلك دورات قليلة بعزم جبار، وكده موتور قد الإيد بيحرك سير بطول الأوضة."}], "total": 93.528, "fps": 30};
+const W = 1080, H = 1920;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+
+// palette: cream paper, ink, brick red, steel grey, blue accent (like the reference's waves)
+const P = { paper: '#efe6d2', grid: 'rgba(60,50,40,0.07)', ink: '#2a2420', red: '#b3362a', grey: '#9b9b9b', greyD: '#6f6f6f', white: '#fbf8f1', blue: '#2c5aa0', amber: '#d9a441', soft: 'rgba(42,36,32,0.08)' };
+const LW = 4;
+
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = (t) => t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+const eo = (t) => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+const pop = (t) => { t = clamp(t, 0, 1); return t < 0.7 ? eo(t / 0.7) * 1.12 : 1.12 - 0.12 * ease((t - 0.7) / 0.3); };
+const TAU = Math.PI * 2;
+
+function stroke(c = P.ink, w = LW) { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; }
+function circle(x, y, r, fill, lw = LW) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (lw) { stroke(P.ink, lw); ctx.stroke(); } }
+function rect(x, y, w, h, fill, r = 8, lw = LW) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (lw) { stroke(P.ink, lw); ctx.stroke(); } }
+function line(x1, y1, x2, y2, c = P.ink, w = LW) { stroke(c, w); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+function text(s, x, y, size, c = P.ink, weight = 900, align = 'center') { ctx.fillStyle = c; ctx.font = `${weight} ${size}px Cairo`; ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.direction = 'rtl'; ctx.fillText(s, x, y); }
+function latin(s, x, y, size, c = P.ink, weight = 700, align = 'center') { ctx.fillStyle = c; ctx.font = `${weight} ${size}px Cairo`; ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillText(s, x, y); }
+
+function paper() {
+  ctx.fillStyle = P.paper; ctx.fillRect(0, 0, W, H);
+  stroke(P.grid, 2);
+  for (let x = 60; x < W; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 60; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+}
+
+// ---------- parts ----------
+function gear(cx, cy, r, teeth, ang, fill = P.grey, helical = false) {
+  const ro = r, ri = r * 0.82, n = teeth;
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+  ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * TAU, da = TAU / n;
+    const a1 = a + da * 0.15, a2 = a + da * 0.35, a3 = a + da * 0.65, a4 = a + da * 0.85;
+    if (i === 0) ctx.moveTo(Math.cos(a) * ri, Math.sin(a) * ri);
+    ctx.lineTo(Math.cos(a1) * ri, Math.sin(a1) * ri);
+    ctx.lineTo(Math.cos(a2) * ro, Math.sin(a2) * ro);
+    ctx.lineTo(Math.cos(a3) * ro, Math.sin(a3) * ro);
+    ctx.lineTo(Math.cos(a4) * ri, Math.sin(a4) * ri);
+  }
+  ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); stroke(P.ink, LW); ctx.stroke();
+  if (helical) { stroke(P.ink, 2); for (let i = 0; i < n; i++) { const a = (i / n) * TAU + TAU / n * 0.5; ctx.beginPath(); ctx.moveTo(Math.cos(a - 0.06) * ri * 0.9, Math.sin(a - 0.06) * ri * 0.9); ctx.lineTo(Math.cos(a + 0.06) * ro * 0.98, Math.sin(a + 0.06) * ro * 0.98); ctx.stroke(); } }
+  circle(0, 0, r * 0.22, P.white);
+  circle(0, 0, r * 0.07, P.ink, 0);
+  ctx.restore();
+}
+function motor(x, y, s = 1, fanAng = 0, withBox = true) {
+  // x,y = bottom-left of the motor foot; drawn to the right
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  rect(10, -20, 300, 22, P.greyD, 4);                     // feet
+  rect(0, -200, 260, 180, P.grey, 26);                     // motor body
+  for (let i = 0; i < 6; i++) line(30 + i * 36, -186, 30 + i * 36, -36, P.ink, 2);
+  circle(0, -110, 70, P.greyD);                            // fan hood
+  ctx.save(); ctx.translate(0, -110); ctx.rotate(fanAng); for (let i = 0; i < 6; i++) { ctx.rotate(TAU / 6); line(0, 0, 0, -52, P.ink, 3); } ctx.restore();
+  circle(0, -110, 12, P.ink, 0);
+  if (withBox) { rect(255, -230, 170, 220, P.red, 14); rect(300, -300, 80, 80, P.red, 10); rect(425, -170, 70, 36, P.greyD, 6); line(495, -152, 560, -152, P.ink, 10); }
+  ctx.restore();
+}
+function conveyor(x, y, len, beltPhase, coilX, withCoil = true) {
+  rect(x, y, len, 60, P.greyD, 30);
+  ctx.save(); ctx.beginPath(); ctx.roundRect(x, y, len, 60, 30); ctx.clip();
+  stroke(P.ink, 3); for (let i = -1; i < len / 70 + 1; i++) { const px = x + ((i * 70 + beltPhase) % (len + 70)); ctx.beginPath(); ctx.moveTo(px, y + 8); ctx.lineTo(px - 12, y + 52); ctx.stroke(); }
+  ctx.restore();
+  for (let i = 0; i <= 4; i++) { const lx = x + 40 + i * (len - 80) / 4; line(lx, y + 60, lx, y + 150); line(lx - 28, y + 150, lx + 28, y + 150); }
+  if (withCoil) { ctx.save(); ctx.translate(coilX, y - 10); ctx.beginPath(); ctx.ellipse(0, -90, 110, 100, 0, 0, TAU); ctx.fillStyle = P.grey; ctx.fill(); stroke(); ctx.stroke(); ctx.beginPath(); ctx.ellipse(0, -90, 40, 36, 0, 0, TAU); ctx.fillStyle = P.paper; ctx.fill(); ctx.stroke(); ctx.restore(); }
+}
+function stickman(x, y, h = 300, o = {}) {
+  // x,y = feet position (center). h = height. o: {walk, armL, armR, lean, ride, hat}
+  const hr = h * 0.14, torso = h * 0.42, leg = h * 0.34;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(o.lean || 0);
+  const hipY = -leg, shY = -leg - torso, headY = shY - hr * 1.15;
+  const sw = Math.sin(o.walk || 0) * 0.55;
+  line(0, hipY, Math.sin(sw) * leg * 0.9, 0 + (o.ride ? -leg * 0.2 : 0));
+  line(0, hipY, Math.sin(-sw) * leg * 0.9, 0 + (o.ride ? -leg * 0.2 : 0));
+  line(0, hipY, 0, shY);
+  const aL = o.armL === undefined ? 0.5 : o.armL, aR = o.armR === undefined ? -0.5 : o.armR;
+  line(0, shY + 10, Math.sin(aL) * torso * 0.8, shY + 10 + Math.cos(aL) * torso * 0.8);
+  line(0, shY + 10, Math.sin(aR) * torso * 0.8, shY + 10 + Math.cos(aR) * torso * 0.8);
+  // head egg
+  ctx.beginPath(); ctx.ellipse(0, headY, hr * 0.9, hr, 0, 0, TAU); ctx.fillStyle = P.white; ctx.fill(); stroke(); ctx.stroke();
+  circle(-hr * 0.3, headY - hr * 0.1, 4, P.ink, 0); circle(hr * 0.3, headY - hr * 0.1, 4, P.ink, 0);
+  line(-hr * 0.22, headY + hr * 0.4, hr * 0.22, headY + hr * 0.4, P.ink, 3);
+  if (o.hat !== false) { ctx.beginPath(); ctx.moveTo(-hr * 1.2, headY - hr * 0.55); ctx.quadraticCurveTo(0, headY - hr * 2.0, hr * 1.2, headY - hr * 0.55); ctx.closePath(); ctx.fillStyle = P.white; ctx.fill(); stroke(); ctx.stroke(); line(-hr * 1.35, headY - hr * 0.5, hr * 1.35, headY - hr * 0.5); }
+  ctx.restore();
+}
+function dial(cx, cy, r, v) { // v 0..1
+  circle(cx, cy, r, P.white); circle(cx, cy, r * 0.9, P.white, 2);
+  stroke(P.ink, 3);
+  for (let i = 0; i <= 10; i++) { const a = Math.PI * 0.8 + i * (Math.PI * 1.4 / 10); const l = i % 5 === 0 ? r * 0.18 : r * 0.1; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r * 0.86, cy + Math.sin(a) * r * 0.86); ctx.lineTo(cx + Math.cos(a) * (r * 0.86 - l), cy + Math.sin(a) * (r * 0.86 - l)); ctx.stroke(); }
+  const a = Math.PI * 0.8 + clamp(v, 0, 1) * Math.PI * 1.4;
+  line(cx, cy, cx + Math.cos(a) * r * 0.72, cy + Math.sin(a) * r * 0.72, P.red, 7);
+  circle(cx, cy, r * 0.08, P.ink, 0);
+}
+function arrow(x1, y1, x2, y2, c = P.ink, w = 6, head = 22) {
+  line(x1, y1, x2, y2, c, w); const a = Math.atan2(y2 - y1, x2 - x1);
+  ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - Math.cos(a - 0.5) * head, y2 - Math.sin(a - 0.5) * head); ctx.lineTo(x2 - Math.cos(a + 0.5) * head, y2 - Math.sin(a + 0.5) * head); ctx.closePath(); ctx.fillStyle = c; ctx.fill();
+}
+function badge(x, y, s, size = 120, fill = P.red, tc = P.white, isLatin = false) { ctx.save(); ctx.translate(x, y); circle(0, 0, size, fill); (isLatin ? latin : text)(s, 0, 4, isLatin ? size * 0.55 : size * 0.8, tc, 900); ctx.restore(); }
+function cloud(x, y, w, h, s) { ctx.save(); ctx.translate(x, y); ctx.beginPath(); ctx.ellipse(0, 0, w, h, 0, 0, TAU); ctx.fillStyle = P.white; ctx.fill(); stroke(); ctx.stroke(); circle(-w * 0.9, h * 1.0, 16, P.white); circle(-w * 1.15, h * 1.5, 9, P.white); text(s, 0, 6, h * 1.0, P.ink); ctx.restore(); }
+function bicycle(x, y, s, wa, pa) { // x,y = ground under rear wheel center
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  const R = 120, wb = 330;
+  for (const wx of [0, wb]) { ctx.save(); ctx.translate(wx, -R); circle(0, 0, R, null, 7); circle(0, 0, R - 14, null, 2); ctx.rotate(wa); for (let i = 0; i < 8; i++) { ctx.rotate(TAU / 8); line(0, 0, 0, -R + 10, P.ink, 2); } ctx.restore(); }
+  stroke(P.red, 8); ctx.beginPath(); ctx.moveTo(0, -R); ctx.lineTo(150, -R - 150); ctx.lineTo(260, -R - 170); ctx.lineTo(wb, -R); ctx.moveTo(150, -R - 150); ctx.lineTo(190, -R + 10); ctx.lineTo(0, -R); ctx.moveTo(190, -R + 10); ctx.lineTo(260, -R - 170); ctx.stroke();
+  line(150, -R - 150, 130, -R - 200, P.ink, 7); line(100, -R - 200, 160, -R - 200, P.ink, 8); // seat
+  line(260, -R - 170, 300, -R - 230, P.ink, 7); line(270, -R - 235, 330, -R - 225, P.ink, 8); // bars
+  gear(190, -R + 10, 48, 18, pa, P.greyD); gear(0, -R, 22, 9, pa * 18 / 9, P.greyD);
+  line(190, -R - 36, 2, -R - 20, P.ink, 3); line(190, -R + 56, 2, -R + 20, P.ink, 3); // chain
+  ctx.save(); ctx.translate(190, -R + 10); ctx.rotate(pa); line(0, 0, 0, 60, P.ink, 6); line(0, 0, 0, -60, P.ink, 6); ctx.restore();
+  ctx.restore();
+}
+function wrench(x, y, len, ang, w = 14) { ctx.save(); ctx.translate(x, y); ctx.rotate(ang); rect(0, -w / 2, len, w, P.greyD, w / 2); circle(len, 0, w * 1.3, P.greyD); ctx.beginPath(); ctx.arc(len, 0, w * 0.7, -0.6, 0.6); ctx.fillStyle = P.paper; ctx.fill(); ctx.restore(); }
+function weight(x, y, s, label) { rect(x - 60 * s, y - 70 * s, 120 * s, 70 * s, P.greyD, 10 * s); rect(x - 20 * s, y - 92 * s, 40 * s, 22 * s, P.greyD, 6 * s); if (label) text(label, x, y - 35 * s, 34 * s, P.white); }
+function oilcan(x, y, s, tilt) { ctx.save(); ctx.translate(x, y); ctx.rotate(tilt); rect(-50 * s, -60 * s, 100 * s, 70 * s, P.greyD, 12 * s); rect(-20 * s, -84 * s, 40 * s, 26 * s, P.greyD, 6 * s); line(-50 * s, -40 * s, -130 * s, -90 * s, P.ink, 10 * s); ctx.restore(); }
+function cross(x, y, s, c = P.red) { line(x - s, y - s, x + s, y + s, c, 14); line(x + s, y - s, x - s, y + s, c, 14); }
+function check(x, y, s, c = '#1f7a3d') { stroke(c, 14); ctx.beginPath(); ctx.moveTo(x - s, y); ctx.lineTo(x - s * 0.3, y + s * 0.7); ctx.lineTo(x + s, y - s * 0.7); ctx.stroke(); }
+function counter(x, y, w, h, s) { rect(x - w / 2, y - h / 2, w, h, P.white, 14); latin(s, x, y + 4, h * 0.5, P.ink, 900); }
+function timerRing(cx, cy, r, p) { circle(cx, cy, r, P.white, 3); stroke(P.red, 10); ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + TAU * clamp(p, 0, 1)); ctx.stroke(); }
+
+// ---------- UI chrome: title + subtitles ----------
+function title(s, sub) {
+  text(s, W / 2, 230, 82, P.ink, 900);
+  if (sub) text(sub, W / 2, 330, 46, P.red, 700);
+  line(W / 2 - 260, 395, W / 2 + 260, 395, P.red, 5);
+}
+function subtitle(words, t) {
+  if (!words) return;
+  // group words into cues of up to 5 words (by index) and show the active cue
+  const groups = []; let cur = [];
+  for (const w of words) { cur.push(w); if (cur.length >= 4 || /[.،؟,?!]$/.test(w.w)) { groups.push(cur); cur = []; } }
+  if (cur.length) { if (groups.length && cur.length <= 1) groups[groups.length - 1].push(...cur); else groups.push(cur); }
+  let g = null;
+  for (let i = 0; i < groups.length; i++) { const a = groups[i][0].t0, b = i + 1 < groups.length ? groups[i + 1][0].t0 : groups[i][groups[i].length - 1].t1 + 0.4; if (t >= a - 0.05 && t < b) { g = groups[i]; break; } }
+  if (!g) return;
+  const s = g.map((w) => w.w).join(' ');
+  ctx.font = '700 54px Cairo'; ctx.direction = 'rtl';
+  const tw = ctx.measureText(s).width + 70;
+  rect(W / 2 - tw / 2, 1560, tw, 96, P.white, 20, 3);
+  text(s, W / 2, 1610, 54, P.ink, 700);
+}
+function brand() { text('الجيربوكس بيشتغل إزاي؟', W - 110, 92, 30, P.greyD, 700, 'right'); circle(W - 70, 92, 14, P.red, 0); }
+
+// ---------- scenes (s = seconds inside the scene, d = scene duration) ----------
+const scenes = [
+ function s1(s, d) {   // hook
+  title('الجيربوكس بيشتغل إزاي؟', 'موتور صغير… حمل تقيل');
+  const fan = s * 40, spin = ease(s / 0.6);
+  conveyor(60, 1180, 900, 0, 760);
+  motor(60, 1180, 0.9, fan);
+  if (s > 0.4) counter(260, 860 - 20 * (1 - ease((s - 0.4) / 0.4)), 330, 100, '1400 rpm');
+  if (s > 0.4) { for (let i = 0; i < 3; i++) line(40, 1040 + i * 26, 10 - (fan * 3 % 40), 1040 + i * 26, P.ink, 3); }
+  if (s > 2.2) { const k = pop((s - 2.2) / 0.5); ctx.save(); ctx.translate(760, 860); ctx.scale(k, k); counter(0, 0, 300, 100, '50 rpm'); ctx.restore(); }
+  if (s > 2.8) { const k = pop((s - 2.8) / 0.5); ctx.save(); ctx.translate(760, 1080); ctx.scale(k, k); text('١ طن', 0, 0, 56, P.ink); ctx.restore(); }
+  if (s > 4.5) { const k = pop((s - 4.5) / 0.5); ctx.save(); ctx.translate(520, 720); ctx.scale(k, k); text('؟', 0, 10, 170, P.red); ctx.restore(); }
+  dial(930, 600, 100, 0.02 + 0.02 * Math.sin(s * 12));
+  stickman(990, 1330, 330, { armL: s > 5.5 ? -1.3 : 0.5, armR: -0.6, walk: 0 });
+  if (s > 6.5) timerRing(540, 1420, 44, (s - 6.5) / (d - 6.5)), text('هشرح في دقيقة ونص', 540, 1500, 34, P.greyD, 700);
+ },
+ function s2(s, d) {   // bicycle analogy
+  title('فكرة عجلة السباق', 'ترس صغير قدام… ترس كبير ورا');
+  // hill
+  ctx.beginPath(); ctx.moveTo(0, 1500); ctx.lineTo(1080, 1500); ctx.lineTo(1080, 1180); ctx.lineTo(560, 1350); ctx.lineTo(0, 1500); ctx.closePath(); ctx.fillStyle = P.soft; ctx.fill(); stroke(); ctx.stroke();
+  const prog = ease(s / (d - 1));
+  const bx = 160 + prog * 560, by = 1500 - (bx > 560 ? (bx - 560) / 520 * 320 : 0), tilt = bx > 560 ? -0.55 : 0;
+  const pa = s * (s < 4 ? 3 : 9), wa = s * (s < 4 ? 3 : 2);
+  ctx.save(); ctx.translate(bx, by); ctx.rotate(tilt); bicycle(0, 0, 0.75, wa, pa);
+  stickman(142, -88, 300, { hat: true, lean: 0.18, armL: 1.25, armR: 1.1, walk: 0 }); ctx.restore();
+  if (s > 2 && s < 7) { const k = pop((s - 2) / 0.5); ctx.save(); ctx.translate(540, 720); ctx.scale(k, k); gear(-150, 0, 95, 22, s * 3, P.greyD); gear(90, 0, 42, 10, s * 3 * 2.2, P.greyD); arrow(-40, -140, 40, -140, P.red, 6); text('سريع', 90, -200, 40, P.red); text('بطيء وقوي', -150, -220, 40, P.red); ctx.restore(); }
+  if (s > 7) { const k = pop((s - 7) / 0.5); ctx.save(); ctx.translate(540, 780); ctx.scale(k, k); text('نفس فكرة الجيربوكس', 0, 0, 70, P.ink); ctx.restore(); }
+  dial(930, 560, 90, 0.12);
+ },
+ function s3(s, d) {   // 20 teeth vs 60 teeth
+  title('ترس صغير بيدوّر ترس كبير', 'عشرين سنة × ستين سنة');
+  const a = s * 2.6;
+  rect(90, 560, 900, 860, P.white, 30);
+  gear(250, 1060, 92, 20, a, P.grey, true); gear(606, 1060, 272, 60, -a / 3 + 0.05, P.grey, true);
+  if (s > 1.5) badge(250, 860, '٢٠', 62, P.red); if (s > 2.5) badge(606, 660, '٦٠', 72, P.red);
+  const turns = Math.floor(a / TAU);
+  if (s > 4) { counter(250, 1500, 300, 96, `${Math.min(turns, 99)} لفة`); counter(830, 1500, 300, 96, `${Math.min(Math.floor(turns / 3), 33)} لفة`); }
+  if (s > 7) { const k = pop((s - 7) / 0.5); ctx.save(); ctx.translate(540, 1500); ctx.scale(k, k); badge(0, 0, '3 : 1', 80, P.ink, P.white, true); ctx.restore(); }
+  dial(930, 560, 80, 0.24);
+ },
+ function s4(s, d) {   // speed down torque up
+  title('السرعة تقل… العزم يزيد', 'بنفس النسبة');
+  const p = ease((s - 1) / 4);
+  // speed arrow shrinks, torque arrow grows
+  text('السرعة', 700, 620, 54, P.blue); arrow(1000, 700, 1000 - 60 - (1 - p) * 500, 700, P.blue, 12, 36);
+  text('العزم', 700, 900, 54, P.red); arrow(1000, 980, 1000 - 60 - p * 650, 980, P.red, 12, 36);
+  if (s > 1) { latin('÷ 3', 300, 600, 60, P.blue, 900); latin('× 3', 300, 1080, 60, P.red, 900); }
+  // wrench analogy
+  const g = s * 2;
+  gear(240, 1470, 60, 14, g, P.grey, true); gear(600, 1470, 180, 42, -g / 3, P.grey, true);
+  wrench(240, 1470, 110, -1.5 + 0.3 * Math.sin(s * 3), 12); wrench(600, 1470, 290, -2.3 + 0.1 * Math.sin(s * 3), 16);
+  if (s > 5.5) { const k = pop((s - 5.5) / 0.5); ctx.save(); ctx.translate(540, 1180); ctx.scale(k, k); text('الطاقة نفسها مبتضيعش', 0, 0, 56, P.ink); ctx.restore(); }
+  dial(930, 560, 80, 0.36 + 0.02 * Math.sin(s * 6));
+ },
+ function s5(s, d) {   // real numbers
+  title('من عشرة لتلاتمية نيوتن متر', 'موتور واحد ونص كيلووات');
+  const fan = s * 30;
+  motor(140, 1000, 0.8, fan, false);
+  if (s > 0.8) counter(260, 650, 340, 100, '1.5 kW');
+  if (s > 1.6) { const k = pop((s - 1.6) / 0.4); ctx.save(); ctx.translate(360, 1120); ctx.scale(k, k); counter(0, 0, 300, 100, '10 N·m'); ctx.restore(); }
+  // gearbox stages drop in
+  for (let i = 0; i < 3; i++) { const t0 = 3 + i * 0.6; if (s > t0) { const k = eo((s - t0) / 0.5); const yy = 1010 - (1 - k) * 300; gear(560 + i * 120, yy - i * 30, 50 + i * 30, 12 + i * 8, (s * 4) / (i + 1) * (i % 2 ? -1 : 1), P.grey, true); } }
+  if (s > 4.8) { const k = pop((s - 4.8) / 0.4); ctx.save(); ctx.translate(690, 650); ctx.scale(k, k); badge(0, 0, 'i = 30', 90, P.red, P.white, true); ctx.restore(); }
+  if (s > 6.2) { const k = pop((s - 6.2) / 0.5); ctx.save(); ctx.translate(800, 1180); ctx.scale(k, k); counter(0, 0, 360, 110, '300 N·m'); ctx.restore(); }
+  if (s > 6.2) { const lift = eo((s - 6.2) / 2); line(900, 1240, 900, 1500 - lift * 160, P.ink, 4); weight(900, 1520 - lift * 160, 1.2); }
+  dial(930, 560, 90, 0.48 + (s > 6.2 ? 0.08 * eo((s - 6.2) / 1) : 0));
+ },
+ function s6(s, d) {   // helical teeth
+  title('الأسنان الحلزونية', 'كذا سنة بتشتبك في نفس اللحظة');
+  const a = s * 1.8;
+  // left: straight gears clacking (crossed out) ; right: helical smooth
+  rect(60, 560, 460, 700, P.white, 26); rect(560, 560, 460, 700, P.white, 26);
+  const jolt = Math.sin(s * 25) * 3;
+  gear(290 + jolt, 760, 90, 14, a, P.grey, false); gear(290 - jolt, 1040, 150, 24, -a * 14 / 24, P.grey, false);
+  gear(790, 760, 90, 14, a, P.grey, true); gear(790, 1040, 150, 24, -a * 14 / 24, P.grey, true);
+  if (s > 2.5) { // jagged noise vs smooth wave
+    stroke(P.red, 6); ctx.beginPath(); for (let i = 0; i <= 12; i++) { const x = 160 + i * 22, y = 1200 + (i % 2 ? -22 : 22); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); cross(290, 1200, 60);
+    stroke(P.blue, 6); ctx.beginPath(); for (let i = 0; i <= 40; i++) { const x = 640 + i * 7.5, y = 1200 + Math.sin(i * 0.5 + s * 4) * 14; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); check(880, 1190, 34);
+  }
+  if (s > 5.5) { const k = pop((s - 5.5) / 0.5); ctx.save(); ctx.translate(540, 1350); ctx.scale(k, k); text('صوت أهدى + حمل أعلى', 0, 0, 60, P.ink); ctx.restore(); }
+  dial(930, 1470, 80, 0.6);
+ },
+ function s7(s, d) {   // steel + oil bath
+  title('صلب متقسي وحمام زيت', '٥٨ روكويل · تغيير زيت كل ٦٠٠٠ ساعة');
+  // housing open with gears and oil
+  rect(80, 740, 760, 600, P.red, 30);
+  ctx.save(); ctx.beginPath(); ctx.roundRect(110, 770, 700, 540, 22); ctx.clip(); ctx.fillStyle = P.paper; ctx.fillRect(110, 770, 700, 540);
+  const lvl = 1310 - 150 * ease((s - 1) / 3);
+  ctx.fillStyle = P.amber; ctx.fillRect(110, lvl, 700, 600);
+  gear(340, 1080, 115, 20, s * 2, P.grey, true); gear(610, 1080, 165, 28, -s * 2 * 20 / 28, P.grey, true);
+  ctx.restore();
+  const tilt = s > 0.5 ? -0.6 * ease((s - 0.5) / 0.8) : 0;
+  oilcan(300, 640, 1, tilt);
+  if (s > 1.2 && s < 4.5) { for (let i = 0; i < 4; i++) { const y = 650 + ((s * 500 + i * 90) % 350); circle(190, y, 9, P.amber, 2); } }
+  stickman(960, 1340, 280, { armL: 0.8, armR: -1.1 });
+  if (s > 2.5) { const k = pop((s - 2.5) / 0.5); ctx.save(); ctx.translate(640, 640); ctx.scale(k, k); badge(0, 0, '58 HRC', 96, P.ink, P.white, true); ctx.restore(); }
+  if (s > 6) { const k = pop((s - 6) / 0.5); ctx.save(); ctx.translate(540, 1470); ctx.scale(k, k); counter(0, 0, 440, 100, 'كل ٦٠٠٠ ساعة'); ctx.restore(); }
+  dial(930, 580, 80, 0.72);
+ },
+ function s8(s, d) {   // misconception
+  title('موتور أكبر؟ لأ', 'موتور صغير + جيربوكس');
+  const big = 1 - 0.5 * ease((s - 2) / 1.2);
+  ctx.save(); ctx.translate(540 - 200 * big, 1000); ctx.scale(big * 1.4, big * 1.4); motor(0, 0, 1, s * 10, false); ctx.restore();
+  if (s > 2) { const k = pop((s - 2) / 0.4); ctx.save(); ctx.translate(540, 820); ctx.scale(k, k); cross(0, 0, 120); ctx.restore(); }
+  if (s > 3.4) { const k = eo((s - 3.4) / 0.6); ctx.save(); ctx.translate(120, 1380 + (1 - k) * 200); motor(0, 0, 0.9, s * 30); ctx.restore(); check(700, 1250, 50); }
+  if (s > 5) { const k = pop((s - 5) / 0.5); ctx.save(); ctx.translate(820, 1400); ctx.scale(k, k); latin('$', 0, 0, 120, P.red, 900); arrow(80, -70, 80, 60, P.red, 8); ctx.restore(); }
+  if (s > 5.8) { const k = pop((s - 5.8) / 0.5); ctx.save(); ctx.translate(960, 1400); ctx.scale(k, k); text('⚡', 0, 0, 100, P.ink); arrow(80, -70, 80, 60, P.red, 8); ctx.restore(); }
+  stickman(930, 1000, 260, { armL: s > 2 ? -1.6 : 0.4, armR: -0.4 });
+  dial(140, 620, 90, 0.84);
+ },
+ function s9(s, d) {   // payoff
+  title('ببساطة…', 'لفات كتير بقوة صغيرة ← لفات قليلة بعزم جبار');
+  const fan = s * 40, belt = s * 120, coil = 420 + ease((s - 2) / 5) * 300;
+  conveyor(120, 1180, 840, belt, coil);
+  motor(120, 1180, 0.9, fan);
+  arrow(380, 700, 540, 700, P.blue, 10); arrow(640, 700, 820, 700, P.red, 10);
+  counter(300, 590, 300, 90, '1400 rpm'); counter(820, 590, 280, 90, '50 rpm');
+  if (s > 1) { const k = pop((s - 1) / 0.5); ctx.save(); ctx.translate(600, 870); ctx.scale(k, k); counter(0, 0, 300, 100, '300 N·m'); ctx.restore(); }
+  dial(930, 930, 110, 0.86 + 0.14 * eo((s - 0.5) / 1.5));
+  stickman(980, 1330, 330, { armL: -1.9, armR: -0.4 });
+  if (s > d - 3.2) { const k = ease((s - (d - 3.2)) / 0.6); ctx.fillStyle = `rgba(239,230,210,${k})`; ctx.fillRect(0, 0, W, H); if (k > 0.5) { text('الجيربوكس بيشتغل إزاي؟', W / 2, 880, 90, P.ink); text('موتور قد الإيد… سير بطول الأوضة', W / 2, 1010, 50, P.red, 700); gear(540, 1250, 120, 20, s * 1.5, P.grey, true); } }
+ },
+];
+
+// ---------- master clock ----------
+function sceneAt(t) {
+  if (!TL) return { i: 0, s: t, d: 10, words: null, t0: 0 };
+  let acc = 0;
+  for (let i = 0; i < TL.scenes.length; i++) { const sc = TL.scenes[i]; if (t < acc + sc.dur || i === TL.scenes.length - 1) { return { i, s: t - acc, d: sc.dur, words: sc.words, t0: acc, lead: sc.lead }; } acc += sc.dur; }
+}
+window.__seek = function (t) {
+  const sc = sceneAt(t);
+  paper();
+  scenes[sc.i](Math.max(0, sc.s), sc.d);
+  brand();
+  if (sc.words) subtitle(sc.words, sc.s - sc.lead);
+  return sc.i;
+};
+window.__ready = document.fonts.load('900 80px Cairo').then(() => document.fonts.load('700 50px Cairo')).then(() => true);
+// audio-driven playback
+const au = document.getElementById('au'), btn = document.getElementById('play'), fill = document.getElementById('fill');
+let playing = false;
+function tick() { const t = Math.min(au.currentTime, TL.total - 0.01); window.__seek(t); fill.style.width = (t / TL.total * 100) + '%'; if (playing) requestAnimationFrame(tick); }
+btn.addEventListener('click', () => { au.currentTime = 0; au.play().then(() => { playing = true; btn.hidden = true; tick(); }).catch(() => {}); });
+au.addEventListener('ended', () => { playing = false; btn.hidden = false; btn.querySelector('span').textContent = '↻'; });
+document.getElementById('wrap').addEventListener('click', (e) => { if (e.target === btn || btn.contains(e.target)) return; if (playing) { au.pause(); playing = false; btn.hidden = false; btn.querySelector('span').textContent = '▶'; } else if (au.currentTime > 0 && au.currentTime < au.duration) { au.play(); playing = true; btn.hidden = true; tick(); } });
+window.__ready.then(() => window.__seek(0.3)).catch(() => window.__seek(0.3));
+</script>
+</body>
+</html>
