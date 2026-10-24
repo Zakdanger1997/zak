@@ -106,6 +106,12 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .fam .code { font-family: var(--display); font-size: 1.3rem; font-weight: 700; }
 .fam .name { font-size: 0.9rem; }
 .fam .rng { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); }
+.fam img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; border-radius: 3px; margin-bottom: 4px; max-width: 100%; }
+.others { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+.others div { display: flex; flex-direction: column; gap: 3px; font-size: 0.82rem; color: var(--muted); min-width: 0; }
+.others img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 3px; max-width: 100%; }
+.others b { font-family: var(--display); font-size: 1rem; color: var(--fg); }
+.sheet .photo { width: 100%; max-width: 360px; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 4px; margin-bottom: 12px; }
 .fam.off { opacity: 0.55; cursor: default; }
 .kpi { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
 .kpi div { background: var(--panel-2); border-left: 3px solid var(--accent); padding: 8px 12px; border-radius: 0 4px 4px 0; }
@@ -253,6 +259,7 @@ footer.foot p { margin: 6px 0; }
     <div class="field" style="margin-bottom:14px">
       <span class="lab" data-i18n="family">Redüktör ailesi</span>
       <div class="famgrid" id="famgrid"></div>
+      <div id="others"></div>
     </div>
     <div class="grid">
       <div class="field">
@@ -420,17 +427,18 @@ footer.foot p { margin: 6px 0; }
     IRS: 'https://www.imakreduktor.com/wp-content/uploads/2026/07/IRS_IRSD_Katalog_2026_Rev.01.pdf',
   };
   const FAMILIES = [
-    { f: 'IR',   tr: 'Helisel dişli motorlu redüktör', en: 'Helical geared motor', rng: '90 – 18 000 Nm · 0,12 – 160 kW' },
-    { f: 'IRK',  tr: 'Konik helisel dişli redüktör', en: 'Helical-bevel geared motor', rng: '180 – 18 000 Nm · 0,12 – 200 kW' },
-    { f: 'YP',   tr: 'Paralel milli helisel redüktör', en: 'Parallel-shaft helical geared motor', rng: '130 – 18 000 Nm · 0,12 – 200 kW' },
-    { f: 'IRS',  tr: 'Sonsuz vidalı redüktör (döküm)', en: 'Worm geared motor (cast iron)', rng: '240 – 12 500 Nm · 0,12 – 22 kW' },
-    { f: 'IRSD', tr: 'Helisel + sonsuz vidalı redüktör', en: 'Helical-worm geared motor', rng: '125 – 7 000 Nm · 0,09 – 11 kW' },
-    { f: 'S',    tr: 'Alüminyum gövdeli sonsuz redüktör', en: 'Aluminium-housing worm geared motor', rng: '21 – 1 500 Nm · 0,12 – 15 kW' },
+    { f: 'IR',   tr: 'Helisel dişli motorlu redüktör', en: 'Helical geared motor', rng: '90 – 18 000 Nm · 0,12 – 160 kW', img: 'img/IR.jpg' },
+    { f: 'IRK',  tr: 'Konik helisel dişli redüktör', en: 'Helical-bevel geared motor', rng: '180 – 18 000 Nm · 0,12 – 200 kW', img: 'img/IRK.jpg' },
+    { f: 'YP',   tr: 'Paralel milli helisel redüktör', en: 'Parallel-shaft helical geared motor', rng: '130 – 18 000 Nm · 0,12 – 200 kW', img: 'img/YP.jpg' },
+    { f: 'IRS',  tr: 'Sonsuz vidalı redüktör (döküm)', en: 'Worm geared motor (cast iron)', rng: '240 – 12 500 Nm · 0,12 – 22 kW', img: 'img/IRS.jpg' },
+    { f: 'IRSD', tr: 'Helisel + sonsuz vidalı redüktör', en: 'Helical-worm geared motor', rng: '125 – 7 000 Nm · 0,09 – 11 kW', img: 'img/IRSD.jpg', imgUnit: 'img/IRSD-unit.jpg' },
+    { f: 'S',    tr: 'Alüminyum gövdeli sonsuz redüktör', en: 'Aluminium-housing worm geared motor', rng: '21 – 1 500 Nm · 0,12 – 15 kW', img: 'img/S.jpg' },
   ];
   const OTHER = [
-    ['IRC', 'Vinç tahrik redüktörü', 'Hoist drive gear unit'], ['MA / MK', 'Monoblok redüktör', 'Monobloc gear unit'],
-    ['IRNX / IRO', 'Mil üstü redüktör', 'Shaft-mounted gear unit'], ['A / AE', 'Endüstriyel redüktör', 'Industrial gear unit'],
-    ['IPR / IPRK', 'Planet redüktör', 'Planetary gear unit'], ['4DS · AD · ADK · ADS', 'Özel tip redüktörler', 'Special-purpose gear units'],
+    ['IRC', 'Vinç tahrik redüktörü', 'Hoist drive gear unit', 'img/IRC.jpg'], ['MA / MK', 'Monoblok redüktör', 'Monobloc gear unit', 'img/MAMK.jpg'],
+    ['IRNX', 'Mil üstü redüktör', 'Shaft-mounted gear unit', 'img/IRNX.jpg'], ['IRO', 'Mil üstü redüktör', 'Shaft-mounted gear unit', 'img/IRO.jpg'],
+    ['A / AE', 'Endüstriyel redüktör', 'Industrial gear unit', 'img/A.jpg'], ['IPR / IPRK', 'Planet redüktör', 'Planetary gear unit', 'img/IPR.jpg'],
+    ['4DS', 'Havalandırıcı tipi redüktör', 'Aerator gear unit', 'img/4DS.jpg'], ['AD / ADS', 'Özel tip redüktör', 'Special-purpose gear unit', 'img/AD.jpg'], ['ADK', 'Özel tip redüktör', 'Special-purpose gear unit', 'img/ADK.jpg'],
   ];
   const FS = { // [hours row][U, M, H]  — i.Mak catalogue "Service factor" table
     motor: [[0.8, 1, 1.5], [1, 1.25, 1.75], [1.25, 1.5, 2]],
@@ -668,8 +676,9 @@ footer.foot p { margin: 6px 0; }
     const grid = $('#famgrid');
     grid.innerHTML = FAMILIES.map((f) => {
       const has = famHas(f.f, 'motor') || famHas(f.f, 'unit');
-      return `<label class="fam${has ? '' : ' off'}"><input type="radio" name="fam" value="${f.f}" ${S.fam === f.f ? 'checked' : ''} ${has ? '' : 'disabled'}><span class="code">${f.f}</span><span class="name">${f[lang]}</span><span class="rng">${f.rng}</span></label>`;
-    }).join('') + `<div class="fam off"><span class="name" style="font-weight:600">${t('other')}</span>${OTHER.map((o) => `<span class="rng">${o[0]} · ${lang === 'tr' ? o[1] : o[2]}</span>`).join('')}</div>`;
+      return `<label class="fam${has ? '' : ' off'}"><input type="radio" name="fam" value="${f.f}" ${S.fam === f.f ? 'checked' : ''} ${has ? '' : 'disabled'}><img src="${f.img}" alt="${f.f} ${f[lang]}" loading="lazy"><span class="code">${f.f}</span><span class="name">${f[lang]}</span><span class="rng">${f.rng}</span></label>`;
+    }).join('');
+    $('#others').innerHTML = `<h3>${t('other')}</h3><div class="others">` + OTHER.map((o) => `<div><img src="${o[3]}" alt="${o[0]}" loading="lazy"><b>${o[0]}</b><span>${lang === 'tr' ? o[1] : o[2]}</span></div>`).join('') + '</div>';
   }
   function renderDriveFields() {
     const motor = S.drive === 'motor';
@@ -763,10 +772,13 @@ footer.foot p { margin: 6px 0; }
       `${t('loadClass')}: ${S.load} · ${t('hours')}: ${HOURS[S.hours]} · ${t('prime')}: ${t({ motor: 'primeMotor', p46: 'primeP46', p12: 'primeP12' }[S.prime])}`,
       `${t('table')}: ${pdf}#page=${c.g.cp}`,
     ].filter(Boolean).join('\n');
+    const famMeta = FAMILIES.find((f) => f.f === fam);
+    const photo = (unit && famMeta.imgUnit) ? famMeta.imgUnit : famMeta.img;
     $('#detail').innerHTML = `<div class="sheet">
       <div>
+        <img class="photo" src="${photo}" alt="${fam} ${famMeta[lang]}">
         <div class="desig">${desig}</div>
-        <div class="sub">${FAMILIES.find((f) => f.f === fam)[lang]} · ${c.types.map(decodeType)[0]}</div>
+        <div class="sub">${famMeta[lang]} · ${c.types.map(decodeType)[0]}</div>
         <div class="inline" style="margin-bottom:12px">${checks.join('')}</div>
         <dl>${dl.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
         <p class="note"><a href="${pdf}#page=${c.g.cp}" target="_blank" rel="noopener">${t('table')} ${c.g.cp}</a></p>

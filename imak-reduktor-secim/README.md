@@ -66,6 +66,7 @@ imak-reduktor-secim/
 ├── data/
 │   ├── catalog.js          # generated performance-table data
 │   └── applications.js     # generated load-class list
+├── img/                    # product photos from imakreduktor.com, resized (one per series)
 ├── tools/
 │   ├── parse_catalogs.py   # PDF → raw JSON
 │   ├── build_data.py       # raw JSON → data/catalog.js (+ validation report)
@@ -73,4 +74,4 @@ imak-reduktor-secim/
 └── README.md
 ```
 
-i.Mak, the series names and the catalogue values belong to İ.MAK Redüktör San. ve Tic. A.Ş. This tool is an independent reading of their public documents.
+The product photos in `img/` are i.Mak's own renders from imakreduktor.com, resized for the page. i.Mak, the series names and the catalogue values belong to İ.MAK Redüktör San. ve Tic. A.Ş. This tool is an independent reading of their public documents.
