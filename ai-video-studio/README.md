@@ -7,7 +7,7 @@ Claude does the creative work (research, script, shot list, picture prompts) thr
 | Stage | Tool | Cost |
 |-------|------|------|
 | Narration with word timings | [edge-tts](https://github.com/rany2/edge-tts) (Microsoft neural voices, 300+ voices, Egyptian/Gulf Arabic included) | free |
-| One AI picture per scene | [Pollinations](https://pollinations.ai) image API (Flux), no account needed | free (small corner logo unless you add a free token) |
+| One AI picture per scene | [Pollinations](https://pollinations.ai) image API (basic model anonymously; Flux with a free token in `POLLINATIONS_TOKEN`) or the Hugging Face inference API (`HF_TOKEN`, free account) | free |
 | Camera motion, captions, mix, encode | ffmpeg (zoompan, libass with Arabic shaping, loudnorm) | free |
 
 Output: an MP4 (1080×1920 or 1920×1080, 30 fps, H.264 + AAC) with burned captions timed from the speech. A three-scene test renders in about a minute on a laptop.

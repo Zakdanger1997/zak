@@ -1,57 +1,57 @@
 {
   "stickman": {
     "name": "Stickman on paper",
-    "prompt": "flat 2D minimal webcomic illustration, thin even black outlines, simple stick-figure characters with egg heads and dot eyes, solid flat colour fills, no shading, cream grid-paper background, one brick-red accent colour, muted grey elsewhere",
-    "negative": "no text, no letters, no watermark, no photorealism, no 3D render"
+    "prompt": "simple line drawing, stick figures, flat colors, cream paper background, red accent",
+    "negative": "no text"
   },
   "paper-cutout": {
     "name": "Paper cut-out diorama",
-    "prompt": "layered paper cut-out diorama illustration, soft paper textures, gentle drop shadows between layers, warm pastel palette, handcrafted feel, centred composition",
-    "negative": "no text, no letters, no watermark, no photorealism"
+    "prompt": "paper cut-out diorama illustration, layered paper, soft shadows, pastel colors",
+    "negative": "no text"
   },
   "editorial": {
     "name": "Editorial collage",
-    "prompt": "editorial motion-graphics collage, bold flat shapes, halftone textures, one strong accent colour on off-white, magazine infographic look, clean composition",
-    "negative": "no text, no letters, no watermark, no photorealism"
+    "prompt": "bold flat editorial illustration, halftone texture, one accent color, off-white background",
+    "negative": "no text"
   },
   "watercolor": {
     "name": "Watercolor chronicle",
-    "prompt": "loose watercolor illustration with ink line work, soft bleeding washes, paper grain, muted earthy palette, storybook feel",
-    "negative": "no text, no letters, no watermark, no photorealism"
+    "prompt": "loose watercolor and ink illustration, soft washes, paper grain",
+    "negative": "no text"
   },
   "clay": {
     "name": "Claymation",
-    "prompt": "stop-motion claymation style, soft plasticine characters and props, visible fingerprints, studio lighting, shallow depth of field, playful colours",
-    "negative": "no text, no letters, no watermark"
+    "prompt": "claymation style, plasticine characters, studio lighting",
+    "negative": "no text"
   },
   "3d-cartoon": {
     "name": "Colorful 3D cartoon",
-    "prompt": "stylised 3D cartoon render, rounded shapes, soft global illumination, bright saturated colours, clean studio background, friendly character design",
-    "negative": "no text, no letters, no watermark, no photorealism"
+    "prompt": "colorful 3D cartoon render, rounded shapes, soft lighting",
+    "negative": "no text"
   },
   "whiteboard": {
     "name": "Whiteboard doodle",
-    "prompt": "whiteboard marker doodle illustration, black marker lines with a few blue and red marker accents on a clean white board, hand-drawn explainer sketch",
-    "negative": "no text, no letters, no watermark, no photorealism"
+    "prompt": "whiteboard marker doodle, black marker lines, blue and red accents, white background",
+    "negative": "no text"
   },
   "isometric": {
     "name": "Isometric flat vector",
-    "prompt": "isometric flat vector illustration, clean geometric shapes, limited palette with one accent colour, subtle long shadows, infographic style on a plain background",
-    "negative": "no text, no letters, no watermark, no photorealism"
+    "prompt": "isometric flat vector illustration, clean shapes, limited palette",
+    "negative": "no text"
   },
   "pixel": {
     "name": "Pixel art",
-    "prompt": "retro 16-bit pixel art scene, crisp pixels, limited palette, charming video-game look",
-    "negative": "no text, no letters, no watermark"
+    "prompt": "16-bit pixel art, crisp pixels, limited palette",
+    "negative": "no text"
   },
   "storybook": {
     "name": "Cinematic storybook",
-    "prompt": "lush hand-painted 2D animation storybook illustration, cinematic lighting, rich colours, painterly textures, fairy-tale atmosphere",
-    "negative": "no text, no letters, no watermark, no photorealism"
+    "prompt": "hand-painted storybook illustration, cinematic light, rich colors",
+    "negative": "no text"
   },
   "photoreal": {
     "name": "Cinematic photo",
-    "prompt": "cinematic photograph, natural light, 35mm lens, shallow depth of field, realistic detail, documentary feel",
-    "negative": "no text, no letters, no watermark"
+    "prompt": "cinematic photograph, natural light, 35mm, shallow depth of field",
+    "negative": "no text"
   }
 }

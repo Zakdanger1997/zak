@@ -36,7 +36,7 @@ def load_project(path):
     p.setdefault('aspect', '9:16'); p.setdefault('fps', 30); p.setdefault('lang', 'en')
     p.setdefault('voice', 'en-US-GuyNeural'); p.setdefault('rate', '+0%')
     p.setdefault('lead', 0.4); p.setdefault('tail', 0.6); p.setdefault('seed', 7)
-    p.setdefault('image_provider', 'pollinations'); p.setdefault('image_model', 'flux')
+    p.setdefault('image_provider', 'pollinations'); p.setdefault('image_model', 'flux')  # anonymous tier serves its basic model
     p.setdefault('caption', {}); c = p['caption']
     c.setdefault('enabled', True); c.setdefault('font', 'Cairo'); c.setdefault('size', 58)
     c.setdefault('max_words', 4); c.setdefault('margin_v', 240)
@@ -122,6 +122,28 @@ def pollinations(prompt, w, h, seed, model, out):
     return False
 
 
+def huggingface(prompt, w, h, seed, model, out):
+    """Free Hugging Face inference API (needs a free account token in HF_TOKEN)."""
+    import requests
+    tok = os.environ.get('HF_TOKEN')
+    if not tok:
+        log('  HF_TOKEN not set; cannot use the huggingface provider'); return False
+    url = f"https://router.huggingface.co/hf-inference/models/{model}"
+    body = {'inputs': prompt, 'parameters': {'width': min(w, 1024), 'height': min(h, 1024) if w >= h else min(h, 1536), 'seed': seed}}
+    for attempt in range(4):
+        try:
+            r = requests.post(url, json=body, timeout=240, headers={'Authorization': f'Bearer {tok}', 'Accept': 'image/jpeg'})
+            if r.status_code == 200 and r.headers.get('content-type', '').startswith('image'):
+                open(out, 'wb').write(r.content); return True
+            log('  hf attempt', attempt + 1, 'status', r.status_code, r.text[:120])
+            if r.status_code in (401, 403):
+                return False
+        except Exception as e:
+            log('  hf attempt', attempt + 1, 'error', e)
+        time.sleep(10 + attempt * 10)
+    return False
+
+
 def placeholder(text, w, h, out):
     from PIL import Image, ImageDraw
     im = Image.new('RGB', (w, h), '#efe6d2'); d = ImageDraw.Draw(im)
@@ -140,9 +162,12 @@ def images(p):
         sc['image_file'] = out
         if os.path.exists(out) and os.path.getsize(out) > 5000:
             continue
-        prompt = f"{p['style_prompt']}. {sc['image']}. {p['negative']}".strip()
+        prompt = f"{sc['image']}, {p['style_prompt']}, {p['negative']}".strip(', ')
         seed = p['seed'] * 100 + sc['n'] + int(sc.get('reseed', 0))
-        ok = p['image_provider'] == 'pollinations' and pollinations(prompt, w, h, seed, p['image_model'], out)
+        if p['image_provider'] == 'huggingface':
+            ok = huggingface(prompt, w, h, seed, p.get('hf_model', 'black-forest-labs/FLUX.1-schnell'), out)
+        else:
+            ok = p['image_provider'] == 'pollinations' and pollinations(prompt, w, h, seed, p['image_model'], out)
         if not ok:
             log(f"scene {sc['n']}: using placeholder image")
             placeholder(sc.get('title', ''), w, h, out)

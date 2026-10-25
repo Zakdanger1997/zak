@@ -51,7 +51,7 @@ Rules per scene (one scene = one narration line ≈ 10 s):
 Per scene also write:
 
 - `title`: a 2 to 5 word on-screen headline in the narration language (optional but recommended for explainers).
-- `image`: an English picture prompt describing one concrete staged scene (subject, action, setting, props), consistent characters across scenes ("the same stick-figure engineer in a hard hat"), **never any text in the picture**. The style prefix is added automatically.
+- `image`: an English picture prompt, **short and concrete (10 to 25 words)**: one subject doing one action in one setting, with the key prop. Keep characters consistent across scenes ("stick figure engineer in a white hard hat"). **Never ask for text in the picture.** The style card is appended automatically, so do not repeat style words. The free anonymous image tier runs a basic model that follows short prompts well and long ones badly; a free Pollinations token (`POLLINATIONS_TOKEN`) or a free Hugging Face token (`HF_TOKEN` with `"image_provider": "huggingface"`) switches to Flux-class quality.
 - `motion`: `in`, `out`, `left`, `right`, `up`, `down` or `auto`.
 
 ## 4. Build
@@ -73,8 +73,8 @@ python3 <plugin root>/tools/freevid.py assemble project.json
 
 Check `final.mp4` with `ffprobe` (duration = sum of scene durations, video + audio
 streams) and extract two frames at different times to confirm captions and pictures.
-Deliver the file. Mention that the free image service may stamp a small logo in a
-corner; a free Pollinations token in `POLLINATIONS_TOKEN` removes it.
+Deliver the file. Say plainly which image tier was used: anonymous (basic model, small
+corner logo) or token (Flux-class, no logo). Registering for either token is free.
 
 Behind a corporate proxy set `HTTPS_PROXY`; `freevid` passes it to edge-tts and
 `requests` honours `REQUESTS_CA_BUNDLE`.
