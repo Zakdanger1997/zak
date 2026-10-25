@@ -1,0 +1,20 @@
+{
+  "name": "ai-video-studio",
+  "version": "0.1.0",
+  "description": "Free, local AI video studio: Claude writes the script and shot list, free services voice it and draw it, ffmpeg cuts it. Narrated picture-story explainers and shorts in any language, no paid video platform needed.",
+  "author": {
+    "name": "Zakdanger1997"
+  },
+  "license": "MIT",
+  "keywords": [
+    "video",
+    "explainer",
+    "shorts",
+    "text-to-speech",
+    "image-generation",
+    "ffmpeg",
+    "faceless-video",
+    "arabic"
+  ],
+  "skills": "./skills"
+}

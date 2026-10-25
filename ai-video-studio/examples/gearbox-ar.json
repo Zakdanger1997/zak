@@ -1,0 +1,13 @@
+{
+  "title": "اختبار قصير",
+  "lang": "ar",
+  "voice": "ar-EG-ShakirNeural",
+  "aspect": "9:16",
+  "style": "stickman",
+  "seed": 11,
+  "scenes": [
+    {"title": "الجيربوكس بيشتغل إزاي؟", "text": "الموتور ده بيلف ألف وأربعمية لفة في الدقيقة، لكن السير عايز خمسين لفة بس وقوة تشيل طن.", "image": "a small red geared motor beside a long conveyor belt carrying a heavy steel coil inside a factory hall, a stick-figure engineer in a hard hat shrugging", "motion": "in"},
+    {"title": "فكرة عجلة السباق", "text": "افتكر عجلة السباق، لما تنقل على الترس الصغير قدام والكبير ورا بتطلع الطلعة براحة بس ببطء.", "image": "a stick-figure cyclist riding a red bicycle up a steep hill, large front chainring and small rear sprocket clearly visible", "motion": "left"},
+    {"title": "ترس صغير بيدوّر ترس كبير", "text": "جوه الجيربوكس ترس صغير بيدوّر واحد أكبر منه، فالكبير بيلف أبطأ بس أقوى.", "image": "a small grey gear with twenty teeth meshing into a large grey gear with sixty teeth inside an open red gearbox housing, cross-section view", "motion": "out"}
+  ]
+}

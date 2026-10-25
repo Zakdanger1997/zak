@@ -27,6 +27,12 @@
       "category": "engineering",
       "homepage": "https://github.com/morluto/rea",
       "license": "MIT"
+    },
+    {
+      "name": "ai-video-studio",
+      "description": "Free local AI video studio: Claude writes the script, free TTS and image services voice and draw it, ffmpeg renders narrated explainers and shorts in any language.",
+      "source": "./ai-video-studio",
+      "category": "video"
     }
   ]
 }

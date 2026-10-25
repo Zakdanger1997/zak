@@ -1,0 +1,57 @@
+{
+  "stickman": {
+    "name": "Stickman on paper",
+    "prompt": "flat 2D minimal webcomic illustration, thin even black outlines, simple stick-figure characters with egg heads and dot eyes, solid flat colour fills, no shading, cream grid-paper background, one brick-red accent colour, muted grey elsewhere",
+    "negative": "no text, no letters, no watermark, no photorealism, no 3D render"
+  },
+  "paper-cutout": {
+    "name": "Paper cut-out diorama",
+    "prompt": "layered paper cut-out diorama illustration, soft paper textures, gentle drop shadows between layers, warm pastel palette, handcrafted feel, centred composition",
+    "negative": "no text, no letters, no watermark, no photorealism"
+  },
+  "editorial": {
+    "name": "Editorial collage",
+    "prompt": "editorial motion-graphics collage, bold flat shapes, halftone textures, one strong accent colour on off-white, magazine infographic look, clean composition",
+    "negative": "no text, no letters, no watermark, no photorealism"
+  },
+  "watercolor": {
+    "name": "Watercolor chronicle",
+    "prompt": "loose watercolor illustration with ink line work, soft bleeding washes, paper grain, muted earthy palette, storybook feel",
+    "negative": "no text, no letters, no watermark, no photorealism"
+  },
+  "clay": {
+    "name": "Claymation",
+    "prompt": "stop-motion claymation style, soft plasticine characters and props, visible fingerprints, studio lighting, shallow depth of field, playful colours",
+    "negative": "no text, no letters, no watermark"
+  },
+  "3d-cartoon": {
+    "name": "Colorful 3D cartoon",
+    "prompt": "stylised 3D cartoon render, rounded shapes, soft global illumination, bright saturated colours, clean studio background, friendly character design",
+    "negative": "no text, no letters, no watermark, no photorealism"
+  },
+  "whiteboard": {
+    "name": "Whiteboard doodle",
+    "prompt": "whiteboard marker doodle illustration, black marker lines with a few blue and red marker accents on a clean white board, hand-drawn explainer sketch",
+    "negative": "no text, no letters, no watermark, no photorealism"
+  },
+  "isometric": {
+    "name": "Isometric flat vector",
+    "prompt": "isometric flat vector illustration, clean geometric shapes, limited palette with one accent colour, subtle long shadows, infographic style on a plain background",
+    "negative": "no text, no letters, no watermark, no photorealism"
+  },
+  "pixel": {
+    "name": "Pixel art",
+    "prompt": "retro 16-bit pixel art scene, crisp pixels, limited palette, charming video-game look",
+    "negative": "no text, no letters, no watermark"
+  },
+  "storybook": {
+    "name": "Cinematic storybook",
+    "prompt": "lush hand-painted 2D animation storybook illustration, cinematic lighting, rich colours, painterly textures, fairy-tale atmosphere",
+    "negative": "no text, no letters, no watermark, no photorealism"
+  },
+  "photoreal": {
+    "name": "Cinematic photo",
+    "prompt": "cinematic photograph, natural light, 35mm lens, shallow depth of field, realistic detail, documentary feel",
+    "negative": "no text, no letters, no watermark"
+  }
+}

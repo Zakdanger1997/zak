@@ -23,6 +23,7 @@ Built by [Salesably.ai](https://salesably.ai).
 |--------|-------------|
 | **[marketing-skills](./marketing-skills)** | 10 specialized marketing skills: brand voice, positioning, content strategy, copywriting, and distribution |
 | **[sales-skills](./sales-skills)** | 9 specialized sales skills: deal qualification, prospect research, call preparation, and stakeholder engagement |
+| **[ai-video-studio](./ai-video-studio)** | Free local AI video studio: narrated explainers and shorts from a script, with free text-to-speech, free AI pictures and ffmpeg |
 | **[rea](./rea)** | REA (Reverse Engineer Anything): MCP server plus workflow skill for analyzing binaries, Electron/JavaScript apps, .NET assemblies, APKs, firmware, and websites |
 
 The repository also hosts **[imak-reduktor-secim](./imak-reduktor-secim)**, a stand-alone browser-based gearbox selection program for i.Mak Redüktör built from their public catalogue tables (not a Claude Code plugin; open `imak-reduktor-secim/index.html`).
@@ -39,6 +40,7 @@ The repository also hosts **[imak-reduktor-secim](./imak-reduktor-secim)**, a st
    /plugin install marketing-skills
    /plugin install sales-skills
    /plugin install rea
+   /plugin install ai-video-studio
    ```
 
 3. **Restart Claude Code** to load the new skills.
@@ -77,7 +79,7 @@ Claude Code has a token limit for displaying available skills. If you have many 
 - Explicitly invoke skills by name: `use the sales-skills:powerful-framework skill`
 - Keep your most important plugins installed and remove others
 
-This marketplace adds 20 skills total (10 marketing + 9 sales + 1 reverse engineering). If you have many other plugins, consider which ones you need most.
+This marketplace adds 21 skills total (10 marketing + 9 sales + 1 reverse engineering + 1 video). If you have many other plugins, consider which ones you need most.
 
 ## Claude Desktop Users
 
