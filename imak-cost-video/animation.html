@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face{font-family:'Inter';font-weight:400;src:url('assets/fonts/inter-400.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:500;src:url('assets/fonts/inter-500.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:600;src:url('assets/fonts/inter-600.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:700;src:url('assets/fonts/inter-700.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:800;src:url('assets/fonts/inter-800.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:900;src:url('assets/fonts/inter-900.woff2') format('woff2');}
+  html,body{margin:0;padding:0;background:#20201e;}#c{display:block;}
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1080"></canvas>
+<script src="data.js"></script>
+<script src="assets/logo.js"></script>
+<script>
+const W=1080,H=1080,FPS=30;
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const D=window.DATA;
+const C={bg:'#F4F1EC',bg2:'#ECE7DF',ink:'#17120F',sub:'#6E675E',faint:'#A79E90',
+  red:'#920000',redHi:'#B81414',amber:'#C98A1E',steel:'#8A8176',
+  card:'#FFFFFF',cardBd:'#E6E0D5',track:'#E7E1D6',shadow:'rgba(40,30,20,0.10)'};
+const logo=new Image();logo.src=window.LOGOURI;
+const logoReady=new Promise(r=>{logo.onload=r;logo.onerror=r;});
+window.__ready=Promise.all([document.fonts.ready,logoReady]);
+
+const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeOut=t=>1-Math.pow(1-t,3);
+const easeInOut=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const easeOutBack=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);};
+const app=(lt,s,d,e=easeOut)=>e(clamp((lt-s)/d));
+const count=(lt,s,d,tg)=>Math.round(easeOut(clamp((lt-s)/d))*tg);
+const money=n=>'$'+Math.round(n).toLocaleString('en-US');
+
+function text(str,x,y,{size=40,weight=700,color=C.ink,align='left',baseline='alphabetic',ls=0,alpha=1,halo=0}={}){
+  ctx.save();ctx.globalAlpha*=alpha;ctx.textAlign=align;ctx.textBaseline=baseline;
+  ctx.font=`${weight} ${size}px Inter, sans-serif`;try{ctx.letterSpacing=ls+'px';}catch(e){}
+  if(halo){ctx.strokeStyle='rgba(244,241,236,0.95)';ctx.lineWidth=halo;ctx.lineJoin='round';ctx.strokeText(str,x,y);}
+  ctx.fillStyle=color;ctx.fillText(str,x,y);ctx.restore();
+}
+function measure(str,size,weight,ls=0){ctx.save();ctx.font=`${weight} ${size}px Inter, sans-serif`;try{ctx.letterSpacing=ls+'px';}catch(e){}const w=ctx.measureText(str).width;ctx.restore();return w;}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function kicker(str,cx,y,alpha=1){const size=26,ls=5;const w=measure(str.toUpperCase(),size,700,ls);
+  ctx.save();ctx.globalAlpha*=alpha;const rule=46,gap=20,total=rule+gap+w+gap+rule,x0=cx-total/2;
+  ctx.strokeStyle=C.red;ctx.lineWidth=3;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x0,y);ctx.lineTo(x0+rule,y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x0+total-rule,y);ctx.lineTo(x0+total,y);ctx.stroke();
+  text(str.toUpperCase(),cx,y,{size,weight:700,color:C.red,align:'center',baseline:'middle',ls});ctx.restore();}
+function gear(cx,cy,rOut,teeth,rot,color,hole=0.46,alpha=1){
+  ctx.save();ctx.globalAlpha*=alpha;ctx.translate(cx,cy);ctx.rotate(rot);
+  const rIn=rOut*0.80,tw=Math.PI/teeth*0.62;ctx.beginPath();
+  for(let i=0;i<teeth;i++){const a=i/teeth*Math.PI*2;
+    ctx.lineTo(Math.cos(a-tw)*rIn,Math.sin(a-tw)*rIn);ctx.lineTo(Math.cos(a-tw*0.6)*rOut,Math.sin(a-tw*0.6)*rOut);
+    ctx.lineTo(Math.cos(a+tw*0.6)*rOut,Math.sin(a+tw*0.6)*rOut);ctx.lineTo(Math.cos(a+tw)*rIn,Math.sin(a+tw)*rIn);}
+  ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.globalCompositeOperation='destination-out';
+  ctx.beginPath();ctx.arc(0,0,rOut*hole,0,Math.PI*2);ctx.fill();ctx.globalCompositeOperation='source-over';ctx.restore();}
+
+// donut: segments fill in order as total sweep 0->1
+function donut(cx,cy,rO,rI,segs,sweep){
+  const gap=0.012*Math.PI*2; let a0=-Math.PI/2; const totalPct=segs.reduce((s,x)=>s+x.pct,0);
+  const shown=sweep*totalPct; let acc=0;
+  // track
+  ctx.beginPath();ctx.arc(cx,cy,rO,0,Math.PI*2);ctx.arc(cx,cy,rI,0,Math.PI*2,true);ctx.fillStyle=C.track;ctx.fill('evenodd');
+  for(const s of segs){
+    const segShown=clamp((shown-acc)/s.pct)*s.pct; acc+=s.pct;
+    if(segShown<=0.01){a0+=s.pct/100*Math.PI*2;continue;}
+    const a1=a0+segShown/100*Math.PI*2;
+    ctx.beginPath();ctx.arc(cx,cy,rO,a0+gap/2,a1-gap/2);ctx.arc(cx,cy,rI,a1-gap/2,a0+gap/2,true);
+    ctx.closePath();ctx.fillStyle=s.color;ctx.fill();
+    a0+=s.pct/100*Math.PI*2;
+  }
+}
+function hbar(x,y,w,h,frac,color,track=C.track){rr(x,y,w,h,h/2);ctx.fillStyle=track;ctx.fill();
+  if(frac>0){rr(x,y,Math.max(h,w*clamp(frac)),h,h/2);ctx.fillStyle=color;ctx.fill();}}
+
+function background(){ctx.fillStyle=C.bg;ctx.fillRect(0,0,W,H);
+  const g=ctx.createRadialGradient(W/2,H*0.42,200,W/2,H*0.5,760);
+  g.addColorStop(0,'rgba(255,255,255,0.35)');g.addColorStop(1,'rgba(214,205,190,0.22)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(120,105,85,0.05)';
+  for(let x=60;x<W;x+=48)for(let y=60;y<H;y+=48){ctx.beginPath();ctx.arc(x,y,1.3,0,Math.PI*2);ctx.fill();}}
+function chrome(t,hideLogo){
+  ctx.fillStyle='rgba(120,110,95,0.18)';ctx.fillRect(0,0,W,5);
+  ctx.fillStyle=C.red;ctx.fillRect(0,0,W*clamp(t/TOTAL),5);
+  if(!hideLogo){const lh=38,lw=logo.width*(lh/logo.height);ctx.save();ctx.globalAlpha=0.96;ctx.drawImage(logo,86,60,lw,lh);ctx.restore();}}
+function sourceLine(str,alpha){text(str,W/2,1016,{size:19,weight:500,color:C.faint,align:'center',ls:0.3,alpha});}
+
+const SC=[];const scene=(dur,draw)=>SC.push({dur,draw});
+function enter(lt,dur){const a=Math.min(clamp(lt/0.45),clamp((dur-lt)/0.33));const rise=(1-clamp(lt/0.5))*22;return{a,rise};}
+
+// ---- S1 HOOK ----
+scene(4.2,(lt,dur)=>{const{a,rise}=enter(lt,dur);ctx.save();ctx.globalAlpha=a;ctx.translate(0,rise);const cx=W/2;
+  const spin=lt*0.6;
+  gear(cx+140,330,66,12,spin,C.bg2,.5,app(lt,0.1,0.6));
+  gear(cx,360,118,14,-spin*0.7,C.red,.46,app(lt,0,0.6)*easeOutBack(clamp(lt/0.7)));
+  gear(cx-145,388,56,10,spin*1.2,'#2B2622',.5,app(lt,0.2,0.6));
+  kicker('Choosing an industrial drive',cx,585,app(lt,0.25,0.45));
+  text('The price tag is',cx,700,{size:84,weight:900,color:C.ink,align:'center',ls:-2,alpha:app(lt,0.35,0.5)});
+  text('the smallest cost.',cx,792,{size:84,weight:900,color:C.red,align:'center',ls:-2,alpha:app(lt,0.55,0.5)});
+  text('How selecting the right gearbox decides your money for 20 years.',cx,872,
+    {size:28,weight:500,color:C.sub,align:'center',alpha:app(lt,0.85,0.6)});
+  ctx.restore();});
+
+// ---- S2 MOTORS = ELECTRICITY ----
+scene(4.8,(lt,dur)=>{const{a,rise}=enter(lt,dur);ctx.save();ctx.globalAlpha=a;ctx.translate(0,rise);const cx=W/2;
+  kicker('Why efficiency is money',cx,250,app(lt,0.1,0.5));
+  const n=count(lt,0.4,1.3,D.motorShare);
+  text(n+'%',cx,520,{size:260,weight:900,color:C.red,align:'center',baseline:'middle',ls:-6,alpha:app(lt,0.4,0.4)});
+  text('of the world’s electricity runs',cx,700,{size:40,weight:800,color:C.ink,align:'center',alpha:app(lt,1.0,0.5)});
+  text('through electric motor systems.',cx,752,{size:40,weight:800,color:C.ink,align:'center',alpha:app(lt,1.15,0.5)});
+  text('In industry alone: '+D.motorShareIndustry+'%. Every point of efficiency is cash.',cx,828,
+    {size:27,weight:500,color:C.sub,align:'center',alpha:app(lt,1.35,0.6)});
+  sourceLine(D.sources.motors,app(lt,1.5,0.6));
+  ctx.restore();});
+
+// ---- S3 TCO DONUT ----
+scene(9.0,(lt,dur)=>{const{a}=enter(lt,dur);ctx.save();ctx.globalAlpha=a;const cx=W/2;
+  kicker('What a drive really costs',cx,210,app(lt,0.1,0.5));
+  text('Over a 15–20 year life.',cx,295,{size:54,weight:900,color:C.ink,align:'center',ls:-1,alpha:app(lt,0.25,0.5)});
+  const dcx=360,dcy=610,rO=215,rI=132;
+  const sweep=app(lt,0.6,1.6,easeInOut);
+  ctx.save();ctx.globalAlpha*=app(lt,0.5,0.5);donut(dcx,dcy,rO,rI,D.tco,sweep);ctx.restore();
+  text('TOTAL',dcx,dcy-14,{size:26,weight:700,color:C.sub,align:'center',baseline:'middle',ls:3,alpha:app(lt,1.2,0.5)});
+  text('COST',dcx,dcy+22,{size:26,weight:700,color:C.sub,align:'center',baseline:'middle',ls:3,alpha:app(lt,1.2,0.5)});
+  // legend — swatch + big % on a line, label beneath (no horizontal overflow)
+  const lx=645,ly=478,row=112;
+  D.tco.forEach((s,i)=>{const st=0.9+i*0.55;const ca=app(lt,st,0.5);const y=ly+i*row;
+    ctx.save();ctx.globalAlpha*=ca;
+    ctx.fillStyle=s.color;rr(lx,y-32,30,30,8);ctx.fill();
+    const pn=count(lt,st+0.1,0.9,s.pct);
+    text(pn+'%',lx+44,y,{size:58,weight:900,color:C.ink,align:'left',baseline:'alphabetic',ls:-1});
+    text(s.label,lx+2,y+34,{size:25,weight:600,color:C.sub,align:'left',baseline:'alphabetic'});
+    ctx.restore();});
+  text('Purchase price ≈ 2–3% — the sticker price is the tip of the iceberg.',cx,905,
+    {size:30,weight:700,color:C.red,align:'center',alpha:app(lt,2.6,0.6)});
+  sourceLine(D.sources.tco,app(lt,2.8,0.6));
+  ctx.restore();});
+
+// ---- S4 INSIGHT ----
+scene(4.4,(lt,dur)=>{const{a,rise}=enter(lt,dur);ctx.save();ctx.globalAlpha=a;ctx.translate(0,rise);const cx=W/2;
+  kicker('The real lever',cx,330,app(lt,0.1,0.5));
+  text('Energy is ≈90% of the cost.',cx,470,{size:60,weight:900,color:C.ink,align:'center',ls:-1,alpha:app(lt,0.25,0.5)});
+  text('So a 1–2% efficiency gain',cx,590,{size:48,weight:800,color:C.sub,align:'center',alpha:app(lt,0.6,0.5)});
+  text('saves more than the drive’s price.',cx,655,{size:52,weight:900,color:C.red,align:'center',ls:-1,alpha:app(lt,0.85,0.5)});
+  const uw=clamp((lt-1.0)/0.5)*460;ctx.save();ctx.globalAlpha*=app(lt,1.0,0.4);ctx.strokeStyle=C.red;ctx.lineWidth=5;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(cx-uw/2,690);ctx.lineTo(cx+uw/2,690);ctx.stroke();ctx.restore();
+  text('The cheapest gearbox is rarely the cheapest to own.',cx,780,
+    {size:28,weight:500,color:C.sub,align:'center',alpha:app(lt,1.4,0.6)});
+  ctx.restore();});
+
+// ---- S5 GEAR EFFICIENCY BARS ----
+scene(8.0,(lt,dur)=>{const{a,rise}=enter(lt,dur);ctx.save();ctx.globalAlpha=a;ctx.translate(0,rise);const cx=W/2;
+  kicker('The right gear type pays — every hour',cx,230,app(lt,0.1,0.5));
+  text('Efficiency by gear type.',cx,320,{size:54,weight:900,color:C.ink,align:'center',ls:-1,alpha:app(lt,0.25,0.5)});
+  const bx=170,bw=740,bh=56;
+  // Helical
+  let y=470;const ha=app(lt,0.7,0.5);
+  ctx.save();ctx.globalAlpha*=ha;
+  text('Helical gears',bx,y-30,{size:30,weight:800,color:C.ink,align:'left'});
+  const hf=app(lt,0.9,1.1)*(D.gearHelical/100);
+  hbar(bx,y,bw,bh,hf,C.red);
+  const hn=count(lt,0.95,1.0,D.gearHelical);
+  text('up to '+hn+'%',bx+bw,y-30,{size:30,weight:900,color:C.red,align:'right'});
+  ctx.restore();
+  // Worm (range 50-90)
+  y=640;const wa=app(lt,1.5,0.5);
+  ctx.save();ctx.globalAlpha*=wa;
+  text('Worm gears',bx,y-30,{size:30,weight:800,color:C.ink,align:'left'});
+  // track
+  rr(bx,y,bw,bh,bh/2);ctx.fillStyle=C.track;ctx.fill();
+  const rf=app(lt,1.7,1.0);
+  const x50=bx+bw*(D.gearWormLo/100), x90=bx+bw*(D.gearWormHi/100);
+  const curW=(x90-x50)*rf;
+  ctx.save();rr(bx,y,bw,bh,bh/2);ctx.clip();
+  ctx.fillStyle=C.amber;ctx.fillRect(x50,y,curW,bh);ctx.restore();
+  text(D.gearWormLo+'–'+D.gearWormHi+'%',bx+bw,y-30,{size:30,weight:900,color:C.amber,align:'right',alpha:app(lt,2.0,0.5)});
+  ctx.restore();
+  text('The wrong gear type can quietly waste',cx,822,{size:30,weight:700,color:C.ink,align:'center',alpha:app(lt,2.3,0.6)});
+  text('10–40% of your energy — for 20 years.',cx,864,{size:30,weight:800,color:C.red,align:'center',alpha:app(lt,2.45,0.6)});
+  sourceLine(D.sources.gears,app(lt,2.6,0.6));
+  ctx.restore();});
+
+// ---- S6 DOWNTIME ----
+scene(8.0,(lt,dur)=>{const{a,rise}=enter(lt,dur);ctx.save();ctx.globalAlpha=a;ctx.translate(0,rise);const cx=W/2;
+  kicker('When the wrong part fails',cx,220,app(lt,0.1,0.5));
+  text('Downtime is the real bill.',cx,310,{size:54,weight:900,color:C.ink,align:'center',ls:-1,alpha:app(lt,0.25,0.5)});
+  const n=count(lt,0.6,1.5,D.downtimeAvg);
+  text(money(n),cx,500,{size:150,weight:900,color:C.red,align:'center',baseline:'middle',ls:-3,alpha:app(lt,0.6,0.4)});
+  text('per hour — average industrial unplanned downtime.',cx,610,
+    {size:32,weight:700,color:C.ink,align:'center',alpha:app(lt,1.6,0.5)});
+  // auto callout chip
+  const pa=app(lt,2.1,0.5);ctx.save();ctx.globalAlpha*=pa;
+  const lbl='$2.3M / hour in automotive plants',ps=28,pw=measure(lbl,ps,700,0.5)+70;
+  ctx.fillStyle='#2B2622';rr(cx-pw/2,665,pw,62,31);ctx.fill();
+  text(lbl,cx,697,{size:ps,weight:700,color:'#fff',align:'center',baseline:'middle',ls:0.5});ctx.restore();
+  text('One mis-sized or mis-selected gearbox can stop the whole line.',cx,800,
+    {size:29,weight:700,color:C.ink,align:'center',alpha:app(lt,2.5,0.6)});
+  sourceLine(D.sources.downtime,app(lt,2.7,0.6));
+  ctx.restore();});
+
+// ---- S7 RIGHT-SIZING ----
+scene(5.2,(lt,dur)=>{const{a,rise}=enter(lt,dur);ctx.save();ctx.globalAlpha=a;ctx.translate(0,rise);const cx=W/2;
+  kicker('Select for the real load',cx,220,app(lt,0.1,0.5));
+  text('Right-sized, not over or under.',cx,310,{size:50,weight:900,color:C.ink,align:'center',ls:-1,alpha:app(lt,0.25,0.5)});
+  const rows=[
+    {t:'Undersized',s:'early failure & downtime',c:C.steel,x:false},
+    {t:'Right service factor',s:'long life at the lowest cost',c:C.red,x:true},
+    {t:'Oversized',s:'wasted capital & energy',c:C.steel,x:false}
+  ];
+  const cw=760,ch=118,x0=cx-cw/2;let y=420;
+  rows.forEach((r,i)=>{const st=0.6+i*0.5;const ca=app(lt,st,0.5);const pop=easeOutBack(clamp((lt-st)/0.5));
+    ctx.save();ctx.globalAlpha*=ca;const sc=lerp(0.94,1,clamp(pop));
+    ctx.translate(x0+cw/2,y+ch/2);ctx.scale(sc,sc);ctx.translate(-(x0+cw/2),-(y+ch/2));
+    ctx.save();ctx.shadowColor=C.shadow;ctx.shadowBlur=22;ctx.shadowOffsetY=8;
+    ctx.fillStyle=r.x?'#fff':C.card;rr(x0,y,cw,ch,22);ctx.fill();ctx.restore();
+    ctx.strokeStyle=r.x?C.red:C.cardBd;ctx.lineWidth=r.x?3:1.4;rr(x0,y,cw,ch,22);ctx.stroke();
+    ctx.fillStyle=r.c;rr(x0,y,10,ch,5);ctx.fill();
+    text(r.t,x0+48,y+50,{size:36,weight:900,color:r.x?C.red:C.ink,align:'left'});
+    text(r.s,x0+48,y+88,{size:26,weight:500,color:C.sub,align:'left'});
+    ctx.restore();y+=ch+26;});
+  ctx.restore();});
+
+// ---- S8 END ----
+scene(5.4,(lt,dur)=>{const a=Math.min(clamp(lt/0.6),clamp((dur-lt)/0.5));ctx.save();ctx.globalAlpha=a;const cx=W/2;
+  const lh=118*easeOutBack(clamp(lt/0.8)),lw=logo.width*(118/logo.height);
+  ctx.save();ctx.globalAlpha*=app(lt,0,0.6);ctx.drawImage(logo,cx-lw/2,330-lh/2,lw,lh);ctx.restore();
+  const uw=clamp((lt-0.5)/0.5)*220;ctx.strokeStyle=C.red;ctx.lineWidth=4;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(cx-uw/2,440);ctx.lineTo(cx+uw/2,440);ctx.stroke();
+  text('Select it right — once.',cx,560,{size:58,weight:900,color:C.ink,align:'center',ls:-1,alpha:app(lt,0.6,0.5)});
+  text('1,000,000+ configurations · free i-Guide selection support',cx,640,
+    {size:28,weight:600,color:C.sub,align:'center',alpha:app(lt,0.9,0.6)});
+  const pa=app(lt,1.2,0.5);ctx.save();ctx.globalAlpha*=pa;
+  const label=D.web,ps=30,pw=measure(label,ps,700,1)+80;
+  ctx.fillStyle=C.red;rr(cx-pw/2,710,pw,64,32);ctx.fill();
+  text(label,cx,742,{size:ps,weight:700,color:'#fff',align:'center',baseline:'middle',ls:1});ctx.restore();
+  // combined sources, small, two lines so nothing clips
+  const sa=app(lt,1.4,0.6);
+  text('Sources: IEA-4E Electric Motor Systems Annex 2023 · U.S. DOE motor life-cycle cost',cx,966,{size:17,weight:500,color:C.faint,align:'center',ls:0.2,alpha:sa});
+  text('ABB Value of Reliability 2023 · Siemens True Cost of Downtime 2024 · published gear-efficiency data',cx,992,{size:17,weight:500,color:C.faint,align:'center',ls:0.2,alpha:sa});
+  ctx.restore();});
+
+let TOTAL=0;const STARTS=[];SC.forEach(s=>{STARTS.push(TOTAL);TOTAL+=s.dur;});
+window.__meta={fps:FPS,total:TOTAL};
+function seek(t){t=clamp(t,0,TOTAL-0.0001);background();let i=SC.length-1;for(let k=0;k<SC.length;k++){if(t>=STARTS[k])i=k;}
+  SC[i].draw(t-STARTS[i],SC[i].dur);chrome(t,i===SC.length-1);}
+window.__seek=seek;
+if(!window.__headless){window.__ready.then(()=>{const t0=performance.now();(function loop(){seek(((performance.now()-t0)/1000)%TOTAL);requestAnimationFrame(loop);})();});}
+</script>
+</body>
+</html>
