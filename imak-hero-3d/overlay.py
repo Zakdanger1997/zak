@@ -44,7 +44,7 @@ def ad(img, layout='top'):
     else:                                                                   # square / portrait: two lines
         size=84*u; f1=font(FO, size, 700)
         while d.textlength(a_.strip(),font=f1) > W*0.80: size*=0.97; f1=font(FO, size, 700)
-        wa=d.textlength(a_.strip(),font=f1); wb=d.textlength(b_,font=f1); y=int(H*0.082)
+        wa=d.textlength(a_.strip(),font=f1); wb=d.textlength(b_,font=f1); y=int(H*(0.082 if W/H>0.9 else 0.100))
         d.text((cx-wa/2, y), a_.strip(), font=f1, fill=WHITE); d.text((cx-wb/2, y+int(size*1.13)), b_, font=f1, fill=GOLD)
     f2=font(FO, 30*u, 600); f3=font(FI, 23*u, 500)
     w2=d.textlength(COPY[0],font=f2); d.text((cx-w2/2, int(H-112*u)), COPY[0], font=f2, fill=WHITE)

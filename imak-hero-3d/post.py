@@ -16,6 +16,7 @@ ap.add_argument('--contrast', type=float, default=1.10)
 ap.add_argument('--vig', type=float, default=0.30)
 ap.add_argument('--grain', type=float, default=0.012)
 ap.add_argument('--seed', type=int, default=3)
+ap.add_argument('--burn', default='')                       # x0,y0,x1,y1,amount: soft local darkening
 a = ap.parse_args()
 
 def to_lin(x): return np.where(x <= 0.04045, x / 12.92, ((x + 0.055) / 1.055) ** 2.4)
@@ -86,6 +87,12 @@ img = img + shadow_w * np.array([-0.012, 0.004, 0.022], dtype=np.float32)      #
 img = img + high_w * np.array([0.020, 0.006, -0.018], dtype=np.float32)        # amber highlights
 r2 = ((fx - 0.5) / 0.75) ** 2 + ((fy - 0.52) / 0.72) ** 2
 img = img * (1 - a.vig * np.clip(r2 - 0.25, 0, 1.2) ** 1.3)[..., None]          # vignette
+if a.burn:
+    bx0, by0, bx1, by1, amt = [float(t) for t in a.burn.split(',')]
+    m = ((fx >= bx0) & (fx <= bx1) & (fy >= by0) & (fy <= by1)).astype(np.float32)
+    m = ndi.gaussian_filter(m, 60 * S)[..., None]
+    hl = np.clip((l - 0.45) / 0.4, 0, 1)                      # only pull down the bright parts
+    img = img * (1 - m * amt * (0.35 + 0.65 * hl))
 rng = np.random.default_rng(a.seed)
 g = rng.normal(0, a.grain, (H, W, 1)).astype(np.float32)
 g = ndi.gaussian_filter(g, (0.6, 0.6, 0))
