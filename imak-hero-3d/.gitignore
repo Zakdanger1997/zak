@@ -1,0 +1,7 @@
+hdri/
+blenv/
+out/*_A.png
+out/*_B.png
+out/*_hero.png
+out/test*
+__pycache__/
