@@ -38,13 +38,17 @@ cut-and-paste. The product is i.Mak's own render; everything around it is modell
 ```bash
 pip install bpy numpy pillow scipy          # Blender as a Python module (Cycles renderer)
 ./fetch_assets.sh                           # downloads the CC0 sky HDRI into hdri/
-python scene.py --product irnx --res 2560x1440 --samples 160 --out out/final_irnx
-python post.py out/final_irnx out/final_irnx_hero.png          # true-colour product, bloom, grade
-python overlay.py out/final_irnx_hero.png out irnx             # clean + ad versions, crops
-# portrait (LinkedIn feed):
-python scene.py --product irnx --res 1440x1800 --samples 128 --fit HORIZONTAL --lens 90 --aim_z 1.62 --out out/final_irnx_port
-python post.py out/final_irnx_port out/final_irnx_port_hero.png --sun 0.741,0.466
-python overlay.py out/final_irnx_port_hero.png out irnx
+python scene.py --product irnx --res 1920x1080 --samples 56 --out out/hd_irnx      # ~8 min on 4 CPU cores
+python post.py out/hd_irnx out/hd_irnx_hero.png --burn 0.0,0.0,0.24,0.44,0.5      # true colour, bloom, grade
+python overlay.py out/hd_irnx_hero.png out irnx                                   # clean + ad versions, 1:1 crop
+# portrait (LinkedIn feed) — its own camera:
+python scene.py --product irnx --res 1080x1350 --samples 56 --fit HORIZONTAL --lens 90 --aim_z 1.62 --out out/hd_irnx_port
+python post.py out/hd_irnx_port out/hd_irnx_port_hero.png --sun 0.741,0.466
+python overlay.py out/hd_irnx_port_hero.png out irnx
+# IRK version:
+python scene.py --product irk --res 1920x1080 --samples 48 --out out/hd_irk
+python post.py out/hd_irk out/hd_irk_hero.png --burn 0.0,0.0,0.24,0.44,0.5 && python overlay.py out/hd_irk_hero.png out irk
+# print quality: raise --res to 2560x1440 (or more) and --samples to 160+ (~35 min)
 ```
 `scene.py` renders two passes: **A** the beauty render, **B** the product alone in exact brand
 colour with its coverage matte; `post.py` blends B over A so the i.Mak red is not shifted by the
