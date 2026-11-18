@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jib Crane Control Panel — Wiring Diagram</title>
+<style>
+  :root{
+    --ink:#1a2230; --mut:#5a6578; --line:#2b3442; --l1:#8a1f1f; --l2:#1d1d1d; --l3:#8a6a1f;
+    --pe:#1f7a33; --n:#1f4f8a; --ctrl:#b3261e; --neg:#0f3d7a; --accent:#0b5fff; --paper:#ffffff;
+    --grid:#e7ebf1; --box:#f6f8fb; --warn:#8a4b00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#eef1f6;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 64px}
+  header.title{background:var(--paper);border:1px solid #d7dde6;border-radius:14px;
+    padding:20px 24px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-start;
+    box-shadow:0 1px 2px rgba(20,30,50,.04)}
+  header.title h1{font-size:22px;margin:0 0 4px}
+  header.title .sub{color:var(--mut);font-size:13px;margin:0}
+  .tblk{font-size:12px;color:var(--mut);text-align:right;border-left:1px solid #e3e8ef;padding-left:16px;min-width:230px}
+  .tblk b{color:var(--ink)}
+  .card{background:var(--paper);border:1px solid #d7dde6;border-radius:14px;margin-top:22px;
+    box-shadow:0 1px 2px rgba(20,30,50,.04);overflow:hidden}
+  .card h2{font-size:15px;margin:0;padding:14px 20px;border-bottom:1px solid #e9edf3;background:var(--box);
+    letter-spacing:.3px;text-transform:uppercase;color:#30405c}
+  .card .body{padding:16px 20px}
+  .spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .spec .it{background:var(--box);border:1px solid #e9edf3;border-radius:10px;padding:10px 12px}
+  .spec .it .k{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut)}
+  .spec .it .v{font-weight:600;font-size:14px;margin-top:2px}
+  svg{display:block;width:100%;height:auto;background:
+    linear-gradient(0deg,transparent 23px,var(--grid) 24px),
+    linear-gradient(90deg,transparent 23px,var(--grid) 24px);
+    background-size:24px 24px;border-radius:8px;border:1px solid #eef1f6}
+  text{font-family:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace}
+  .lbl{font-size:12px;fill:var(--ink)}
+  .lbl.sm{font-size:10.5px;fill:var(--mut)}
+  .lbl.tag{font-size:12px;font-weight:700;fill:var(--accent)}
+  .wire{stroke:var(--line);stroke-width:2;fill:none}
+  .wL1{stroke:var(--l1)} .wL2{stroke:var(--l2)} .wL3{stroke:var(--l3)}
+  .wPE{stroke:var(--pe);stroke-dasharray:1 0}
+  .wPos{stroke:var(--ctrl);stroke-width:2.2} .wNeg{stroke:var(--neg);stroke-width:2.2}
+  .dev{fill:#fff;stroke:var(--line);stroke-width:1.8}
+  .dot{fill:var(--line)}
+  table.bom{border-collapse:collapse;width:100%;font-size:13px}
+  table.bom th,table.bom td{border:1px solid #e3e8ef;padding:8px 10px;text-align:left;vertical-align:top}
+  table.bom th{background:var(--box);font-weight:600;color:#30405c}
+  table.bom td.tag{font-weight:700;color:var(--accent);white-space:nowrap}
+  ul.notes{margin:4px 0 0;padding-left:20px}
+  ul.notes li{margin:7px 0}
+  .warn{background:#fff6e9;border:1px solid #f0d9ae;border-radius:10px;padding:12px 14px;margin-top:14px;
+    font-size:13px;color:#5a4320}
+  .warn b{color:var(--warn)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--mut);margin-top:12px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:22px;height:0;border-top:3px solid}
+  .foot{color:var(--mut);font-size:12px;margin-top:26px;text-align:center}
+  @media print{body{background:#fff}.wrap{max-width:none}.card,header.title{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="title">
+    <div>
+      <h1>Jib Crane Control Panel — Wiring Diagram</h1>
+      <p class="sub">3-phase geared motors · Direct-on-line reversing · Spring-applied fail-safe brake · Hoist + trolley travel</p>
+    </div>
+    <div class="tblk">
+      <div>Drawing: <b>JIB-CP-01</b> · Rev <b>A</b></div>
+      <div>Date: <b>2026-11-18</b></div>
+      <div>Supply: <b>3×400 V AC + N + PE, 50 Hz</b></div>
+      <div>Control: <b>24 V DC</b></div>
+    </div>
+  </header>
+
+  <!-- SPEC -->
+  <section class="card">
+    <h2>Configuration</h2>
+    <div class="body">
+      <div class="spec">
+        <div class="it"><div class="k">Motor type</div><div class="v">3~ asynchronous geared motor, DOL</div></div>
+        <div class="it"><div class="k">Movements</div><div class="v">Hoist (M1) + Trolley travel (M2)</div></div>
+        <div class="it"><div class="k">Reversing</div><div class="v">2 contactors/motor, interlocked</div></div>
+        <div class="it"><div class="k">Brake</div><div class="v">Spring-applied, DC, fail-safe</div></div>
+        <div class="it"><div class="k">Control voltage</div><div class="v">24 V DC (SELV) pendant</div></div>
+        <div class="it"><div class="k">Protection</div><div class="v">Thermal overload + limit switches + E-stop</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POWER CIRCUIT -->
+  <section class="card">
+    <h2>Sheet 1 — Power Circuit (3-phase)</h2>
+    <div class="body">
+      <svg viewBox="0 0 1120 720" role="img" aria-label="Three phase power circuit">
+        <!-- Incoming supply -->
+        <text class="lbl tag" x="24" y="40">L1</text>
+        <text class="lbl tag" x="24" y="64" fill="#8a6a1f">L3</text>
+        <text class="lbl tag" x="24" y="52" fill="#1d1d1d">L2</text>
+        <text class="lbl tag" x="24" y="90" fill="#1f7a33">PE</text>
+
+        <!-- three phase vertical bus from top -->
+        <!-- phase x positions -->
+        <!-- L1=120 L2=150 L3=180 -->
+        <path class="wire wL1" d="M120 30 L120 120"/>
+        <path class="wire wL2" d="M150 30 L150 120"/>
+        <path class="wire wL3" d="M180 30 L180 120"/>
+        <text class="lbl sm" x="100" y="24">L1 L2 L3</text>
+
+        <!-- Main isolator QS1 -->
+        <rect class="dev" x="96" y="120" width="108" height="56" rx="6"/>
+        <text class="lbl" x="150" y="143" text-anchor="middle">QS1</text>
+        <text class="lbl sm" x="150" y="160" text-anchor="middle">Main isolator</text>
+        <text class="lbl sm" x="150" y="172" text-anchor="middle">lockable 3P</text>
+        <path class="wire wL1" d="M120 176 L120 206"/>
+        <path class="wire wL2" d="M150 176 L150 206"/>
+        <path class="wire wL3" d="M180 176 L180 206"/>
+
+        <!-- Main breaker / fuses Q1 -->
+        <rect class="dev" x="96" y="206" width="108" height="56" rx="6"/>
+        <text class="lbl" x="150" y="229" text-anchor="middle">Q1</text>
+        <text class="lbl sm" x="150" y="246" text-anchor="middle">Main MCB</text>
+        <text class="lbl sm" x="150" y="258" text-anchor="middle">+ gG fuses</text>
+        <path class="wire wL1" d="M120 262 L120 292"/>
+        <path class="wire wL2" d="M150 262 L150 292"/>
+        <path class="wire wL3" d="M180 262 L180 292"/>
+
+        <!-- Main/safety contactor KM0 -->
+        <rect class="dev" x="96" y="292" width="108" height="56" rx="6"/>
+        <text class="lbl" x="150" y="315" text-anchor="middle">KM0</text>
+        <text class="lbl sm" x="150" y="332" text-anchor="middle">Line (safety)</text>
+        <text class="lbl sm" x="150" y="344" text-anchor="middle">contactor</text>
+
+        <!-- Distribution bus below KM0 -->
+        <path class="wire wL1" d="M120 348 L120 392"/>
+        <path class="wire wL2" d="M150 348 L150 392"/>
+        <path class="wire wL3" d="M180 348 L180 392"/>
+        <!-- horizontal bus -->
+        <path class="wire wL1" d="M120 392 L470 392"/>
+        <path class="wire wL2" d="M150 404 L470 404"/>
+        <path class="wire wL3" d="M180 416 L470 416"/>
+        <text class="lbl sm" x="210" y="384">distribution busbars</text>
+
+        <!-- ============ HOIST BRANCH M1 (left block x~470) ============ -->
+        <!-- taps down -->
+        <path class="wire wL1" d="M470 392 L470 452"/>
+        <path class="wire wL2" d="M482 404 L482 452"/>
+        <path class="wire wL3" d="M494 416 L494 452"/>
+        <text class="lbl" x="482" y="446" text-anchor="middle" style="font-weight:700;fill:#0b5fff">HOIST</text>
+
+        <!-- Overload F1 -->
+        <rect class="dev" x="430" y="452" width="128" height="48" rx="6"/>
+        <text class="lbl" x="494" y="473" text-anchor="middle">F1</text>
+        <text class="lbl sm" x="494" y="490" text-anchor="middle">thermal overload</text>
+        <path class="wire wL1" d="M470 500 L470 532"/>
+        <path class="wire wL2" d="M482 500 L482 532"/>
+        <path class="wire wL3" d="M494 500 L494 532"/>
+
+        <!-- Reversing contactors KM1 (UP) / KM2 (DOWN) -->
+        <rect class="dev" x="408" y="532" width="80" height="52" rx="6"/>
+        <text class="lbl" x="448" y="554" text-anchor="middle">KM1</text>
+        <text class="lbl sm" x="448" y="571" text-anchor="middle">UP</text>
+        <rect class="dev" x="500" y="532" width="80" height="52" rx="6"/>
+        <text class="lbl" x="540" y="554" text-anchor="middle">KM2</text>
+        <text class="lbl sm" x="540" y="571" text-anchor="middle">DOWN</text>
+        <!-- feeds into both from bus -->
+        <path class="wire wL1" d="M470 532 L470 526 L448 526 L448 532"/>
+        <path class="wire wL2" d="M482 532 L482 522 L540 522 L540 532"/>
+        <path class="wire wL3" d="M494 516 L540 516" />
+        <path class="wire wL1" d="M448 532 L448 532"/>
+        <!-- phase-swap note -->
+        <text class="lbl sm" x="494" y="600" text-anchor="middle">KM2 swaps L1/L3 → reverse rotation</text>
+
+        <!-- to motor M1 -->
+        <path class="wire" d="M448 584 L448 620 L494 620"/>
+        <path class="wire" d="M540 584 L540 620 L494 620"/>
+        <path class="wire" d="M494 620 L494 648"/>
+        <circle class="dev" cx="494" cy="672" r="24"/>
+        <text class="lbl" x="494" y="669" text-anchor="middle" style="font-weight:700">M1</text>
+        <text class="lbl sm" x="494" y="683" text-anchor="middle">3~</text>
+        <text class="lbl sm" x="494" y="712" text-anchor="middle">Hoist geared motor U1 V1 W1</text>
+
+        <!-- Brake on M1 -->
+        <rect class="dev" x="600" y="612" width="150" height="86" rx="8"/>
+        <text class="lbl" x="675" y="632" text-anchor="middle">YB1 — Brake</text>
+        <text class="lbl sm" x="675" y="649" text-anchor="middle">rectifier V1 (AC→DC)</text>
+        <text class="lbl sm" x="675" y="664" text-anchor="middle">spring-applied coil</text>
+        <text class="lbl sm" x="675" y="679" text-anchor="middle">releases when KM1/KM2 on</text>
+        <text class="lbl sm" x="675" y="694" text-anchor="middle">+ KA-brake DC fast cut</text>
+        <path class="wire" d="M518 672 L600 655"/>
+        <path class="wire wL2" d="M540 620 L600 620"/>
+
+        <!-- ============ TROLLEY BRANCH M2 (right block x~860) ============ -->
+        <!-- extend bus right -->
+        <path class="wire wL1" d="M470 392 L860 392"/>
+        <path class="wire wL2" d="M470 404 L872 404"/>
+        <path class="wire wL3" d="M470 416 L884 416"/>
+        <path class="wire wL1" d="M860 392 L860 452"/>
+        <path class="wire wL2" d="M872 404 L872 452"/>
+        <path class="wire wL3" d="M884 416 L884 452"/>
+        <text class="lbl" x="872" y="446" text-anchor="middle" style="font-weight:700;fill:#0b5fff">TROLLEY</text>
+
+        <!-- Overload F2 -->
+        <rect class="dev" x="820" y="452" width="128" height="48" rx="6"/>
+        <text class="lbl" x="884" y="473" text-anchor="middle">F2</text>
+        <text class="lbl sm" x="884" y="490" text-anchor="middle">thermal overload</text>
+        <path class="wire wL1" d="M860 500 L860 532"/>
+        <path class="wire wL2" d="M872 500 L872 532"/>
+        <path class="wire wL3" d="M884 500 L884 532"/>
+
+        <!-- Reversing KM3 (FWD/→) / KM4 (REV/←) -->
+        <rect class="dev" x="798" y="532" width="80" height="52" rx="6"/>
+        <text class="lbl" x="838" y="554" text-anchor="middle">KM3</text>
+        <text class="lbl sm" x="838" y="571" text-anchor="middle">TRAVEL →</text>
+        <rect class="dev" x="890" y="532" width="80" height="52" rx="6"/>
+        <text class="lbl" x="930" y="554" text-anchor="middle">KM4</text>
+        <text class="lbl sm" x="930" y="571" text-anchor="middle">TRAVEL ←</text>
+        <path class="wire wL1" d="M860 532 L860 526 L838 526 L838 532"/>
+        <path class="wire wL2" d="M872 532 L872 522 L930 522 L930 532"/>
+        <path class="wire wL3" d="M884 516 L930 516"/>
+        <text class="lbl sm" x="884" y="600" text-anchor="middle">KM4 swaps L1/L3 → reverse rotation</text>
+
+        <!-- to motor M2 -->
+        <path class="wire" d="M838 584 L838 620 L884 620"/>
+        <path class="wire" d="M930 584 L930 620 L884 620"/>
+        <path class="wire" d="M884 620 L884 648"/>
+        <circle class="dev" cx="884" cy="672" r="24"/>
+        <text class="lbl" x="884" y="669" text-anchor="middle" style="font-weight:700">M2</text>
+        <text class="lbl sm" x="884" y="683" text-anchor="middle">3~</text>
+        <text class="lbl sm" x="884" y="712" text-anchor="middle">Trolley geared motor U2 V2 W2</text>
+
+        <!-- PE bus -->
+        <path class="wire wPE" d="M60 92 L1000 92"/>
+        <path class="wire wPE" d="M494 92 L494 648"/>
+        <path class="wire wPE" d="M884 92 L884 648"/>
+        <text class="lbl sm" x="1004" y="96">PE → motor frames, panel, crane structure</text>
+      </svg>
+      <div class="legend">
+        <span><i class="sw" style="border-color:#8a1f1f"></i>L1</span>
+        <span><i class="sw" style="border-color:#1d1d1d"></i>L2</span>
+        <span><i class="sw" style="border-color:#8a6a1f"></i>L3</span>
+        <span><i class="sw" style="border-color:#1f7a33"></i>PE (earth)</span>
+        <span>○ = motor &nbsp; ▭ = device/contactor</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTROL CIRCUIT -->
+  <section class="card">
+    <h2>Sheet 2 — Control Circuit (24 V DC ladder)</h2>
+    <div class="body">
+      <svg viewBox="0 0 1120 640" role="img" aria-label="24V DC control ladder">
+        <!-- PSU -->
+        <rect class="dev" x="40" y="24" width="150" height="70" rx="8"/>
+        <text class="lbl" x="115" y="48" text-anchor="middle">G1 — PSU</text>
+        <text class="lbl sm" x="115" y="66" text-anchor="middle">400/230 V AC in</text>
+        <text class="lbl sm" x="115" y="80" text-anchor="middle">24 V DC out, fused F3</text>
+
+        <!-- rails -->
+        <path class="wire wPos" d="M190 44 L240 44 L240 600"/>
+        <path class="wire wNeg" d="M190 80 L270 80 L270 600"/>
+        <text class="lbl tag" x="246" y="118" fill="#b3261e">+24V</text>
+        <text class="lbl tag" x="276" y="118" fill="#0f3d7a">0V</text>
+
+        <!-- E-STOP chain at top of + rail -->
+        <path class="wPos wire" d="M240 150 L330 150"/>
+        <rect class="dev" x="330" y="132" width="96" height="36" rx="6"/>
+        <text class="lbl" x="378" y="150" text-anchor="middle">S0 E-STOP</text>
+        <text class="lbl sm" x="378" y="180" text-anchor="middle">NC, latching mushroom</text>
+        <path class="wPos wire" d="M426 150 L520 150"/>
+        <!-- overloads in chain -->
+        <rect class="dev" x="520" y="132" width="70" height="36" rx="6"/>
+        <text class="lbl sm" x="555" y="154" text-anchor="middle">F1 NC</text>
+        <path class="wPos wire" d="M590 150 L650 150"/>
+        <rect class="dev" x="650" y="132" width="70" height="36" rx="6"/>
+        <text class="lbl sm" x="685" y="154" text-anchor="middle">F2 NC</text>
+        <path class="wPos wire" d="M720 150 L800 150"/>
+        <!-- KM0 coil -->
+        <circle class="dev" cx="840" cy="150" r="22"/>
+        <text class="lbl" x="840" y="155" text-anchor="middle">KM0</text>
+        <path class="wPos wire" d="M862 150 L1000 150 L1000 150"/>
+        <path class="wNeg wire" d="M840 172 L840 600"/>
+        <text class="lbl sm" x="840" y="196" text-anchor="middle">Line contactor coil</text>
+        <text class="lbl sm" x="620" y="124" text-anchor="middle">Safety chain — must be closed to enable all motion</text>
+
+        <!-- rung helper: a fed "+EN" rail after KM0 aux -->
+        <path class="wPos wire" d="M240 230 L300 230"/>
+        <rect class="dev" x="300" y="214" width="70" height="32" rx="6"/>
+        <text class="lbl sm" x="335" y="234" text-anchor="middle">KM0 aux</text>
+        <path class="wPos wire" d="M370 230 L430 230 L430 600"/>
+        <text class="lbl tag" x="436" y="226" fill="#b3261e">+EN (enabled)</text>
+
+        <!-- RUNG: HOIST UP -->
+        <path class="wPos wire" d="M430 288 L470 288"/>
+        <rect class="dev" x="470" y="272" width="70" height="32" rx="6"/>
+        <text class="lbl sm" x="505" y="292" text-anchor="middle">S1 UP</text>
+        <path class="wPos wire" d="M540 288 L590 288"/>
+        <rect class="dev" x="590" y="272" width="86" height="32" rx="6"/>
+        <text class="lbl sm" x="633" y="292" text-anchor="middle">S5 top-limit</text>
+        <path class="wPos wire" d="M676 288 L726 288"/>
+        <rect class="dev" x="726" y="272" width="80" height="32" rx="6"/>
+        <text class="lbl sm" x="766" y="292" text-anchor="middle">KM2 NC</text>
+        <path class="wPos wire" d="M806 288 L820 288"/>
+        <circle class="dev" cx="844" cy="288" r="20"/>
+        <text class="lbl" x="844" y="293" text-anchor="middle">KM1</text>
+        <path class="wNeg wire" d="M844 308 L844 600"/>
+        <text class="lbl sm" x="420" y="262" text-anchor="end">Hoist UP</text>
+
+        <!-- RUNG: HOIST DOWN -->
+        <path class="wPos wire" d="M430 344 L470 344"/>
+        <rect class="dev" x="470" y="328" width="70" height="32" rx="6"/>
+        <text class="lbl sm" x="505" y="348" text-anchor="middle">S2 DOWN</text>
+        <path class="wPos wire" d="M540 344 L590 344"/>
+        <rect class="dev" x="590" y="328" width="86" height="32" rx="6"/>
+        <text class="lbl sm" x="633" y="348" text-anchor="middle">S6 low-limit</text>
+        <path class="wPos wire" d="M676 344 L726 344"/>
+        <rect class="dev" x="726" y="328" width="80" height="32" rx="6"/>
+        <text class="lbl sm" x="766" y="348" text-anchor="middle">KM1 NC</text>
+        <path class="wPos wire" d="M806 344 L820 344"/>
+        <circle class="dev" cx="844" cy="344" r="20"/>
+        <text class="lbl" x="844" y="349" text-anchor="middle">KM2</text>
+        <text class="lbl sm" x="420" y="334" text-anchor="end">Hoist DOWN</text>
+
+        <!-- RUNG: TROLLEY → -->
+        <path class="wPos wire" d="M430 418 L470 418"/>
+        <rect class="dev" x="470" y="402" width="70" height="32" rx="6"/>
+        <text class="lbl sm" x="505" y="422" text-anchor="middle">S3 →</text>
+        <path class="wPos wire" d="M540 418 L590 418"/>
+        <rect class="dev" x="590" y="402" width="86" height="32" rx="6"/>
+        <text class="lbl sm" x="633" y="422" text-anchor="middle">S7 end →</text>
+        <path class="wPos wire" d="M676 418 L726 418"/>
+        <rect class="dev" x="726" y="402" width="80" height="32" rx="6"/>
+        <text class="lbl sm" x="766" y="422" text-anchor="middle">KM4 NC</text>
+        <path class="wPos wire" d="M806 418 L820 418"/>
+        <circle class="dev" cx="844" cy="418" r="20"/>
+        <text class="lbl" x="844" y="423" text-anchor="middle">KM3</text>
+        <text class="lbl sm" x="420" y="408" text-anchor="end">Trolley →</text>
+
+        <!-- RUNG: TROLLEY <- -->
+        <path class="wPos wire" d="M430 474 L470 474"/>
+        <rect class="dev" x="470" y="458" width="70" height="32" rx="6"/>
+        <text class="lbl sm" x="505" y="478" text-anchor="middle">S4 ←</text>
+        <path class="wPos wire" d="M540 474 L590 474"/>
+        <rect class="dev" x="590" y="458" width="86" height="32" rx="6"/>
+        <text class="lbl sm" x="633" y="478" text-anchor="middle">S8 end ←</text>
+        <path class="wPos wire" d="M676 474 L726 474"/>
+        <rect class="dev" x="726" y="458" width="80" height="32" rx="6"/>
+        <text class="lbl sm" x="766" y="478" text-anchor="middle">KM3 NC</text>
+        <path class="wPos wire" d="M806 474 L820 474"/>
+        <circle class="dev" cx="844" cy="474" r="20"/>
+        <text class="lbl" x="844" y="479" text-anchor="middle">KM4</text>
+        <text class="lbl sm" x="420" y="464" text-anchor="end">Trolley ←</text>
+
+        <!-- negative rail bottom -->
+        <path class="wNeg wire" d="M270 600 L1000 600"/>
+        <path class="wNeg wire" d="M844 494 L844 600"/>
+        <text class="lbl sm" x="520" y="592">0 V return rail (common)</text>
+
+        <!-- note on interlock -->
+        <text class="lbl sm" x="1004" y="288">KM2 NC in UP rung &amp; KM1 NC in DOWN rung</text>
+        <text class="lbl sm" x="1004" y="306">= electrical interlock (never both at once).</text>
+        <text class="lbl sm" x="1004" y="430">Same for KM3/KM4. Use mechanically</text>
+        <text class="lbl sm" x="1004" y="448">interlocked contactor pairs as well.</text>
+      </svg>
+      <div class="legend">
+        <span><i class="sw" style="border-color:#b3261e"></i>+24 V DC</span>
+        <span><i class="sw" style="border-color:#0f3d7a"></i>0 V</span>
+        <span>○ = coil &nbsp; ▭ = contact / switch</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAKE DETAIL -->
+  <section class="card">
+    <h2>Sheet 3 — Fail-safe Brake Wiring (per motor with brake)</h2>
+    <div class="body">
+      <svg viewBox="0 0 1120 300" role="img" aria-label="Brake rectifier detail">
+        <!-- motor terminals -->
+        <text class="lbl" x="60" y="60" style="font-weight:700">From motor terminals (after reversing contactors)</text>
+        <path class="wire wL1" d="M70 90 L200 90"/>
+        <path class="wire wL2" d="M70 130 L200 130"/>
+        <text class="lbl sm" x="70" y="84">U</text>
+        <text class="lbl sm" x="70" y="124">V</text>
+
+        <!-- optional DC fast-cut contact KA -->
+        <rect class="dev" x="200" y="72" width="110" height="76" rx="8"/>
+        <text class="lbl" x="255" y="104" text-anchor="middle">KA-brake</text>
+        <text class="lbl sm" x="255" y="122" text-anchor="middle">DC-side contact</text>
+        <text class="lbl sm" x="255" y="136" text-anchor="middle">(fast braking)</text>
+
+        <!-- rectifier -->
+        <rect class="dev" x="360" y="60" width="150" height="100" rx="10"/>
+        <text class="lbl" x="435" y="92" text-anchor="middle">Brake rectifier</text>
+        <text class="lbl sm" x="435" y="110" text-anchor="middle">AC in → DC out</text>
+        <text class="lbl sm" x="435" y="126" text-anchor="middle">half/full-wave</text>
+        <path class="wire" d="M310 90 L360 90"/>
+        <path class="wire" d="M310 130 L360 130"/>
+
+        <!-- brake coil -->
+        <path class="wPos wire" d="M510 92 L620 92"/>
+        <path class="wNeg wire" d="M510 128 L620 128"/>
+        <rect class="dev" x="620" y="70" width="150" height="80" rx="10"/>
+        <text class="lbl" x="695" y="102" text-anchor="middle">YB — Brake coil</text>
+        <text class="lbl sm" x="695" y="120" text-anchor="middle">spring-applied</text>
+        <text class="lbl sm" x="695" y="134" text-anchor="middle">e.g. 180 V DC</text>
+
+        <text class="lbl sm" x="60" y="200">Operating principle (fail-safe):</text>
+        <text class="lbl sm" x="60" y="222">• Motor energised → rectifier powered → coil energised → brake electrically RELEASED → motor turns.</text>
+        <text class="lbl sm" x="60" y="242">• Motor de-energised / power loss / E-stop → coil drops → springs APPLY the brake → load held. (Safe by default.)</text>
+        <text class="lbl sm" x="60" y="262">• KA-brake DC-side contact (optional) cuts the coil DC directly for faster, more precise stopping on the hoist.</text>
+      </svg>
+      <div class="warn"><b>Brake voltage must match the motor's brake nameplate</b> (commonly 180 V DC via rectifier, or 230/400 V AC coil). Confirm the rectifier type (half-wave ≈ 0.45×, full-wave ≈ 0.9× the AC input) against the plate before wiring.</div>
+    </div>
+  </section>
+
+  <!-- BOM -->
+  <section class="card">
+    <h2>Component List (BOM)</h2>
+    <div class="body">
+      <table class="bom">
+        <thead><tr><th>Tag</th><th>Component</th><th>Function / sizing notes</th></tr></thead>
+        <tbody>
+          <tr><td class="tag">QS1</td><td>Main isolator (lockable, 3P)</td><td>Rated ≥ sum of motor FLCs; lockable-off for maintenance.</td></tr>
+          <tr><td class="tag">Q1</td><td>Main MCB / gG fuses</td><td>Short-circuit + line protection for the whole panel.</td></tr>
+          <tr><td class="tag">KM0</td><td>Line (safety) contactor, 3P</td><td>Drops out on E-stop / overload; removes power from all motors.</td></tr>
+          <tr><td class="tag">F1 / F2</td><td>Thermal overload relays</td><td>Set to motor FLA on the nameplate; NC aux in the safety chain.</td></tr>
+          <tr><td class="tag">KM1 / KM2</td><td>Hoist reversing contactors</td><td>UP / DOWN. Mechanically + electrically interlocked. Phase swap on KM2.</td></tr>
+          <tr><td class="tag">KM3 / KM4</td><td>Trolley reversing contactors</td><td>→ / ←. Interlocked pair; phase swap on KM4.</td></tr>
+          <tr><td class="tag">M1 / M2</td><td>3~ geared motors</td><td>Hoist (with brake) / trolley travel. Wire U-V-W per rotation test.</td></tr>
+          <tr><td class="tag">YB1 / V1 / KA-brake</td><td>Spring-applied brake + rectifier + DC contact</td><td>Fail-safe; releases only while its motor is energised.</td></tr>
+          <tr><td class="tag">G1 / F3</td><td>24 V DC PSU + control fuse</td><td>SELV control supply for the pendant and coils.</td></tr>
+          <tr><td class="tag">S0</td><td>Emergency stop (NC, latching)</td><td>In the safety chain; one at the panel, one on the pendant.</td></tr>
+          <tr><td class="tag">S1–S4</td><td>Pendant pushbuttons</td><td>UP, DOWN, →, ← (momentary, dead-man).</td></tr>
+          <tr><td class="tag">S5 / S6</td><td>Hoist limit switches (NC)</td><td>Top (upper) and bottom (lower) travel limits.</td></tr>
+          <tr><td class="tag">S7 / S8</td><td>Trolley end-of-travel limits (NC)</td><td>Each direction of the trolley on the jib arm.</td></tr>
+          <tr><td class="tag">PE</td><td>Protective earth</td><td>Motor frames, panel, pendant, crane structure — all bonded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- NOTES / SAFETY -->
+  <section class="card">
+    <h2>Notes &amp; Safety</h2>
+    <div class="body">
+      <ul class="notes">
+        <li><b>Reversing = phase swap.</b> The DOWN (KM2) and ← (KM4) contactors swap two of the three phases (L1↔L3) relative to UP/→. Confirm actual direction with a no-load rotation test and relabel if needed — do not assume.</li>
+        <li><b>Interlock both ways.</b> Use contactor pairs that are mechanically interlocked <em>and</em> keep the electrical interlock shown (opposite-direction NC contact in each coil rung) so UP and DOWN can never close together.</li>
+        <li><b>Fail-safe brake.</b> The brake is spring-applied and electrically released. Any loss of power, E-stop, or overload applies the brake and holds the load. Never wire a brake that releases on power loss.</li>
+        <li><b>Dead-man control.</b> Pendant buttons are momentary — motion only while held. The hoist should have no mechanical latching.</li>
+        <li><b>Limit switches are NC</b> and wired in series with their direction, so a broken wire stops motion (fail-safe).</li>
+        <li><b>Earthing.</b> Bond motor frames, panel, pendant and crane structure to PE. Verify continuity before energising.</li>
+        <li><b>Sizing.</b> Set overloads to the motor nameplate FLA; size cable, contactors and fuses to the motors' full-load and starting currents.</li>
+      </ul>
+      <div class="warn"><b>Important:</b> This is a standard reference schematic to assemble and understand the panel — it is not a substitute for a qualified electrical engineer's approved design. Crane/lifting installations are safety-critical and are usually subject to local regulations and standards (e.g. IEC 60204-32 for machinery hoisting, plus local wiring codes). Have the final design checked and commissioned by a competent person, and confirm every rating against the actual motor and brake nameplates.</div>
+    </div>
+  </section>
+
+  <div class="foot">Jib Crane Control Panel · Drawing JIB-CP-01 Rev A · Generated 2026-11-18 · Open in a browser and use Print → Save as PDF for a copy.</div>
+
+</div>
+</body>
+</html>
