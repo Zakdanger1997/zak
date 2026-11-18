@@ -1,5 +1,5 @@
-# Builds the i.Mak export-outreach report (Latin America + Middle East) as an editable PowerPoint deck.
-# Usage: python build_deck.py [out.pptx]      (needs: pip install python-pptx)
+# i.Mak ihracat erişim raporu (Latin Amerika + Orta Doğu) — düzenlenebilir PowerPoint sunumu (Türkçe).
+# Kullanım: python build_deck.py [cikti.pptx]   (gerekli: pip install python-pptx)
 import os, sys
 from lxml import etree
 from pptx import Presentation
@@ -12,27 +12,24 @@ from pptx.enum.chart import XL_CHART_TYPE
 from pptx.oxml.ns import qn
 
 ROOT = os.path.dirname(os.path.abspath(__file__)); AS = os.path.join(ROOT, 'assets')
-OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, 'iMak_Outreach_Report_18Nov2026.pptx')
+OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, 'iMak_Erisim_Raporu_TR_18Kasim2026.pptx')
 
-# ----------------------------------------------------------------------------- data (edit here, rebuild)
+# ----------------------------------------------------------------------------- veriler (buradan düzenle)
 D = dict(
-    date='18 Nov 2026',
-    # Latin America (active)
+    date='18 Kasım 2026',
     la_enrolled=904, la_sent=1223, la_deliv=1200, la_leads=46, la_replies_msg=51, la_reply=5.7,
     la_bounced=23, la_bounce=1.8, la_spam=20, la_scheduled=770,
-    # Middle East — Crane ME 2026 (active but stalled since 12 Nov)
-    me_sent=377, me_deliv=374, me_leads=2, me_reply=1.6, me_bounced=3, me_bounce=0.8, me_spam=0, me_last='12 Nov',
-    # combined (both live campaigns)
+    me_sent=377, me_deliv=374, me_leads=2, me_reply=1.6, me_bounced=3, me_bounce=0.8, me_spam=0, me_last='12 Kasım',
     sent=1600, deliv=1574, leads=48, bounced=26, spam=20, reply=5.2,
-    goal=2000, cap=120, projected='~1,990', topup='~300',
-    # WhatsApp channel (industry benchmarks — opted-in contacts)
-    wa_users='3.3B+', wa_open='~95%', em_open='~22%')
+    goal=2000, cap=120, projected='~1.990', topup='~300',
+    wa_users='3,3 Mr+', wa_open=95, em_open=22)
 DELIV = round(100 * D['deliv'] / D['sent'], 1)       # 98.4
 BOUNCE = round(100 * D['bounced'] / D['sent'], 1)     # 1.6
 LA_GOAL = round(100 * D['la_sent'] / D['goal'])       # 61
-fmt = lambda n: f'{n:,}'
+fmt = lambda n: f'{n:,}'.replace(',', '.')            # 1600 -> 1.600
+tp = lambda x: '%' + str(x).replace('.', ',')         # 5.7 -> %5,7
 
-# ----------------------------------------------------------------------------- style
+# ----------------------------------------------------------------------------- stil
 RED = '952414'; RED_D = '6F170C'; RED_L = 'DEAAA0'; INK = '15181E'; CHAR = '232830'; GREY = '5C6470'
 MUTE = '8A919C'; LINE = 'E3DED6'; BG = 'F7F5F1'; CARD = 'FFFFFF'; GOLD = 'DDA033'; GREEN = '1F9D6B'
 AMBER = 'C9881F'; BAD = 'C0392B'; TRACK = 'ECE7DF'; WHITE = 'FFFFFF'; PALE = 'C9CED6'; WA = '1FA855'
@@ -108,16 +105,28 @@ def pic(s, name, x, y, h=None, w=None):
 
 def notes(s, t): s.notes_slide.notes_text_frame.text = t
 
+# --- slayt geçişleri (slide transitions) --------------------------------------
+def add_transition(slide, kind='push', direction='l', spd='med'):
+    sld = slide.element
+    for t in sld.findall(qn('p:transition')): sld.remove(t)
+    tr = etree.SubElement(sld, qn('p:transition')); tr.set('spd', spd)
+    eff = etree.SubElement(tr, qn('p:' + kind))
+    if kind in ('push', 'cover', 'pull', 'wipe', 'cut'): eff.set('dir', direction)
+    if kind == 'fade': eff.set('thruBlk', '0')
+    sld.remove(tr)
+    cm = sld.find(qn('p:clrMapOvr')); cs = sld.find(qn('p:cSld'))
+    (cm if cm is not None else cs).addnext(tr)
+
 PAGE = [0]
 def content_slide(kicker, title):
     s = prs.slides.add_slide(BLANK); PAGE[0] += 1
     s.background.fill.solid(); s.background.fill.fore_color.rgb = rgb(BG)
     box(s, MX, 0.60, 0.085, 0.80, fill=RED)
     text(s, MX + 0.25, 0.55, 9.5, 0.3, kicker, size=11.5, bold=True, color=RED, spc=1.6)
-    text(s, MX + 0.25, 0.80, 9.9, 0.65, title, size=30, bold=True, color=INK)
+    text(s, MX + 0.25, 0.80, 10.2, 0.65, title, size=30, bold=True, color=INK)
     pic(s, 'logo_red.png', SW - MX - 1.55, 0.66, h=0.39)
     line(s, MX, 6.98, SW - MX, 6.98, LINE, 0.75)
-    text(s, MX, 7.07, 10.5, 0.25, f'i.Mak Export Team   ·   Export outreach: Latin America & Middle East   ·   Report as of {D["date"]}',
+    text(s, MX, 7.07, 11.0, 0.25, f'i.Mak İhracat Ekibi   ·   İhracat erişimi: Latin Amerika & Orta Doğu   ·   {D["date"]} itibarıyla',
          size=10, color=MUTE)
     text(s, SW - MX - 1, 7.07, 1, 0.25, str(PAGE[0] + 1), size=10, color=MUTE, align='r')
     return s
@@ -148,7 +157,7 @@ def donut(s, x, y, size, pct, color):
     ch._chartSpace.find(qn('c:chart')).addnext(sp)
     return gf
 
-# ============================================================================= 1 · title
+# ============================================================================= 1 · kapak
 s = prs.slides.add_slide(BLANK)
 s.background.fill.solid(); s.background.fill.fore_color.rgb = rgb(INK)
 fb = s.shapes.build_freeform(Inches(9.35), Inches(0))
@@ -156,60 +165,60 @@ fb.add_line_segments([(Inches(SW), Inches(0)), (Inches(SW), Inches(SH)), (Inches
 panel = fb.convert_to_shape(); panel.fill.solid(); panel.fill.fore_color.rgb = rgb(RED); panel.line.fill.background()
 panel.shadow.inherit = False; flat(panel)
 pic(s, 'logo_white.png', 0.8, 0.72, h=0.56)
-text(s, 0.8, 2.15, 8, 0.3, f'CAMPAIGN REPORT   ·   {D["date"].upper()}', size=13, bold=True, color=GOLD, spc=2.2)
+text(s, 0.8, 2.15, 8, 0.3, f'KAMPANYA RAPORU   ·   {D["date"].upper()}', size=13, bold=True, color=GOLD, spc=2.2)
 box(s, 0.8, 2.58, 0.9, 0.05, fill=GOLD)
-text(s, 0.8, 2.82, 8.2, 1.9, ['Latin America', '& Middle East outreach'], size=46, bold=True, color=WHITE, lsp=0.96)
-text(s, 0.8, 4.95, 7.4, 0.9, 'Two-region results, the lessons — and a new 1-on-1 WhatsApp channel',
+text(s, 0.8, 2.82, 8.4, 1.9, ['Latin Amerika &', 'Orta Doğu erişimi'], size=46, bold=True, color=WHITE, lsp=0.96)
+text(s, 0.8, 4.95, 7.6, 0.9, 'İki bölgenin sonuçları, dersler — ve yeni bir birebir WhatsApp kanalı',
      size=20, color=PALE, lsp=1.05)
-text(s, 0.8, 6.55, 7.4, 0.3, 'i.Mak Export Team   ·   Cold email + WhatsApp   ·   Spanish & English',
+text(s, 0.8, 6.55, 8.0, 0.3, 'i.Mak İhracat Ekibi   ·   Soğuk e-posta + WhatsApp   ·   İspanyolca & İngilizce',
      size=12, color=MUTE)
-stats = [(fmt(D['sent']), 'emails sent'), (str(D['leads']), 'leads'),
-         (f'{D["reply"]}%', 'reply rate'), (f'{DELIV}%', 'delivered')]
+stats = [(fmt(D['sent']), 'GÖNDERİLEN'), (str(D['leads']), 'MÜŞTERİ ADAYI'),
+         (tp(D['reply']), 'YANIT ORANI'), (tp(DELIV), 'İLETİLDİ')]
 for i, (v, l) in enumerate(stats):
     yy = 0.95 + i * 1.42
-    text(s, 10.0, yy, 2.9, 0.75, v, size=44, bold=True, color=WHITE, align='r')
-    text(s, 10.0, yy + 0.74, 2.9, 0.3, l.upper(), size=11.5, bold=True, color='F3D9D4', align='r', spc=1.8)
+    text(s, 9.7, yy, 3.2, 0.75, v, size=44, bold=True, color=WHITE, align='r')
+    text(s, 9.5, yy + 0.74, 3.4, 0.3, l, size=11, bold=True, color='F3D9D4', align='r', spc=1.4)
     if i < 3: line(s, 11.3, yy + 1.22, 12.9, yy + 1.22, 'B8463A', 0.75)
-notes(s, f'Report as of {D["date"]}, figures pulled live from Apollo across both live campaigns (Latin America + Middle East). '
-         f'Headline: {fmt(D["sent"])} emails sent, {D["leads"]} leads, {DELIV}% delivered.')
+notes(s, f'{D["date"]} itibarıyla rapor; rakamlar her iki aktif kampanyadan (Latin Amerika + Orta Doğu) Apollo üzerinden canlı çekildi. '
+         f'Özet: {fmt(D["sent"])} e-posta gönderildi, {D["leads"]} müşteri adayı, {tp(DELIV)} iletildi.')
 
-# ============================================================================= 2 · executive summary
-s = content_slide('EXECUTIVE SUMMARY', 'The program in one slide')
+# ============================================================================= 2 · yönetici özeti
+s = content_slide('YÖNETİCİ ÖZETİ', 'Tek slaytta program')
 card(s, MX, 1.85, 5.55, 4.85, fill=INK, r=0.16)
-text(s, MX + 0.4, 2.15, 4.8, 0.3, 'HEADLINE', size=11, bold=True, color=GOLD, spc=2)
-text(s, MX + 0.4, 2.5, 4.8, 1.4, [[(f'{D["leads"]} leads', {'color': GOLD}), (f' from {fmt(D["sent"])} emails,', {}), (' two regions.', {})]],
-     size=31, bold=True, color=WHITE, lsp=0.96)
-text(s, MX + 0.4, 3.95, 4.75, 0.9, f'Latin America is working ({D["la_reply"]}% reply). The Middle East lagged ({D["me_reply"]}%) and '
-     f'stalled. The next gain is a 1-on-1 WhatsApp channel.', size=14.5, color=PALE, lsp=1.08)
+text(s, MX + 0.4, 2.15, 4.8, 0.3, 'ÖZET', size=11, bold=True, color=GOLD, spc=2)
+text(s, MX + 0.4, 2.5, 4.8, 1.4, [[('1.600 e-postadan ', {}), ('48 aday', {'color': GOLD}), (', iki bölge.', {})]],
+     size=30, bold=True, color=WHITE, lsp=0.98)
+text(s, MX + 0.4, 3.95, 4.75, 0.9, f'Latin Amerika çalışıyor ({tp(D["la_reply"])} yanıt). Orta Doğu geride kaldı ({tp(D["me_reply"])}) ve '
+     f'durdu. Sıradaki kazanç birebir bir WhatsApp kanalı.', size=14.5, color=PALE, lsp=1.08)
 line(s, MX + 0.4, 5.25, MX + 5.15, 5.25, '3A404B', 0.75)
-for i, (v, l) in enumerate([(f'{D["la_reply"]}%', ['Latin America', 'reply rate']), (f'{D["me_reply"]}%', ['Middle East', 'reply rate']),
-                            (D['projected'], ['LatAm projected', 'at month-end'])]):
+for i, (v, l) in enumerate([(tp(D['la_reply']), ['Latin Amerika', 'yanıt oranı']), (tp(D['me_reply']), ['Orta Doğu', 'yanıt oranı']),
+                            (D['projected'], ['LatAm tahmini', 'ay sonu'])]):
     xx = MX + 0.4 + i * 1.62
     text(s, xx, 5.42, 1.55, 0.6, v, size=27, bold=True, color=WHITE)
     text(s, xx, 6.0, 1.5, 0.6, l, size=11.5, color=MUTE, lsp=0.95)
-rows = [(GREEN, 'Latin America is working',
-         f'{fmt(D["la_sent"])} sent, {D["la_leads"]} leads at {D["la_reply"]}% reply, {DELIV}% delivered. On track for the {fmt(D["goal"])} goal.'),
-        (AMBER, 'The Middle East underperformed',
-         f'Crane ME: {D["me_sent"]} sent, {D["me_leads"]} leads ({D["me_reply"]}%), idle since {D["me_last"]}. Relaunch or redirect its budget.'),
-        (RED, 'Real demand is replying',
-         f'Loma Negra, Socotherm and HOC, plus {D["la_leads"] - 3} more LatAm replies to triage into the pipeline.'),
-        (WA, 'The new move: 1-on-1 WhatsApp',
-         'Both regions run on WhatsApp. An automated-but-personal channel reaches buyers where they actually reply.')]
+rows = [(GREEN, 'Latin Amerika çalışıyor',
+         f'{fmt(D["la_sent"])} gönderildi, {D["la_leads"]} aday {tp(D["la_reply"])} yanıtla, {tp(DELIV)} iletildi. {fmt(D["goal"])} hedefi yolunda.'),
+        (AMBER, 'Orta Doğu beklentinin altında',
+         f'Crane ME: {D["me_sent"]} gönderildi, {D["me_leads"]} aday ({tp(D["me_reply"])}), {D["me_last"]}’dan beri durgun. Yeniden başlat ya da bütçeyi aktar.'),
+        (RED, 'Gerçek talep yanıt veriyor',
+         f'Loma Negra, Socotherm ve HOC, artı {D["la_leads"] - 3} LatAm yanıtı daha — hattı beslemek için.'),
+        (WA, 'Yeni hamle: birebir WhatsApp',
+         'Her iki bölge de WhatsApp kullanıyor. Otomatik ama kişisel bir kanal, alıcılara yanıt verdikleri yerde ulaşır.')]
 for i, (c, t, b) in enumerate(rows):
     yy = 1.85 + i * 1.235
     card(s, 6.55, yy, 6.08, 1.08, r=0.1)
     box(s, 6.55, yy + 0.12, 0.07, 0.84, fill=c)
     text(s, 6.85, yy + 0.15, 5.6, 0.32, t, size=16, bold=True, color=INK)
     text(s, 6.85, yy + 0.49, 5.65, 0.55, b, size=12.5, color=GREY, lsp=1.0)
-notes(s, 'One-slide summary: Latin America works and is on track; the Middle East (Crane ME) underperformed and stalled, so it needs a '
-         'decision; demand is real; and the next step is a 1-on-1 WhatsApp channel.')
+notes(s, 'Tek slaytlık özet: Latin Amerika çalışıyor ve hedefinde; Orta Doğu (Crane ME) beklentinin altında kaldı ve durdu, '
+         'dolayısıyla bir karar gerekiyor; talep gerçek; sıradaki adım birebir WhatsApp kanalı.')
 
-# ============================================================================= 3 · full numbers (two campaigns)
-s = content_slide('RESULTS', 'The full numbers — two live campaigns')
-tiles = [(fmt(D['sent']), 'Emails sent', 'both campaigns', RED),
-         (f'{fmt(D["deliv"])}', 'Delivered', f'{DELIV}% delivery', GREEN),
-         (str(D['leads']), 'Leads (replies)', f'{D["reply"]}% reply rate', GOLD),
-         (f'{D["bounced"]}', 'Bounced', f'{BOUNCE}% — healthy', MUTE)]
+# ============================================================================= 3 · tüm rakamlar
+s = content_slide('SONUÇLAR', 'Tüm rakamlar — iki aktif kampanya')
+tiles = [(fmt(D['sent']), 'Gönderilen e-posta', 'iki kampanya', RED),
+         (fmt(D['deliv']), 'İletildi', f'{tp(DELIV)} iletim', GREEN),
+         (str(D['leads']), 'Müşteri adayı', f'{tp(D["reply"])} yanıt oranı', GOLD),
+         (str(D['bounced']), 'Geri dönen', f'{tp(BOUNCE)} — sağlıklı', MUTE)]
 tw = (CW - 3 * 0.22) / 4
 for i, (v, l, dlt, bar) in enumerate(tiles):
     xx = MX + i * (tw + 0.22)
@@ -218,115 +227,120 @@ for i, (v, l, dlt, bar) in enumerate(tiles):
     text(s, xx + 0.26, 2.2, tw - 0.4, 0.62, v, size=34, bold=True, color=INK)
     text(s, xx + 0.26, 2.84, tw - 0.4, 0.28, l, size=12.5, color=GREY)
     text(s, xx + 0.26, 3.12, tw - 0.4, 0.24, dlt, size=11, bold=True, color=GREY)
-# comparison table
 ty = 3.72; card(s, MX, ty, CW, 2.95, r=0.14)
 colx = [MX + 0.45, MX + 5.7, MX + 7.95, MX + 10.2]
-heads = ['', 'LATIN AMERICA', 'MIDDLE EAST', 'COMBINED']
+heads = ['', 'LATİN AMERİKA', 'ORTA DOĞU', 'TOPLAM']
 for i, h in enumerate(heads):
-    text(s, colx[i], ty + 0.26, 2.3, 0.3, h, size=11.5, bold=True, color=RED if i else MUTE, align='l' if i == 0 else 'c', spc=0.6)
+    text(s, colx[i], ty + 0.26, 2.3, 0.3, h, size=11.5, bold=True, color=RED if i else MUTE, align='l' if i == 0 else 'c', spc=0.5)
 text(s, colx[1], ty + 0.52, 2.3, 0.25, 'i.Mak Reductores (ES)', size=9.5, color=MUTE, align='c')
 text(s, colx[2], ty + 0.52, 2.3, 0.25, 'Crane ME (EN)', size=9.5, color=MUTE, align='c')
-text(s, colx[3], ty + 0.52, 2.3, 0.25, 'both live', size=9.5, color=MUTE, align='c')
+text(s, colx[3], ty + 0.52, 2.3, 0.25, 'iki kampanya', size=9.5, color=MUTE, align='c')
 line(s, MX + 0.45, ty + 0.84, MX + CW - 0.45, ty + 0.84, LINE, 1)
-trows = [('Emails sent', fmt(D['la_sent']), str(D['me_sent']), fmt(D['sent'])),
-         ('Delivered', f'{fmt(D["la_deliv"])}', str(D['me_deliv']), fmt(D['deliv'])),
-         ('Leads (replies)', str(D['la_leads']), str(D['me_leads']), str(D['leads'])),
-         ('Reply rate', f'{D["la_reply"]}%', f'{D["me_reply"]}%', f'{D["reply"]}%'),
-         ('Bounced', str(D['la_bounced']), str(D['me_bounced']), str(D['bounced'])),
-         ('Status', 'Active', f'Stalled · {D["me_last"]}', '')]
+trows = [('Gönderilen e-posta', fmt(D['la_sent']), str(D['me_sent']), fmt(D['sent'])),
+         ('İletildi', fmt(D['la_deliv']), str(D['me_deliv']), fmt(D['deliv'])),
+         ('Müşteri adayı (yanıt)', str(D['la_leads']), str(D['me_leads']), str(D['leads'])),
+         ('Yanıt oranı', tp(D['la_reply']), tp(D['me_reply']), tp(D['reply'])),
+         ('Geri dönen', str(D['la_bounced']), str(D['me_bounced']), str(D['bounced'])),
+         ('Durum', 'Aktif', f'Durgun · {D["me_last"]}', '')]
 for r_, (lab, a, b, c) in enumerate(trows):
     yy = ty + 0.98 + r_ * 0.315
-    hot = lab in ('Leads (replies)', 'Reply rate')
-    text(s, colx[0], yy, 2.3, 0.3, lab, size=12.5, bold=hot, color=INK if hot else GREY)
+    hot = lab in ('Müşteri adayı (yanıt)', 'Yanıt oranı')
+    text(s, colx[0], yy, 2.6, 0.3, lab, size=12.5, bold=hot, color=INK if hot else GREY)
     for ci, val in ((1, a), (2, b), (3, c)):
         col = INK
-        if lab == 'Status':
-            col = GREEN if 'Active' in val else AMBER
-        if lab == 'Reply rate' and ci == 1: col = GREEN
-        if lab == 'Reply rate' and ci == 2: col = AMBER
-        text(s, colx[ci], yy, 2.3, 0.3, val, size=13 if hot else 12.5, bold=hot or lab == 'Status', color=col, align='c')
+        if lab == 'Durum': col = GREEN if 'Aktif' in val else AMBER
+        if lab == 'Yanıt oranı' and ci == 1: col = GREEN
+        if lab == 'Yanıt oranı' and ci == 2: col = AMBER
+        text(s, colx[ci], yy, 2.3, 0.3, val, size=13 if hot else 12.5, bold=hot or lab == 'Durum', color=col, align='c')
     if r_ < len(trows) - 1: line(s, MX + 0.45, yy + 0.295, MX + CW - 0.45, yy + 0.295, 'EFEAE2', 0.75)
-notes(s, f'Two live Apollo sequences. Latin America: {fmt(D["la_sent"])} sent, {D["la_leads"]} leads ({D["la_reply"]}%). '
-         f'Middle East (Crane ME): {D["me_sent"]} sent, {D["me_leads"]} leads ({D["me_reply"]}%), stalled since {D["me_last"]}. '
-         f'A third template sequence exists but was never run. Reply rate is unique repliers per contact reached.')
+notes(s, f'İki aktif Apollo dizisi. Latin Amerika: {fmt(D["la_sent"])} gönderildi, {D["la_leads"]} aday ({tp(D["la_reply"])}). '
+         f'Orta Doğu (Crane ME): {D["me_sent"]} gönderildi, {D["me_leads"]} aday ({tp(D["me_reply"])}), {D["me_last"]}’dan beri durgun. '
+         'Üçüncü bir taslak dizi mevcut ama hiç çalıştırılmadı. Yanıt oranı = ulaşılan kişi başına tekil yanıtlayan.')
 
-# ============================================================================= 4 · two regions, two results
-s = content_slide('RESULTS', 'Two regions, two results')
-def region_card(x, title, tag, tagcol, sent, leads, reply, bar_frac, sub):
-    w = 5.55; card(s, x, 1.95, w, 3.1, r=0.14)
-    text(s, x + 0.4, 2.2, 3.5, 0.3, title, size=20, bold=True, color=INK)
-    chip = box(s, x + w - 1.95, 2.24, 1.55, 0.34, fill=tagcol, r=0.17)
-    label_in(chip, tag, size=10, color=WHITE, spc=0.8)
-    text(s, x + 0.4, 2.78, 2, 0.75, reply, size=46, bold=True, color=tagcol)
-    text(s, x + 0.4, 3.62, 3, 0.3, 'reply rate (per contact)', size=12, color=GREY)
-    box(s, x + 0.4, 4.0, w - 0.8, 0.14, fill=TRACK, r=0.07)
-    box(s, x + 0.4, 4.0, (w - 0.8) * bar_frac, 0.14, fill=tagcol, r=0.07)
-    for j, (v, l) in enumerate([(fmt(sent), 'emails sent'), (str(leads), 'leads')]):
-        xx = x + 3.0 + j * 1.25
-        text(s, xx, 2.78, 1.2, 0.4, v, size=24, bold=True, color=INK)
-        text(s, xx, 3.2, 1.2, 0.3, l, size=11, color=GREY)
-    text(s, x + 0.4, 4.4, w - 0.8, 0.5, sub, size=12, color=GREY, lsp=1.05)
-region_card(MX, 'Latin America', 'ACTIVE', GREEN, D['la_sent'], D['la_leads'], f'{D["la_reply"]}%', D['la_reply'] / 6.0,
-            f'Spanish, {LA_GOAL}% to the {fmt(D["goal"])} goal, {D["la_scheduled"]} still queued.')
-region_card(MX + 5.83, 'Middle East', 'STALLED', AMBER, D['me_sent'], D['me_leads'], f'{D["me_reply"]}%', D['me_reply'] / 6.0,
-            f'Crane ME, English. Idle since {D["me_last"]} — only {D["me_sent"]} sent.')
-card(s, MX, 5.35, CW, 1.35, fill=INK, r=0.14)
-text(s, MX + 0.45, 5.58, 3.0, 0.3, 'DECISION NEEDED', size=11, bold=True, color=GOLD, spc=1.8)
-text(s, MX + 0.45, 5.9, CW - 0.9, 0.7,
-     [[('Crane ME replied at ', {}), (f'{D["me_reply"]}% vs {D["la_reply"]}%', {'bold': True, 'color': WHITE}),
-       (' in LatAm and has been idle since ', {}), (D['me_last'], {'bold': True, 'color': WHITE}),
-       ('. Either ', {}), ('relaunch with revised copy and a deliverability fix', {'bold': True, 'color': WHITE}),
-       (', or fold its budget into Latin America and the new WhatsApp channel.', {})]],
-     size=14, color=PALE, lsp=1.08)
-notes(s, 'The two campaigns diverged sharply: LatAm 5.7% reply, Middle East 1.6% and stalled since 12 Nov. The slide frames the open '
-         'decision on Crane ME — relaunch vs redirect — rather than hiding the weak result.')
+# ============================================================================= 4 · iki bölge (sütun grafik infografiği)
+s = content_slide('SONUÇLAR', 'İki bölge, iki sonuç')
+# --- infografik: bölgeye göre yanıt oranı (çizili sütunlar) ---
+card(s, MX, 1.95, 6.0, 3.45, r=0.14)
+text(s, MX + 0.4, 2.18, 5.2, 0.3, 'YANIT ORANI — BÖLGEYE GÖRE', size=11, bold=True, color=MUTE, spc=1.2)
+cols4 = [('Latin\nAmerika', D['la_reply'], GREEN), ('Orta\nDoğu', D['me_reply'], AMBER), ('Toplam', D['reply'], RED)]
+base_y = 4.78; top_y = 2.78; maxbar = base_y - top_y; scale = 6.4
+line(s, MX + 0.4, base_y, MX + 5.6, base_y, 'D9D3C9', 1.2)
+cxs = [MX + 1.35, MX + 3.0, MX + 4.65]
+for (lab, v, c), cx in zip(cols4, cxs):
+    bh = v / scale * maxbar; cw_ = 0.92
+    box(s, cx - cw_ / 2, base_y - bh, cw_, bh, fill=c, r=0.06)
+    text(s, cx - 0.8, base_y - bh - 0.42, 1.6, 0.35, tp(v), size=19, bold=True, color=c, align='c')
+    text(s, cx - 0.9, base_y + 0.08, 1.8, 0.5, lab.replace('\n', ' '), size=12.5, bold=True, color=INK, align='c', lsp=0.9)
+# --- sağ: bölge bilgi kartları ---
+rx = MX + 6.25; rw = SW - MX - rx
+for j, (title, tag, tagc, sent, leads, extra) in enumerate([
+        ('Latin Amerika', 'AKTİF', GREEN, D['la_sent'], D['la_leads'], f'İspanyolca · {fmt(D["goal"])} hedefinde {tp(LA_GOAL)} · {D["la_scheduled"]} sırada'),
+        ('Orta Doğu', 'DURGUN', AMBER, D['me_sent'], D['me_leads'], f'Crane ME · İngilizce · {D["me_last"]}’dan beri durgun')]):
+    yy = 1.95 + j * 1.75
+    card(s, rx, yy, rw, 1.55, r=0.12)
+    text(s, rx + 0.35, yy + 0.22, 3.0, 0.3, title, size=17, bold=True, color=INK)
+    chip = box(s, rx + rw - 1.5, yy + 0.24, 1.15, 0.32, fill=tagc, r=0.16); label_in(chip, tag, size=9.5, color=WHITE, spc=0.8)
+    for k, (vv, ll) in enumerate([(fmt(sent), 'gönderilen'), (str(leads), 'aday'), (tp(D['la_reply'] if j == 0 else D['me_reply']), 'yanıt')]):
+        xx = rx + 0.35 + k * 1.55
+        text(s, xx, yy + 0.64, 1.5, 0.4, vv, size=21, bold=True, color=tagc if k == 2 else INK)
+        text(s, xx, yy + 1.04, 1.5, 0.3, ll, size=10.5, color=GREY)
+    text(s, rx + 0.35, yy + 1.26, rw - 0.6, 0.3, extra, size=10, color=MUTE)
+card(s, MX, 5.55, CW, 1.12, fill=INK, r=0.14)
+text(s, MX + 0.45, 5.72, 3.0, 0.3, 'KARAR GEREKİYOR', size=11, bold=True, color=GOLD, spc=1.8)
+text(s, MX + 0.45, 6.02, CW - 0.9, 0.6,
+     [[('Crane ME, LatAm’daki ', {}), (f'{tp(D["me_reply"])} ↔ {tp(D["la_reply"])}', {'bold': True, 'color': WHITE}),
+       (f' yanıt verdi ve {D["me_last"]}’dan beri durgun. Ya ', {}), ('revize metin ve iletilebilirlik düzeltmesiyle yeniden başlatın', {'bold': True, 'color': WHITE}),
+       (', ya da bütçesini Latin Amerika ve yeni WhatsApp kanalına aktarın.', {})]],
+     size=13.5, color=PALE, lsp=1.08)
+notes(s, 'İki kampanya belirgin biçimde ayrıştı: LatAm %5,7 yanıt, Orta Doğu %1,6 ve 12 Kasım’dan beri durgun. Sütun grafiği bu farkı '
+         'gösteriyor; Crane ME için açık kararı (yeniden başlat / yönlendir) saklamadan sunuyoruz.')
 
-# ============================================================================= 5 · funnel & rates (combined)
-s = content_slide('RESULTS', 'From send to reply: the combined funnel')
+# ============================================================================= 5 · huni & oranlar
+s = content_slide('SONUÇLAR', 'Gönderimden yanıta: birleşik huni')
 fcx = MX + 2.85
-for (w, y, fill, big, small, tc) in [(5.7, 1.95, INK, fmt(D['sent']), 'emails sent', WHITE),
-                                     (5.3, 3.12, RED, fmt(D['deliv']), f'delivered  ·  {DELIV}%', WHITE),
-                                     (2.9, 4.29, GOLD, str(D['leads']), f'leads  ·  {D["reply"]}%', INK)]:
+for (w, y, fill, big, small, tc) in [(5.7, 1.95, INK, fmt(D['sent']), 'gönderilen e-posta', WHITE),
+                                     (5.3, 3.12, RED, fmt(D['deliv']), f'iletildi  ·  {tp(DELIV)}', WHITE),
+                                     (2.9, 4.29, GOLD, str(D['leads']), f'aday  ·  {tp(D["reply"])}', INK)]:
     b = box(s, fcx - w / 2, y, w, 0.92, fill=fill, r=0.12)
     label_in(b, [[(big + '   ', {'size': 28}), (small, {'size': 14, 'bold': False})]], color=tc)
 for y in (2.90, 4.07):
     tri = box(s, fcx - 0.16, y, 0.32, 0.19, fill=PALE, shape=MSO_SHAPE.ISOSCELES_TRIANGLE); tri.rotation = 180
-text(s, MX, 5.33, 5.7, 0.3, [[(f'{D["bounced"]} bounced', {'bold': True, 'color': INK}), (f' ({BOUNCE}%)      ', {}),
-                              (f'{D["spam"]} spam-blocked', {'bold': True, 'color': INK}), (' across both campaigns', {})]],
+text(s, MX, 5.33, 5.7, 0.3, [[(f'{D["bounced"]} geri döndü', {'bold': True, 'color': INK}), (f' ({tp(BOUNCE)})      ', {}),
+                              (f'{D["spam"]} spam engeli', {'bold': True, 'color': INK}), (' iki kampanya genelinde', {})]],
      size=12, color=GREY, align='c')
 dx0 = 6.9; dsz = 1.75; dgap = (SW - MX - dx0 - 3 * dsz) / 2
-for i, (pct, col, name, sub) in enumerate([(DELIV, GREEN, 'Delivery rate', f'{fmt(D["deliv"])} of {fmt(D["sent"])} delivered'),
-                                           (D['reply'], RED, 'Reply rate', f'{D["leads"]} leads / contacts reached'),
-                                           (BOUNCE, AMBER, 'Bounce rate', f'{D["bounced"]} bounced — healthy')]):
+for i, (pct, col, name, sub) in enumerate([(DELIV, GREEN, 'İletim oranı', f'{fmt(D["deliv"])} / {fmt(D["sent"])} iletildi'),
+                                           (D['reply'], RED, 'Yanıt oranı', f'{D["leads"]} aday / ulaşılan kişi'),
+                                           (BOUNCE, AMBER, 'Geri dönüş oranı', f'{D["bounced"]} geri döndü — sağlıklı')]):
     xx = dx0 + i * (dsz + dgap)
     donut(s, xx, 2.0, dsz, pct, col)
-    text(s, xx, 2.0, dsz, dsz, f'{pct}%', size=21, bold=True, color=INK, align='c', anchor='m')
+    text(s, xx, 2.0, dsz, dsz, tp(pct), size=20, bold=True, color=INK, align='c', anchor='m')
     text(s, xx - 0.1, 3.92, dsz + 0.2, 0.3, name, size=15.5, bold=True, color=INK, align='c')
     text(s, xx - 0.1, 4.26, dsz + 0.2, 0.5, sub, size=11, color=GREY, align='c', lsp=1.0)
 card(s, MX, 5.78, CW, 0.95, fill=INK, r=0.14)
-text(s, MX + 0.4, 5.78, 6.3, 0.95, [[(f'{D["reply"]}% reply', {'color': GOLD}), (' across both regions', {})]],
+text(s, MX + 0.4, 5.78, 6.3, 0.95, [[(f'{tp(D["reply"])} yanıt', {'color': GOLD}), (' iki bölgede birden', {})]],
      size=23, bold=True, color=WHITE, anchor='m')
-text(s, MX + 6.6, 5.78, CW - 7.0, 0.95, 'Replies are the one reliable signal — open tracking fired on few messages, '
-     'so the reply rate is the number we manage.', size=12.5, color=PALE, anchor='m', lsp=1.0)
-notes(s, 'Combined funnel across both live campaigns: 1,600 sent, 1,574 delivered (98.4%), 48 leads. Reply rate here is unique '
-         'repliers over contacts reached. Doughnuts are native, editable PowerPoint charts.')
+text(s, MX + 6.6, 5.78, CW - 7.0, 0.95, 'Yanıt tek güvenilir sinyal — açılma takibi az mesajda çalıştı, '
+     'bu yüzden yönettiğimiz rakam yanıt oranı.', size=12.5, color=PALE, anchor='m', lsp=1.0)
+notes(s, 'İki aktif kampanyanın birleşik hunisi: 1.600 gönderildi, 1.574 iletildi (%98,4), 48 aday. Buradaki yanıt oranı ulaşılan '
+         'kişi başına tekil yanıtlayan. Halka grafikler düzenlenebilir yerel PowerPoint grafikleridir.')
 
-# ============================================================================= 6 · leads
-s = content_slide('LEADS', f'{D["leads"]} leads — and names that matter')
-for i, (v, l, c) in enumerate([(str(D['leads']), 'Total leads (replies)', RED), (f'{D["la_leads"]} + {D["me_leads"]}', 'LatAm + Middle East', INK),
-                               (f'{D["reply"]}%', 'Reply rate (per contact)', INK)]):
+# ============================================================================= 6 · müşteri adayları
+s = content_slide('MÜŞTERİ ADAYLARI', f'{D["leads"]} müşteri adayı — ve önemli isimler')
+for i, (v, l, c) in enumerate([(str(D['leads']), 'Toplam aday (yanıt)', RED), (f'{D["la_leads"]} + {D["me_leads"]}', 'LatAm + Orta Doğu', INK),
+                               (tp(D['reply']), 'Yanıt oranı (kişi başı)', INK)]):
     yy = 1.9 + i * 1.63
     card(s, MX, yy, 3.55, 1.45, r=0.12)
     text(s, MX + 0.35, yy + 0.2, 3.1, 0.75, v, size=40, bold=True, color=c)
     text(s, MX + 0.35, yy + 0.98, 3.1, 0.3, l, size=13, color=GREY)
 tx, tw_ = 4.6, SW - MX - 4.6
 card(s, tx, 1.9, tw_, 4.71, r=0.14)
-text(s, tx + 0.4, 2.12, 5, 0.3, 'Notable leads', size=16, bold=True, color=INK)
-cols = [(tx + 0.4, 'LEAD'), (tx + 3.0, 'SECTOR'), (tx + 6.35, 'REGION')]
+text(s, tx + 0.4, 2.12, 5, 0.3, 'Öne çıkan adaylar', size=16, bold=True, color=INK)
+cols = [(tx + 0.4, 'ADAY'), (tx + 3.0, 'SEKTÖR'), (tx + 6.35, 'BÖLGE')]
 for cx, h in cols: text(s, cx, 2.68, 3, 0.25, h, size=10.5, bold=True, color=MUTE, spc=1.4)
 line(s, tx + 0.4, 2.98, tx + tw_ - 0.4, 2.98, LINE, 1)
-leads = [('Loma Negra', 'Cement (major producer)', 'Argentina', True), ('Socotherm', 'Pipe coating / energy', 'Argentina', False),
-         ('HOC', 'Industrial', 'Latin America', False)]
+leads = [('Loma Negra', 'Çimento (büyük üretici)', 'Arjantin', True), ('Socotherm', 'Boru kaplama / enerji', 'Arjantin', False),
+         ('HOC', 'Endüstriyel', 'Latin Amerika', False)]
 for i, (n, sec, ctry, hot) in enumerate(leads):
     yy = 3.10 + i * 0.72
     if hot: box(s, tx + 0.22, yy - 0.02, tw_ - 0.44, 0.66, fill='FBEFEA', r=0.08)
@@ -336,14 +350,14 @@ for i, (n, sec, ctry, hot) in enumerate(leads):
     if i < 2: line(s, tx + 0.4, yy + 0.68, tx + tw_ - 0.4, yy + 0.68, LINE, 0.75)
 box(s, tx + 0.4, 5.4, tw_ - 0.8, 0.95, fill=BG, r=0.1)
 text(s, tx + 0.62, 5.4, tw_ - 1.25, 0.95,
-     [[(f'+ {D["la_leads"] - 3} more Latin America replies', {'bold': True, 'color': INK}),
-       (f' and {D["me_leads"]} from the Middle East — all to be triaged into the sales pipeline', {})]],
+     [[(f'+ {D["la_leads"] - 3} Latin Amerika yanıtı daha', {'bold': True, 'color': INK}),
+       (f' ve Orta Doğu’dan {D["me_leads"]} — hepsi satış hattına aktarılacak', {})]],
      size=13.5, color=GREY, anchor='m', lsp=1.05)
-notes(s, 'Loma Negra (Argentine cement) is the highest-value account so far. 46 LatAm + 2 Middle East = 48 leads total; the rest need '
-         'triage into the pipeline.')
+notes(s, 'Loma Negra (Arjantin çimento) şimdiye kadarki en yüksek değerli hesap. 46 LatAm + 2 Orta Doğu = toplam 48 aday; '
+         'kalanı hatta aktarılacak.')
 
-# ============================================================================= 7 · markets & message (two maps)
-s = content_slide('MARKETS & MESSAGE', 'Two regions, two languages')
+# ============================================================================= 7 · pazarlar & mesaj
+s = content_slide('PAZARLAR & MESAJ', 'İki bölge, iki dil')
 def map_card(x, w, title, mapimg, aspect, lang, sectors, subj):
     card(s, x, 1.85, w, 4.85, r=0.14)
     text(s, x + 0.35, 2.05, w - 0.7, 0.3, title, size=17, bold=True, color=INK)
@@ -352,56 +366,56 @@ def map_card(x, w, title, mapimg, aspect, lang, sectors, subj):
     yb = 5.62
     text(s, x + 0.35, yb, w - 0.7, 0.3, [[(lang, {'bold': True, 'color': INK}), ('  ·  ' + sectors, {})]], size=12, color=GREY)
     sb = box(s, x + 0.35, yb + 0.36, w - 0.7, 0.46, fill=INK, r=0.1)
-    label_in(sb, [[('SUBJECT  ', {'size': 9, 'color': GOLD, 'spc': 1.2}), (subj, {'size': 12.5})]], color=WHITE, align='l')
+    label_in(sb, [[('KONU  ', {'size': 9, 'color': GOLD, 'spc': 1.2}), (subj, {'size': 12.5})]], color=WHITE, align='l')
     sb.text_frame.margin_left = Inches(0.18)
-map_card(MX, 5.85, 'Latin America', 'latam_map.png', 1300 / 1400, 'Spanish', 'cement · mining · steel · food · water',
+map_card(MX, 5.85, 'Latin Amerika', 'latam_map.png', 1300 / 1400, 'İspanyolca', 'çimento · madencilik · çelik · gıda · su',
          'Reductores para {{company}}')
-map_card(MX + 6.08, 5.85, 'Middle East', 'me_map.png', 1300 / 1118, 'English', 'cranes & heavy lifting',
+map_card(MX + 6.08, 5.85, 'Orta Doğu', 'me_map.png', 1300 / 1118, 'İngilizce', 'vinçler & ağır kaldırma',
          'Gear motors for {{company}}')
-notes(s, 'Latin America ran in Spanish across five named markets (plus Spanish-speaking neighbours; Brazil/Portuguese still open). '
-         'The Middle East (Crane ME) ran in English, targeting GCC crane and heavy-lifting buyers.')
+notes(s, 'Latin Amerika beş adlandırılmış pazarda İspanyolca yürütüldü (artı İspanyolca konuşan komşular; Brezilya/Portekizce hâlâ açık). '
+         'Orta Doğu (Crane ME) İngilizce yürütüldü; Körfez vinç ve ağır kaldırma alıcılarını hedefledi. Harita etiketleri Türkçedir.')
 
-# ============================================================================= 8 · tools
-s = content_slide('TOOLS', 'Programs and tools behind the campaign')
-tools = [('Apollo.io', 'DATA  ·  SENDING', ['Contact database search', 'Email enrichment and reveal', 'Sequence builder', 'Sending engine', 'Analytics']),
-         ('Microsoft 365 / Outlook', 'REPLIES', ['Reply handling', 'Draft replies', 'Sent manually to keep control']),
-         ('Python scripts', 'DATA PREP', ['List building', 'De-dup: one per company', 'Contact-ID to email mapping', 'Batch selection']),
-         ('Claude Code', 'ORCHESTRATION', ['Orchestration', 'Daily monitoring', 'Reply mapping', 'Reporting and scheduling'])]
+# ============================================================================= 8 · araçlar
+s = content_slide('ARAÇLAR', 'Kampanyanın arkasındaki program ve araçlar')
+tools = [('Apollo.io', 'VERİ  ·  GÖNDERİM', ['Kişi veritabanı araması', 'E-posta zenginleştirme/bulma', 'Dizi (sequence) oluşturucu', 'Gönderim motoru', 'Analitik']),
+         ('Microsoft 365 / Outlook', 'YANITLAR', ['Yanıt yönetimi', 'Yanıt taslakları', 'Kontrol için elle gönderim']),
+         ('Python betikleri', 'VERİ HAZIRLIK', ['Liste oluşturma', 'Tekilleştirme: şirkete 1 kişi', 'Kişi-ID → e-posta eşleme', 'Parti (batch) seçimi']),
+         ('Claude Code', 'ORKESTRASYON', ['Orkestrasyon', 'Günlük izleme', 'Yanıt eşleme', 'Raporlama ve zamanlama'])]
 tw4 = (CW - 3 * 0.22) / 4
 for i, (n, tag, d) in enumerate(tools):
     xx = MX + i * (tw4 + 0.22)
     card(s, xx, 1.95, tw4, 3.55, r=0.14)
     box(s, xx, 1.95, tw4, 1.28, fill=INK, r=0.14)
     box(s, xx, 2.75, tw4, 0.48, fill=INK)
-    text(s, xx + 0.28, 2.17, tw4 - 0.5, 0.25, tag, size=10, bold=True, color=GOLD, spc=1.6)
-    text(s, xx + 0.28, 2.47, tw4 - 0.5, 0.6, n, size=19, bold=True, color=WHITE)
+    text(s, xx + 0.28, 2.17, tw4 - 0.5, 0.25, tag, size=10, bold=True, color=GOLD, spc=1.4)
+    text(s, xx + 0.28, 2.47, tw4 - 0.5, 0.6, n, size=18, bold=True, color=WHITE)
     for j, item in enumerate(d):
         yj = 3.50 + j * 0.385
         box(s, xx + 0.3, yj + 0.095, 0.075, 0.075, fill=RED)
-        text(s, xx + 0.5, yj, tw4 - 0.7, 0.3, item, size=13, color=CHAR)
+        text(s, xx + 0.5, yj, tw4 - 0.72, 0.3, item, size=12.5, color=CHAR)
 card(s, MX, 5.78, CW, 0.95, fill=CARD, r=0.14)
-flow = ['Find & enrich', 'Clean & de-dup', 'Send', 'Reply', 'Monitor & report']
+flow = ['Bul & zenginleştir', 'Temizle & tekilleştir', 'Gönder', 'Yanıtla', 'İzle & raporla']
 fw = CW / len(flow)
 for i, f in enumerate(flow):
     xx = MX + i * fw
-    text(s, xx + 0.15, 5.78, fw - 0.3, 0.95, [[(f'{i + 1}   ', {'color': RED, 'bold': True}), (f, {'bold': True})]], size=14.5, color=INK, anchor='m', align='c')
+    text(s, xx + 0.12, 5.78, fw - 0.24, 0.95, [[(f'{i + 1}   ', {'color': RED, 'bold': True}), (f, {'bold': True})]], size=14, color=INK, anchor='m', align='c')
     if i < len(flow) - 1:
         box(s, xx + fw - 0.1, 6.15, 0.2, 0.21, fill=PALE, shape=MSO_SHAPE.CHEVRON)
-notes(s, 'Four tools cover the whole loop: Apollo (data + sending), Python (list prep), Outlook (replies), Claude Code (orchestration, '
-         'monitoring, reporting). WhatsApp would add a messaging tool alongside Apollo.')
+notes(s, 'Dört araç tüm döngüyü kapsıyor: Apollo (veri + gönderim), Python (liste hazırlık), Outlook (yanıtlar), Claude Code '
+         '(orkestrasyon, izleme, raporlama). WhatsApp, Apollo’nun yanına bir mesajlaşma aracı ekler.')
 
-# ============================================================================= 9 · step by step
-s = content_slide('PROCESS', 'Step by step: how we ran it')
-steps = [('Define the target', 'Industrial buyers by region: LatAm reducers; Middle East crane & lifting.'),
-         ('Build contact lists', 'Apollo people search by region, industry and title.'),
-         ('Clean & de-duplicate', 'One contact per company; repeats and invalid records removed.'),
-         ('Enrich & verify emails', 'Verified through Apollo; batches of about 500 prepared.'),
-         ('Write the copy', 'Spanish for LatAm, English for the Middle East, A/B subjects.'),
-         ('Configure the sequences', f'Sender “i.Mak Export Team”, cap {D["cap"]} a day, controlled windows.'),
-         ('Launch & monitor daily', 'Sent, delivered, replies, bounces and spam blocks.'),
-         ('Protect deliverability', 'Cap held steady, spam-block trend watched, no reputation damage.'),
-         ('Route the leads', 'Every replier mapped to their inbox; replies drafted; Bilal CC’d.'),
-         ('Automate check-ins', 'Daily numbers, new leads and the watch rule.')]
+# ============================================================================= 9 · adım adım
+s = content_slide('SÜREÇ', 'Adım adım: nasıl yürüttük')
+steps = [('Hedefi tanımla', 'Bölgeye göre endüstriyel alıcılar: LatAm redüktör; Orta Doğu vinç & kaldırma.'),
+         ('Kişi listeleri oluştur', 'Apollo’da bölge, sektör ve unvana göre kişi araması.'),
+         ('Temizle & tekilleştir', 'Şirket başına bir kişi; tekrarlar ve geçersiz kayıtlar çıkarıldı.'),
+         ('E-postaları doğrula', 'Apollo ile doğrulandı; ~500’lük partiler hazırlandı.'),
+         ('Metni yaz', 'LatAm için İspanyolca, Orta Doğu için İngilizce, A/B konu başlıkları.'),
+         ('Dizileri yapılandır', f'Gönderen “i.Mak Export Team”, günde {D["cap"]} sınırı, kontrollü pencereler.'),
+         ('Başlat & günlük izle', 'Gönderilen, iletilen, yanıt, geri dönüş ve spam engelleri.'),
+         ('İletilebilirliği koru', 'Sınır sabit tutuldu, spam eğilimi izlendi, itibar zedelenmedi.'),
+         ('Adayları yönlendir', 'Her yanıtlayan kutusuna eşlendi; yanıtlar hazırlandı; Bilal CC’lendi.'),
+         ('Kontrolleri otomatikleştir', 'Günlük rakamlar, yeni adaylar ve izleme kuralı.')]
 cwid = CW / 5
 for r_ in range(2):
     yy = 2.05 + r_ * 2.38
@@ -410,113 +424,124 @@ for r_ in range(2):
         i = r_ * 5 + c_; xx = MX + c_ * cwid; t, d = steps[i]
         circ = box(s, xx, yy, 0.54, 0.54, fill=RED, shape=MSO_SHAPE.OVAL)
         label_in(circ, str(i + 1), size=15, color=WHITE)
-        text(s, xx, yy + 0.72, cwid - 0.25, 0.32, t, size=14.5, bold=True, color=INK)
-        text(s, xx, yy + 1.06, cwid - 0.3, 1.1, d, size=11.5, color=GREY, lsp=1.05)
-notes(s, 'Ten repeatable steps, run across both regions. Steps 7 to 10 run every day.')
+        text(s, xx, yy + 0.72, cwid - 0.25, 0.32, t, size=14, bold=True, color=INK)
+        text(s, xx, yy + 1.06, cwid - 0.3, 1.1, d, size=11, color=GREY, lsp=1.05)
+notes(s, 'Her iki bölgede de yürütülen on tekrarlanabilir adım. 7–10. adımlar her gün çalışır.')
 
-# ============================================================================= 10 · challenges
-s = content_slide('LESSONS', 'Six challenges we faced')
-ch = [('MIDDLE EAST', BAD, 'Crane ME underperformed', f'{D["me_reply"]}% reply vs {D["la_reply"]}% in LatAm, and idle since {D["me_last"]}. Needs new copy and a deliverability fix — or redirect.'),
-      ('DELIVERABILITY', BAD, 'Early spam-block spike', 'Spam blocks escalated early in LatAm, a reputation risk. Contained by holding the cap at 120 rather than scaling up.'),
-      ('CAPACITY', AMBER, 'Single-inbox ceiling', 'One sender and inbox caps safe volume at about 120 a day — the ceiling on monthly reach.'),
-      ('CONTACTS', AMBER, 'List size limits the goal', 'Reaching 2,000 is limited by list size, not speed. It needs ongoing contact sourcing.'),
-      ('TRACKING', AMBER, 'Weak open tracking', 'Open tracking fired on few messages. Replies are the only reliable signal, so top-of-funnel is partly blind.'),
-      ('COVERAGE', AMBER, 'Spanish only — no Brazil yet', 'Brazil (Portuguese), the largest LatAm market, is not yet addressed.')]
+# ============================================================================= 10 · zorluklar
+s = content_slide('DERSLER', 'Karşılaştığımız altı zorluk')
+ch = [('ORTA DOĞU', BAD, 'Crane ME beklenti altında', f'LatAm’daki {tp(D["la_reply"])}’ye karşı {tp(D["me_reply"])} yanıt, {D["me_last"]}’dan beri durgun. Yeni metin ve iletilebilirlik düzeltmesi — ya da yönlendirme gerek.'),
+      ('İLETİLEBİLİRLİK', BAD, 'Erken spam-engeli sıçraması', 'LatAm’da spam engelleri erken tırmandı, itibar riski. Sınırı 120’de tutarak kontrol altına alındı.'),
+      ('KAPASİTE', AMBER, 'Tek kutu tavanı', 'Tek gönderen ve kutu, güvenli hacmi günde ~120 ile sınırlar — aylık erişimin tavanı.'),
+      ('KİŞİLER', AMBER, 'Liste boyutu hedefi sınırlıyor', 'Hız değil, liste boyutu 2.000’e ulaşmayı sınırlıyor. Sürekli kişi temini gerekir.'),
+      ('TAKİP', AMBER, 'Zayıf açılma takibi', 'Açılma takibi az mesajda çalıştı. Tek güvenilir sinyal yanıt, bu yüzden huni başı kısmen görünmez.'),
+      ('KAPSAM', AMBER, 'Yalnızca İspanyolca — Brezilya yok', 'En büyük LatAm pazarı Brezilya (Portekizce) henüz ele alınmadı.')]
 cw3 = (CW - 2 * 0.22) / 3
 for i, (tag, col, t, d) in enumerate(ch):
     xx = MX + (i % 3) * (cw3 + 0.22); yy = 1.9 + (i // 3) * 2.46
     card(s, xx, yy, cw3, 2.26, r=0.14)
     box(s, xx, yy + 0.3, 0.07, 1.66, fill=col)
-    chip = box(s, xx + 0.32, yy + 0.28, 0.42 + 0.088 * len(tag), 0.29, fill=col, r=0.145)
-    label_in(chip, tag, size=9.5, color=WHITE, spc=1.2)
-    text(s, xx + 0.32, yy + 0.72, cw3 - 0.6, 0.35, t, size=16.5, bold=True, color=INK)
-    text(s, xx + 0.32, yy + 1.12, cw3 - 0.62, 1.05, d, size=12, color=GREY, lsp=1.06)
-notes(s, 'Red tags are the two biggest issues: the Middle East result, and the early LatAm deliverability risk (now contained). '
-         'Amber tags are ongoing constraints.')
+    chip = box(s, xx + 0.32, yy + 0.28, 0.42 + 0.085 * len(tag), 0.29, fill=col, r=0.145)
+    label_in(chip, tag, size=9.5, color=WHITE, spc=1.0)
+    text(s, xx + 0.32, yy + 0.72, cw3 - 0.6, 0.35, t, size=16, bold=True, color=INK)
+    text(s, xx + 0.32, yy + 1.12, cw3 - 0.62, 1.05, d, size=11.5, color=GREY, lsp=1.06)
+notes(s, 'Kırmızı etiketler en büyük iki sorun: Orta Doğu sonucu ve erken LatAm iletilebilirlik riski (kontrol altında). '
+         'Sarı etiketler süregelen kısıtlar.')
 
-# ============================================================================= 11 · NEW — WhatsApp 1-on-1
-s = content_slide('NEW CHANNEL', 'Add a 1-on-1 WhatsApp channel')
-# left: why
-card(s, MX, 1.9, 5.5, 4.05, fill=INK, r=0.16)
-wb = box(s, MX + 0.4, 2.18, 0.5, 0.5, fill=WA, r=0.14)
-label_in(wb, 'W', size=22, color=WHITE)
-text(s, MX + 1.02, 2.2, 4.0, 0.5, 'Why WhatsApp', size=20, bold=True, color=WHITE, anchor='m')
-text(s, MX + 0.4, 2.92, 4.75, 1.0, 'Both Latin America and the Middle East run their business on WhatsApp. '
-     'Email earns a few per-cent reply; on WhatsApp, buyers answer in minutes.', size=14, color=PALE, lsp=1.1)
-line(s, MX + 0.4, 4.15, MX + 5.1, 4.15, '2C333F', 0.75)
-for i, (v, l) in enumerate([(D['wa_users'], ['WhatsApp', 'users']), (D['wa_open'], ['open rate*', f'(email {D["em_open"]})']),
-                            ('#1', ['business app', 'in both regions'])]):
-    xx = MX + 0.4 + i * 1.62
-    text(s, xx, 4.32, 1.55, 0.5, v, size=26, bold=True, color=WA if i == 1 else WHITE)
-    text(s, xx, 4.9, 1.55, 0.6, l, size=11, color=MUTE, lsp=0.95)
-text(s, MX + 0.4, 5.62, 4.9, 0.3, '*opted-in contacts; industry benchmarks', size=9.5, italic=True, color=MUTE)
-# right: how it works
-text(s, 6.5, 1.95, 6.2, 0.3, 'How the 1-on-1 automation works', size=16, bold=True, color=INK)
-wa_steps = [('Trigger', 'A lead opens, clicks or replies — or a verified mobile number exists.'),
-            ('Auto-personalised message', 'Name, company and product merged into an approved template, sent via the WhatsApp Business API. Reads like a person, not a blast.'),
-            ('1-on-1 conversation', 'The rep takes over live, in Spanish or English — a real back-and-forth, not a broadcast.'),
-            ('Logged to the pipeline', 'Outcome synced to the CRM so WhatsApp maps to quotes and orders.')]
+# ============================================================================= 11 · YENİ — WhatsApp birebir
+s = content_slide('YENİ KANAL', 'Birebir bir WhatsApp kanalı ekleyin')
+card(s, MX, 1.9, 5.5, 4.08, fill=INK, r=0.16)
+wb = box(s, MX + 0.4, 2.18, 0.5, 0.5, fill=WA, r=0.14); label_in(wb, 'W', size=22, color=WHITE)
+text(s, MX + 1.02, 2.2, 4.0, 0.5, 'Neden WhatsApp', size=20, bold=True, color=WHITE, anchor='m')
+text(s, MX + 0.4, 2.86, 4.8, 0.8, 'Her iki bölge de işini WhatsApp üzerinden yürütüyor. E-posta birkaç yüzde yanıt alır; '
+     'WhatsApp’ta alıcılar dakikalar içinde yanıtlar.', size=13.5, color=PALE, lsp=1.08)
+# --- infografik: açılma oranı karşılaştırma çubukları ---
+text(s, MX + 0.4, 3.86, 4.8, 0.25, 'AÇILMA ORANI*', size=10, bold=True, color=GOLD, spc=1.4)
+bar_x = MX + 1.45; bar_w = 3.35
+for k, (nm, val, col) in enumerate([('WhatsApp', D['wa_open'], WA), ('E-posta', D['em_open'], '6B7078')]):
+    yy = 4.2 + k * 0.5
+    text(s, MX + 0.4, yy - 0.02, 1.0, 0.3, nm, size=12, bold=True, color=WHITE, anchor='m')
+    box(s, bar_x, yy, bar_w, 0.3, fill='2C333F', r=0.15)
+    fillw = bar_w * val / 100.0
+    box(s, bar_x, yy, fillw, 0.3, fill=col, r=0.15)
+    if k == 0: text(s, bar_x, yy, fillw - 0.15, 0.3, '~' + tp(val), size=12, bold=True, color=WHITE, align='r', anchor='m')
+    else: text(s, bar_x + fillw + 0.1, yy, 1.2, 0.3, '~' + tp(val), size=12, bold=True, color=PALE, anchor='m')
+line(s, MX + 0.4, 5.3, MX + 5.1, 5.3, '2C333F', 0.75)
+for i, (v, l) in enumerate([(D['wa_users'], ['WhatsApp', 'kullanıcısı']), ('#1', ['iş uygulaması', 'iki bölgede de'])]):
+    xx = MX + 0.4 + i * 2.45
+    text(s, xx, 5.42, 2.3, 0.4, v, size=22, bold=True, color=WHITE)
+    text(s, xx + (1.15 if i == 0 else 0.75), 5.46, 2.2, 0.5, l, size=10.5, color=MUTE, lsp=0.92)
+text(s, MX + 0.4, 5.62, 4.9, 0.0, '', size=1)  # spacer
+text(s, 6.5, 1.95, 6.2, 0.3, 'Birebir otomasyon nasıl çalışır', size=16, bold=True, color=INK)
+wa_steps = [('Tetikleyici', 'Bir aday açar, tıklar veya yanıtlar — ya da doğrulanmış bir numara vardır.'),
+            ('Otomatik kişisel mesaj', 'Ad, şirket ve ürün onaylı şablona işlenir, WhatsApp Business API ile gönderilir. Toplu değil, kişi gibi okunur.'),
+            ('Birebir görüşme', 'Temsilci canlı devralır, İspanyolca veya İngilizce — gerçek diyalog, yayın değil.'),
+            ('Hatta kaydedilir', 'Sonuç CRM’e işlenir; WhatsApp tekliflere ve siparişlere bağlanır.')]
 for i, (t, d) in enumerate(wa_steps):
     yy = 2.42 + i * 0.86
     card(s, 6.5, yy, 6.13, 0.74, r=0.1)
     circ = box(s, 6.72, yy + 0.17, 0.4, 0.4, fill=WA, shape=MSO_SHAPE.OVAL); label_in(circ, str(i + 1), size=13, color=WHITE)
     text(s, 7.3, yy + 0.08, 5.2, 0.3, t, size=14, bold=True, color=INK)
     text(s, 7.3, yy + 0.37, 5.25, 0.35, d, size=11, color=GREY, lsp=1.0)
-# guardrail strip
-gb = card(s, MX, 6.02, 5.5, 0.66, fill='EAF6EE', r=0.1, sh=False, line_='CDE8D6')
-text(s, MX + 0.3, 6.02, 5.0, 0.66, [[('OPT-IN & COMPLIANT   ', {'bold': True, 'color': WA, 'size': 10.5, 'spc': 0.8}),
-     ('Business API, approved templates, easy opt-out — warm follow-up first, not cold blasts.', {'size': 10.5})]],
+box(s, MX, 6.08, 5.5, 0.6, fill='EAF6EE', r=0.1, line='CDE8D6')
+text(s, MX + 0.3, 6.08, 5.0, 0.6, [[('İZİN ODAKLI & UYUMLU   ', {'bold': True, 'color': WA, 'size': 10, 'spc': 0.6}),
+     ('Business API, onaylı şablonlar, kolay çıkış — önce sıcak takip.', {'size': 10})]],
      color=GREY, anchor='m', lsp=1.0)
-notes(s, 'The new channel the campaign should add: automated-but-personal 1-on-1 WhatsApp. It is the dominant business-messaging app in '
-         'both target regions, with far higher open and reply rates than email. Run it compliant: WhatsApp Business API, approved '
-         'templates, opt-out, and warm follow-up on engaged/verified contacts first — a human rep handles the live conversation. '
-         'WhatsApp stats are industry benchmarks for opted-in contacts, not guarantees.')
+notes(s, 'Kampanyaya eklenecek yeni kanal: otomatik ama kişisel birebir WhatsApp. Her iki hedef bölgede de baskın iş mesajlaşma '
+         'uygulaması; açılma ve yanıt oranları e-postadan çok daha yüksek. Uyumlu yürütün: WhatsApp Business API, onaylı şablonlar, '
+         'çıkış hakkı ve önce etkileşime girmiş/doğrulanmış kişilere sıcak takip; canlı görüşmeyi bir temsilci yürütür. WhatsApp '
+         'rakamları izin vermiş kişiler için sektör ortalamalarıdır, garanti değildir.')
 
-# ============================================================================= 12 · growth levers
-s = content_slide('GROWTH PLAN', 'What we can add to gain more')
-lev = [('Launch WhatsApp 1-on-1', 'Automated-but-personal follow-up where buyers actually reply — the biggest new lever.', WA),
-       ('Decide on the Middle East', 'Relaunch Crane ME with revised copy and deliverability, or redirect its budget.', AMBER),
-       ('Scale sending safely', 'Add and warm up more inboxes and domains, then rotate sends above the 120-a-day cap.', RED),
-       ('Open a Brazil track', 'Brazil is the largest LatAm industrial market. A Portuguese sequence multiplies reach.', RED),
-       ('Feed the funnel', 'Continuous contact sourcing (300+ a month) plus trigger-based prospecting.', RED),
-       ('Localise the offer', 'Spanish/English landing page and catalogue, case studies and references.', RED),
-       ('Track to revenue', f'Push the {D["leads"]} leads into a CRM and measure replies → quotes → orders.', RED)]
+# ============================================================================= 12 · büyüme kaldıraçları
+s = content_slide('BÜYÜME PLANI', 'Daha fazlası için neler ekleyebiliriz')
+lev = [('WhatsApp birebiri başlat', 'Alıcıların gerçekten yanıt verdiği yerde otomatik ama kişisel takip — en büyük yeni kaldıraç.', WA),
+       ('Orta Doğu’ya karar ver', 'Crane ME’yi revize metin ve iletilebilirlikle yeniden başlat, ya da bütçeyi yönlendir.', AMBER),
+       ('Gönderimi güvenle ölçekle', 'Daha fazla kutu ve alan adı ekle, ısıt ve döndür; 120/gün sınırını aş.', RED),
+       ('Brezilya kanalını aç', 'Brezilya en büyük LatAm endüstri pazarı. Portekizce dizi erişimi katlar.', RED),
+       ('Huniyi besle', 'Sürekli kişi temini (300+/ay) ve tetik tabanlı potansiyel bulma.', RED),
+       ('Teklifi yerelleştir', 'İspanyolca/İngilizce açılış sayfası ve katalog, vaka çalışmaları, referanslar.', RED),
+       ('Geliri izle', f'{D["leads"]} adayı CRM’e taşı ve yanıt → teklif → sipariş ölç.', RED)]
 cw4 = (CW - 3 * 0.2) / 4
 for i, (t, d, c) in enumerate(lev):
     xx = MX + (i % 4) * (cw4 + 0.2); yy = 1.9 + (i // 4) * 2.46
     card(s, xx, yy, cw4, 2.26, r=0.14)
     circ = box(s, xx + 0.26, yy + 0.26, 0.44, 0.44, fill=c, shape=MSO_SHAPE.OVAL); label_in(circ, str(i + 1), size=13, color=WHITE)
-    text(s, xx + 0.26, yy + 0.84, cw4 - 0.45, 0.34, t, size=14.5, bold=True, color=INK)
+    text(s, xx + 0.26, yy + 0.84, cw4 - 0.45, 0.34, t, size=14, bold=True, color=INK)
     text(s, xx + 0.26, yy + 1.19, cw4 - 0.48, 1.0, d, size=11.5, color=GREY, lsp=1.05)
 xx = MX + 3 * (cw4 + 0.2); yy = 1.9 + 2.46
 card(s, xx, yy, cw4, 2.26, fill=INK, r=0.14)
-text(s, xx + 0.28, yy + 0.26, cw4 - 0.5, 0.25, 'THE SHIFT', size=10, bold=True, color=GOLD, spc=1.8)
-text(s, xx + 0.28, yy + 0.6, cw4 - 0.5, 0.75, ['One channel,', 'one region working'], size=14, color=PALE, lsp=1.0)
-text(s, xx + 0.28, yy + 1.22, cw4 - 0.5, 0.95, ['→ email + WhatsApp,', 'both regions, into a CRM.'], size=15, bold=True, color=WHITE, lsp=1.05)
-notes(s, 'Levers ordered by impact: WhatsApp is the headline new channel; the Middle East needs a decision; the rest scale and clean the '
-         'existing engine and connect it to revenue.')
+text(s, xx + 0.28, yy + 0.26, cw4 - 0.5, 0.25, 'DÖNÜŞÜM', size=10, bold=True, color=GOLD, spc=1.8)
+text(s, xx + 0.28, yy + 0.6, cw4 - 0.5, 0.75, ['Tek kanal,', 'tek bölge çalışıyor'], size=14, color=PALE, lsp=1.0)
+text(s, xx + 0.28, yy + 1.22, cw4 - 0.5, 0.95, ['→ e-posta + WhatsApp,', 'iki bölge, CRM’e bağlı.'], size=15, bold=True, color=WHITE, lsp=1.05)
+notes(s, 'Kaldıraçlar etkiye göre sıralı: WhatsApp öne çıkan yeni kanal; Orta Doğu bir karar gerektiriyor; geri kalanı mevcut motoru '
+         'ölçekler/temizler ve geliri bağlar.')
 
-# ============================================================================= 13 · next steps
+# ============================================================================= 13 · sonraki adımlar
 s = prs.slides.add_slide(BLANK)
 s.background.fill.solid(); s.background.fill.fore_color.rgb = rgb(INK)
 box(s, 0, 0, 0.28, SH, fill=RED)
 pic(s, 'logo_white.png', SW - 0.8 - 1.75, 0.72, h=0.44)
-text(s, 1.0, 0.72, 7, 0.3, 'NEXT 30 DAYS', size=12.5, bold=True, color=GOLD, spc=2.2)
-text(s, 1.0, 1.05, 9, 0.8, 'Proposed next steps', size=40, bold=True, color=WHITE)
-nxt = [('Launch the WhatsApp pilot', f'1-on-1 WhatsApp follow-up on the {D["leads"]} leads and warm contacts — compliant, rep-handled.', WA),
-       ('Fix the Middle East', f'Relaunch Crane ME with revised copy and deliverability, or redirect its budget. Idle since {D["me_last"]}.', GOLD),
-       ('Secure the 2,000 in LatAm', f'Top up {D["topup"]} contacts so the month closes on target; keep the daily cap steady.', GOLD),
-       ('Scale & open Brazil', 'Warm up more inboxes, then launch a Portuguese sequence for the largest LatAm market.', GOLD)]
+text(s, 1.0, 0.72, 7, 0.3, 'ÖNÜMÜZDEKİ 30 GÜN', size=12.5, bold=True, color=GOLD, spc=2.2)
+text(s, 1.0, 1.05, 10, 0.8, 'Önerilen sonraki adımlar', size=38, bold=True, color=WHITE)
+nxt = [('WhatsApp pilotunu başlat', f'{D["leads"]} aday ve sıcak kişilere birebir WhatsApp takibi — uyumlu, temsilci yürütümlü.', WA),
+       ('Orta Doğu’yu düzelt', f'Crane ME’yi revize metin ve iletilebilirlikle yeniden başlat ya da bütçeyi yönlendir. {D["me_last"]}’dan beri durgun.', GOLD),
+       ('LatAm’da 2.000’i garantile', f'Ay hedefte kapansın diye {D["topup"]} kişi ekle; günlük sınırı sabit tut.', GOLD),
+       ('Ölçekle & Brezilya’yı aç', 'Daha fazla kutu ısıt, sonra en büyük LatAm pazarı için Portekizce dizi başlat.', GOLD)]
 for i, (t, d, nc) in enumerate(nxt):
     yy = 2.3 + i * 1.02
     text(s, 1.0, yy, 1.0, 0.8, f'0{i + 1}', size=34, bold=True, color=nc, anchor='m')
-    text(s, 2.15, yy + 0.02, 3.7, 0.8, t, size=20, bold=True, color=WHITE, anchor='m')
-    text(s, 6.0, yy + 0.02, 6.45, 0.8, d, size=14, color=PALE, anchor='m', lsp=1.03)
+    text(s, 2.15, yy + 0.02, 3.9, 0.8, t, size=20, bold=True, color=WHITE, anchor='m')
+    text(s, 6.2, yy + 0.02, 6.25, 0.8, d, size=13.5, color=PALE, anchor='m', lsp=1.03)
     if i < 3: line(s, 1.0, yy + 0.92, 12.5, yy + 0.92, '343A45', 0.75)
-text(s, 1.0, 6.58, 11.5, 0.6, f'Figures pulled live from Apollo on {D["date"]} across two live campaigns. Combined: sent {fmt(D["sent"])} · '
-     f'delivered {fmt(D["deliv"])} · leads {D["leads"]} · bounced {D["bounced"]} · spam blocked {D["spam"]}. '
-     'WhatsApp figures are industry benchmarks. Strategy sections are internal analysis — prepared for i.Mak export sales review.',
+text(s, 1.0, 6.56, 11.6, 0.6, f'Rakamlar {D["date"]} itibarıyla iki aktif kampanyadan Apollo üzerinden canlı çekildi. Birleşik: '
+     f'gönderilen {fmt(D["sent"])} · iletilen {fmt(D["deliv"])} · aday {D["leads"]} · geri dönen {D["bounced"]} · spam engeli {D["spam"]}. '
+     'WhatsApp rakamları sektör ortalamalarıdır. Strateji bölümleri iç analizdir — i.Mak ihracat satış incelemesi için hazırlandı.',
      size=10, color=MUTE, lsp=1.05)
-notes(s, 'Four proposed moves for the next 30 days, led by the WhatsApp pilot and the Middle East decision. Costs and owners to be agreed.')
+notes(s, 'Önümüzdeki 30 gün için dört öneri; başı WhatsApp pilotu ve Orta Doğu kararı çekiyor. Maliyet ve sorumlular belirlenecek.')
 
-prs.save(OUT); print('saved', OUT, 'slides:', len(prs.slides))
+# --- tüm slaytlara geçiş efekti ekle -----------------------------------------
+n = len(prs.slides)
+for i, sl in enumerate(prs.slides):
+    add_transition(sl, 'fade' if i in (0, n - 1) else 'push', 'l', 'med')
+
+prs.save(OUT); print('kaydedildi', OUT, 'slayt:', len(prs.slides))

@@ -33,18 +33,18 @@ REGIONS = {
         secondary={'Venezuela', 'Ecuador', 'Bolivia', 'Paraguay', 'Uruguay', 'Guatemala', 'Honduras',
                    'El Salvador', 'Nicaragua', 'Costa Rica', 'Panama', 'Cuba', 'Dominican Rep.'},
         brazil={'Brazil'},
-        labels=[('MEXICO', -102.5, 23.6, 24, WHITE, 'mm'), ('COLOMBIA', -73.2, 3.6, 21, WHITE, 'mm'),
-                ('PERU', -75.4, -9.6, 21, WHITE, 'mm'), ('ARGENTINA', -64.6, -34.5, 22, WHITE, 'mm'),
-                ('CHILE', -76.8, -31.0, 22, INK, 'rm'), ('BRAZIL', -52.5, -9.0, 27, BROWN, 'mm'),
-                ('Portuguese — next', -52.5, -12.9, 17, BROWN, 'mm')]),
+        labels=[('MEKSİKA', -102.5, 23.6, 24, WHITE, 'mm'), ('KOLOMBİYA', -73.2, 3.6, 20, WHITE, 'mm'),
+                ('PERU', -75.4, -9.6, 21, WHITE, 'mm'), ('ARJANTİN', -64.6, -34.5, 22, WHITE, 'mm'),
+                ('ŞİLİ', -76.8, -31.0, 22, INK, 'rm'), ('BREZİLYA', -52.5, -9.0, 26, BROWN, 'mm'),
+                ('Portekizce — sonraki', -52.5, -12.9, 16, BROWN, 'mm')]),
     'me': dict(
         lon=(23.0, 60.5), lat=(40.5, 11.5), klat=26.0, w=1300,
         core={'Saudi Arabia', 'United Arab Emirates', 'Qatar', 'Kuwait', 'Oman'},
         secondary={'Egypt', 'Jordan', 'Iraq', 'Lebanon', 'Yemen', 'Bahrain'},
         brazil=set(),
-        labels=[('SAUDI ARABIA', 45.2, 23.8, 22, WHITE, 'mm'), ('EGYPT', 29.5, 26.5, 20, WHITE, 'mm'),
-                ('OMAN', 56.6, 20.9, 16, WHITE, 'mm'), ('IRAQ', 43.7, 33.1, 16, INK, 'mm'),
-                ('U.A.E.', 54.4, 24.1, 14, WHITE, 'mm'), ('QATAR', 51.2, 25.3, 11, INK, 'lm')]),
+        labels=[('SUUDİ ARABİSTAN', 45.2, 23.8, 20, WHITE, 'mm'), ('MISIR', 29.5, 26.5, 20, WHITE, 'mm'),
+                ('UMMAN', 56.6, 20.9, 16, WHITE, 'mm'), ('IRAK', 43.7, 33.1, 16, INK, 'mm'),
+                ('B.A.E.', 54.4, 24.1, 14, WHITE, 'mm'), ('KATAR', 51.2, 25.3, 11, INK, 'lm')]),
 }
 R = REGIONS[region]
 LON0, LON1 = R['lon']; LAT0, LAT1 = R['lat']
