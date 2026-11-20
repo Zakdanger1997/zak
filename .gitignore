@@ -1,2 +1,5 @@
 node_modules/
 .DS_Store
+
+# yt-dlp skill default download folder (media is not committed)
+downloads/
