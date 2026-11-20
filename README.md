@@ -24,6 +24,7 @@ Built by [Salesably.ai](https://salesably.ai).
 | **[marketing-skills](./marketing-skills)** | 10 specialized marketing skills: brand voice, positioning, content strategy, copywriting, and distribution |
 | **[sales-skills](./sales-skills)** | 9 specialized sales skills: deal qualification, prospect research, call preparation, and stakeholder engagement |
 | **[ai-video-studio](./ai-video-studio)** | Free local AI video studio: narrated explainers and shorts from a script, with free text-to-speech, free AI pictures and ffmpeg |
+| **[yt-dlp](./yt-dlp)** | Download video, audio, subtitles and transcripts from YouTube and 1,800+ other sites: clips, MP3s, playlists and channel archives |
 | **[rea](./rea)** | REA (Reverse Engineer Anything): MCP server plus workflow skill for analyzing binaries, Electron/JavaScript apps, .NET assemblies, APKs, firmware, and websites |
 
 The repository also hosts **[imak-reduktor-secim](./imak-reduktor-secim)**, a stand-alone browser-based gearbox selection program for i.Mak Redüktör built from their public catalogue tables (not a Claude Code plugin; open `imak-reduktor-secim/index.html`).
@@ -41,6 +42,7 @@ The repository also hosts **[imak-reduktor-secim](./imak-reduktor-secim)**, a st
    /plugin install sales-skills
    /plugin install rea
    /plugin install ai-video-studio
+   /plugin install yt-dlp
    ```
 
 3. **Restart Claude Code** to load the new skills.

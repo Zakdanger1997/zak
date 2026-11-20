@@ -1,0 +1,22 @@
+{
+  "name": "yt-dlp",
+  "version": "0.1.0",
+  "description": "Download video, audio, subtitles, thumbnails and metadata from YouTube and 1,800+ other sites with yt-dlp: clips, playlists, channels, MP3 extraction, transcripts and archives.",
+  "author": {
+    "name": "Zakdanger1997"
+  },
+  "homepage": "https://github.com/yt-dlp/yt-dlp",
+  "license": "MIT",
+  "keywords": [
+    "yt-dlp",
+    "youtube",
+    "download",
+    "video",
+    "audio",
+    "mp3",
+    "subtitles",
+    "transcript",
+    "playlist"
+  ],
+  "skills": "./skills"
+}

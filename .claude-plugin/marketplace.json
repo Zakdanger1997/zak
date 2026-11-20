@@ -33,6 +33,14 @@
       "description": "Free local AI video studio: Claude writes the script, free TTS and image services voice and draw it, ffmpeg renders narrated explainers and shorts in any language.",
       "source": "./ai-video-studio",
       "category": "video"
+    },
+    {
+      "name": "yt-dlp",
+      "description": "Download video, audio, subtitles, transcripts and metadata from YouTube and 1,800+ other sites with yt-dlp: clips, MP3s, playlists and channel archives.",
+      "source": "./yt-dlp",
+      "category": "video",
+      "homepage": "https://github.com/yt-dlp/yt-dlp",
+      "license": "MIT"
     }
   ]
 }
