@@ -26,6 +26,7 @@ A 12-page A4 product brochure for i.Mak Redüktör, modelled on the structure of
 ```bash
 # 1. images: download the originals listed in SOURCES.md into RAW/ (wp/, catimg/, social/), then
 python3 tools/prepare_assets.py RAW          # needs Pillow, numpy, scipy
+python3 tools/make_ticks.py                   # background line pattern as flat PNGs
 # 2. PDF (Playwright + Chromium)
 node tools/build_pdf.js                       # -> imak-mixing-agitating-brochure-EN.pdf
 node tools/build_pdf.js --png /tmp/pages      # also writes one PNG per page for review

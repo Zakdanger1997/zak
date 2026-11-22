@@ -42,12 +42,8 @@ body { font-family: "Barlow", sans-serif; font-size: 8.6pt; line-height: 1.38; c
 .ftr.r::before { right: 0; }
 .ftr b { color: var(--ink); font-weight: 600; }
 
-/* ---- tick pattern (fine dashed lines) ---- */
-.ticks { position: absolute; background-image: repeating-linear-gradient(90deg, var(--tick) 0 0.32mm, transparent 0.32mm 1.25mm);
-  -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 1.6mm, transparent 1.6mm 2.6mm), linear-gradient(90deg, #000 30%, transparent);
-  -webkit-mask-composite: source-in; mask-composite: intersect; }
-.ticks.fade-l { -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 1.6mm, transparent 1.6mm 2.6mm), linear-gradient(270deg, #000 30%, transparent); }
-.ticks.fade-b { -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 1.6mm, transparent 1.6mm 2.6mm), linear-gradient(180deg, #000 20%, transparent); }
+/* ---- tick pattern: flat PNGs from tools/make_ticks.py (no CSS masks: iOS ignores them) ---- */
+.ticks { position: absolute; display: block; }
 
 /* ---- type ---- */
 h2 { font-family: "Barlow Condensed"; font-weight: 600; font-size: 11pt; color: var(--red); margin: 0 0 1.6mm; line-height: 1.1; }
