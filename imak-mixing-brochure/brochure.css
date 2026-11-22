@@ -1,0 +1,127 @@
+/* i.Mak "Gearboxes for mixing and agitating processes" – A4 print stylesheet */
+@font-face { font-family: "Barlow"; font-weight: 300; src: url(fonts/barlow-latin-300-normal.woff2) format("woff2"), url(fonts/barlow-latin-ext-300-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 400; src: url(fonts/barlow-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 400; src: url(fonts/barlow-latin-ext-400-normal.woff2) format("woff2"); unicode-range: U+0100-024F, U+1E00-1EFF; }
+@font-face { font-family: "Barlow"; font-weight: 500; src: url(fonts/barlow-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 500; src: url(fonts/barlow-latin-ext-500-normal.woff2) format("woff2"); unicode-range: U+0100-024F, U+1E00-1EFF; }
+@font-face { font-family: "Barlow"; font-weight: 600; src: url(fonts/barlow-latin-600-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow"; font-weight: 700; src: url(fonts/barlow-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 300; src: url(fonts/barlow-condensed-latin-300-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 400; src: url(fonts/barlow-condensed-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 500; src: url(fonts/barlow-condensed-latin-500-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 600; src: url(fonts/barlow-condensed-latin-600-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 700; src: url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-weight: 500; src: url(fonts/barlow-condensed-latin-ext-500-normal.woff2) format("woff2"); unicode-range: U+0100-024F, U+1E00-1EFF; }
+
+:root {
+  --red: #c8102e;        /* product red */
+  --red-dk: #8e1b1e;     /* logo red */
+  --ink: #2a2b2e;
+  --grey: #6b6e73;
+  --line: #d9dadc;
+  --tint: #f3f3f4;
+  --tick: #e2e3e5;
+}
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: "Barlow", sans-serif; font-size: 8.6pt; line-height: 1.38; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { position: relative; width: 210mm; height: 297mm; overflow: hidden; page-break-after: always; break-after: page; background: #fff; }
+.page:last-child { page-break-after: auto; }
+
+/* ---- running header / footer ---- */
+.hdr { position: absolute; left: 15mm; top: 13mm; right: 48mm; }
+.hdr .kicker { font-family: "Barlow Condensed"; font-weight: 500; font-size: 9pt; letter-spacing: .06em; text-transform: uppercase; color: var(--grey); }
+.hdr h1 { margin: 0.6mm 0 0; font-family: "Barlow Condensed"; font-weight: 500; font-size: 19pt; line-height: 1.05; color: var(--red-dk); }
+.hdr h1 sup { font-size: 9pt; }
+.logo-tr { position: absolute; right: 13mm; top: 11mm; width: 34mm; height: 11mm; overflow: hidden; }
+.logo-tr img { width: 100%; display: block; }
+.ftr { position: absolute; left: 15mm; right: 15mm; bottom: 10mm; height: 6mm; border-top: 0.5pt solid var(--line); font-size: 7pt; color: var(--grey); padding-top: 1.6mm; }
+.ftr::before { content: ""; position: absolute; top: -0.5pt; width: 14mm; height: 1.4pt; background: var(--red); }
+.ftr.r { text-align: right; }
+.ftr.r::before { right: 0; }
+.ftr b { color: var(--ink); font-weight: 600; }
+
+/* ---- tick pattern (fine dashed lines) ---- */
+.ticks { position: absolute; background-image: repeating-linear-gradient(90deg, var(--tick) 0 0.32mm, transparent 0.32mm 1.25mm);
+  -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 1.6mm, transparent 1.6mm 2.6mm), linear-gradient(90deg, #000 30%, transparent);
+  -webkit-mask-composite: source-in; mask-composite: intersect; }
+.ticks.fade-l { -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 1.6mm, transparent 1.6mm 2.6mm), linear-gradient(270deg, #000 30%, transparent); }
+.ticks.fade-b { -webkit-mask-image: repeating-linear-gradient(0deg, #000 0 1.6mm, transparent 1.6mm 2.6mm), linear-gradient(180deg, #000 20%, transparent); }
+
+/* ---- type ---- */
+h2 { font-family: "Barlow Condensed"; font-weight: 600; font-size: 11pt; color: var(--red); margin: 0 0 1.6mm; line-height: 1.1; }
+h2.dk { color: var(--ink); }
+h3 { font-family: "Barlow Condensed"; font-weight: 600; font-size: 9.6pt; margin: 0 0 1mm; color: var(--ink); }
+p { margin: 0 0 2mm; }
+.lead { font-size: 9.6pt; line-height: 1.42; font-weight: 400; }
+.small { font-size: 7.4pt; color: var(--grey); }
+ul.tri { list-style: none; margin: 0 0 2.4mm; padding: 0; }
+ul.tri li { position: relative; padding-left: 3.6mm; margin: 0 0 1mm; }
+ul.tri li::before { content: ""; position: absolute; left: 0.3mm; top: 1.15mm; border-left: 1.7mm solid var(--red); border-top: 1.05mm solid transparent; border-bottom: 1.05mm solid transparent; }
+.abs { position: absolute; }
+.rule-r { border-top: 0.5pt solid var(--red); padding-top: 1.4mm; }
+
+/* ---- spec boxes ---- */
+.spec { border-top: 1.4pt solid var(--red); background: var(--tint); padding: 2mm 2.6mm 2.2mm; }
+.spec h3 { color: var(--red-dk); }
+.spec .row { display: flex; gap: 4mm; }
+.spec .row > div { flex: 1; }
+.kv { display: grid; grid-template-columns: auto 1fr; column-gap: 2.4mm; row-gap: .4mm; font-size: 7.8pt; }
+.kv dt { color: var(--grey); }
+.kv dd { margin: 0; font-weight: 600; }
+
+table.t { border-collapse: collapse; width: 100%; font-size: 7.6pt; }
+table.t th { font-family: "Barlow Condensed"; font-weight: 600; font-size: 8pt; text-align: left; color: #fff; background: var(--ink); padding: 1mm 1.6mm; }
+table.t th.r, table.t td.r { text-align: right; }
+table.t td { padding: .75mm 1.6mm; border-bottom: 0.4pt solid var(--line); }
+table.t tr:nth-child(even) td { background: #f7f7f8; }
+table.t td.hl { color: var(--red-dk); font-weight: 600; }
+
+.cap { font-size: 7pt; color: var(--grey); margin-top: 1mm; line-height: 1.25; }
+.cap b { color: var(--ink); font-weight: 600; }
+.photo { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+.tag { position: absolute; left: 0; bottom: 0; background: rgba(42,43,46,.86); color: #fff; font-family: "Barlow Condensed"; font-weight: 500; font-size: 8pt; padding: .7mm 2.2mm; letter-spacing: .02em; }
+.tag.red { background: var(--red); }
+
+/* callout labels */
+.lab { position: absolute; font-size: 7.2pt; line-height: 1.15; color: var(--ink); white-space: nowrap; }
+.lab b { font-weight: 600; }
+.lab .code { color: var(--red-dk); font-weight: 600; }
+svg.lines { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+
+/* key figures */
+.figs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4mm 4mm; }
+.fig { border-left: 1.4pt solid var(--red); padding-left: 2.4mm; }
+.fig .n { white-space: nowrap; font-family: "Barlow Condensed"; font-weight: 600; font-size: 17pt; line-height: 1; color: var(--ink); }
+.fig .n small { font-size: 10pt; font-weight: 500; }
+.fig .l { font-size: 7.4pt; color: var(--grey); line-height: 1.2; margin-top: .6mm; }
+
+/* option tiles */
+.tiles { display: grid; gap: 2.4mm; }
+.tile { background: var(--tint); padding: 2mm 2.2mm 1.8mm; position: relative; min-height: 22mm; }
+.tile .ic { width: 9mm; height: 9mm; margin-bottom: 1.2mm; }
+.tile .ic svg { width: 100%; height: 100%; }
+.tile h3 { font-size: 8.8pt; margin-bottom: .4mm; }
+.tile p { font-size: 7.3pt; margin: 0; color: #45474b; line-height: 1.28; }
+.tile .code { position: absolute; right: 2mm; top: 1.6mm; font-family: "Barlow Condensed"; font-weight: 600; font-size: 7.4pt; color: var(--red-dk); }
+
+/* torque bars */
+.bars { position: relative; }
+.bar { display: grid; grid-template-columns: 19mm 1fr; align-items: center; margin: 0 0 1.5mm; }
+.bar .nm { font-family: "Barlow Condensed"; font-weight: 600; font-size: 8.4pt; }
+.bar .nm small { display: block; font-family: "Barlow"; font-weight: 400; font-size: 6.6pt; color: var(--grey); margin-top: -.4mm; }
+.bar .track { position: relative; height: 4.2mm; background: repeating-linear-gradient(90deg, transparent 0 calc(25% - 0.3pt), var(--line) calc(25% - 0.3pt) 25%); }
+.bar .fill { position: absolute; top: .5mm; bottom: .5mm; background: linear-gradient(90deg, #e4485e, var(--red)); }
+.bar .val { position: absolute; top: 0; font-size: 7pt; font-weight: 600; line-height: 4.2mm; padding-left: 1.2mm; white-space: nowrap; }
+.axis { display: grid; grid-template-columns: 19mm 1fr; font-size: 6.6pt; color: var(--grey); }
+.axis .sc { position: relative; height: 3mm; }
+.axis .sc span { position: absolute; transform: translateX(-50%); }
+
+.prodcard { text-align: left; }
+.prodcard .im { height: 30mm; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 1.6mm; }
+.prodcard .im img { max-height: 100%; max-width: 100%; }
+.prodcard h3 { border-top: 1.2pt solid var(--red); padding-top: 1.2mm; }
+
+.bar .val.in { color: #fff; padding: 0 1.4mm 0 0; transform: translateX(-100%); }
+table.t td.r { white-space: nowrap; }

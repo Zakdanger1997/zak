@@ -27,7 +27,7 @@ Built by [Salesably.ai](https://salesably.ai).
 | **[yt-dlp](./yt-dlp)** | Download video, audio, subtitles and transcripts from YouTube and 1,800+ other sites: clips, MP3s, playlists and channel archives |
 | **[rea](./rea)** | REA (Reverse Engineer Anything): MCP server plus workflow skill for analyzing binaries, Electron/JavaScript apps, .NET assemblies, APKs, firmware, and websites |
 
-The repository also hosts **[imak-reduktor-secim](./imak-reduktor-secim)**, a stand-alone browser-based gearbox selection program for i.Mak Redüktör built from their public catalogue tables (not a Claude Code plugin; open `imak-reduktor-secim/index.html`).
+The repository also hosts **[imak-reduktor-secim](./imak-reduktor-secim)**, a stand-alone browser-based gearbox selection program for i.Mak Redüktör built from their public catalogue tables (not a Claude Code plugin; open `imak-reduktor-secim/index.html`), and **[imak-mixing-brochure](./imak-mixing-brochure)**, a 12-page i.Mak product brochure for mixing and agitating applications (PDF + HTML source).
 
 ## Installation
 
