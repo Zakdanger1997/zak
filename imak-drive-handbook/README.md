@@ -13,9 +13,11 @@ An interactive 3D handbook that runs in the browser. It is an open book on a dra
 
 Every number is plain physics or comes from the i.Mak catalogue: the service-factor table and the class-M load class for mixers. The gears are true involute gears. The phases are set so the teeth really mesh, including the internal ring gear.
 
-## Run it
+## Open it
 
-It needs no build step and no dependencies. Serve the folder with any static server:
+**Easiest:** double-click `dist/imak-drive-handbook.html`. It is one self-contained file (about 3.6 MB) holding the code, the i.Mak model, the fonts and the logo. It works offline on Windows, Mac and phones, and it can be emailed or put on any web host as-is. On a phone in portrait it shows one page at a time; the red button switches between the question and the 3D model.
+
+`index.html` is the source version. It only runs from a web server, not by double-click, because browsers block ES modules on `file://`. To work on it, serve the folder with any static server:
 
 ```bash
 python3 -m http.server 8000      # then open http://localhost:8000
@@ -24,6 +26,8 @@ python3 -m http.server 8000      # then open http://localhost:8000
 - `?demo=1` plays the scripted walkthrough live.
 - `?lesson=3` opens a lesson directly.
 - Controls: drag the red dial, click an answer, click the flap, and use ← / → to turn pages (↑ / ↓ also move the dial).
+
+Rebuild the single file after any change: `npm i esbuild` once, then `node tools/build_standalone.js`.
 
 ## Make the video and stills
 

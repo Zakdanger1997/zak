@@ -541,7 +541,13 @@ function buildPump() {
 let gltfCache = null;
 /** Load the i.Mak model before the first page turn so lesson 5 pops up complete. */
 export function preload() {
-  return new Promise((res) => new GLTFLoader().load('models/irkm.glb', (g) => { gltfCache = g.scene; res(); }, undefined, () => res()));
+  const done = (res) => (g) => { gltfCache = g.scene; res(); };
+  const packed = window.HB_ASSETS && window.HB_ASSETS.irkm;     // single-file build: model inlined as base64
+  if (packed) {
+    const bin = Uint8Array.from(atob(packed), (c) => c.charCodeAt(0)).buffer;
+    return new Promise((res) => new GLTFLoader().parse(bin, '', done(res), () => res()));
+  }
+  return new Promise((res) => new GLTFLoader().load('models/irkm.glb', done(res), undefined, () => res()));
 }
 function buildReal() {
   const group = new THREE.Group();

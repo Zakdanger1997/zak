@@ -220,7 +220,7 @@ function bendFlip(theta) {
 
 /* -------------------------------------------------------------- the lessons */
 const logo = new Image();
-logo.src = 'img/logo.png';
+logo.src = (window.HB_ASSETS && window.HB_ASSETS.logo) || 'img/logo.png';
 const state = LESSONS.map((l) => ({ dial: l.dial ? l.dial.start : 0, dialPos: l.dial ? l.dial.start : 0, pick: null, open: false }));
 let cur = 0, mech = null, mechRoot = null, turning = null, popT = 1, badges = [];
 const MECH_POS = new THREE.Vector3(PAGE_W / 2 + 0.2, HP - 0.05, -6.0);
@@ -320,6 +320,7 @@ function stepTurn(dt) {
     flip.visible = false;
     turning = null;
     redraw();
+    phoneView(0.8);
   }
 }
 
@@ -395,6 +396,7 @@ const VIEWS = {
   'mech:planetary': { target: new THREE.Vector3(10.6, 1.8, -5.6), width: 23, el: 52, az: 0 },
   'mech:motor': { target: new THREE.Vector3(10.6, 2.6, -5.6), width: 25, el: 50, az: -6 },
   'mech:pump': { target: new THREE.Vector3(10.6, 1.4, -6.4), width: 23, el: 56, az: 0 },
+  'left:phone': { target: new THREE.Vector3(-10.5, 1.4, 0.4), width: 22.4, el: 74, az: 0 },
   'mech:real': { target: new THREE.Vector3(10.6, 4.2, -5.8), width: 21, el: 30, az: 0 },
   cover: { target: new THREE.Vector3(0, 1.4, 0.2), width: 48, el: 62, az: 0 },
 };
@@ -446,6 +448,20 @@ function resize() {
   camera.aspect = w / h;
   // portrait screens: keep the book filling the width
   camera.updateProjectionMatrix();
+  const was = portrait;
+  portrait = !RECORD && w / h < 0.85;
+  if (portrait || was) phoneView(0.5);
+}
+// phones in portrait: one page at a time, a button switches between the question page and the 3D model
+let portrait = false, phoneSide = 'mech';
+function phoneView(d = 0.8) {
+  const btn = document.getElementById('side');
+  if (btn) btn.style.display = portrait && !LESSONS[cur].cover ? 'block' : 'none';
+  if (!camState || RECORD) return;
+  if (!portrait) { view(LESSONS[cur].cover ? 'cover' : 'book', d); return; }
+  if (LESSONS[cur].cover) { view('mech', d); return; }
+  view(phoneSide === 'page' ? 'left:phone' : 'mech', d);
+  if (btn) btn.textContent = phoneSide === 'page' ? 'Show the 3D model  ↑' : 'Show the question  ↓';
 }
 addEventListener('resize', resize);
 
@@ -494,6 +510,8 @@ if (ui && !RECORD) {
     b.onclick = () => goTo(i);
     tabs.appendChild(b);
   });
+  const side = document.getElementById('side');
+  side.onclick = () => { phoneSide = phoneSide === 'page' ? 'mech' : 'page'; phoneView(0.8); };
 } else if (ui) ui.style.display = 'none';
 
 export const api = { goTo, setDial, pick, toggleFlap, view, step, leftPagePoint, layoutOf, get cur() { return cur; }, get turning() { return !!turning; }, state, LESSONS };
@@ -508,6 +526,7 @@ async function start() {
   const startAt = +(Q.get('lesson') || 0);
   show(startAt);
   view(Q.get('view') || (startAt ? 'book' : 'cover'), 0.01);
+  if (portrait) phoneView(0.01);
   if (RECORD) { window.HB_READY = true; return; }
   if (Q.has('demo')) { const { runDemo } = await import('./demo.js'); runDemo(api, true); return; }
   let last = performance.now();

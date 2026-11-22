@@ -23,7 +23,12 @@
   #ui .tabs button { font: 500 14px 'Barlow Condensed'; letter-spacing: .04em; color: #cfd6dd; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
   #ui .tabs button.on { background: #cc0605; border-color: #cc0605; color: #fff; }
   #ui .hint { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font: 500 14px Barlow; color: #9aa6b1; background: rgba(0,0,0,.25); padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
-  @media (max-width: 700px) { #ui .tabs button { font-size: 12px; padding: 5px 8px; } #ui .brand { display: none; } #ui .hint { font-size: 12px; } }
+  #side { display: none; position: absolute; bottom: 56px; left: 50%; transform: translateX(-50%); pointer-events: auto; font: 600 17px Barlow; color: #fff; background: #cc0605; border: 0; padding: 12px 22px; border-radius: 999px; box-shadow: 0 6px 18px rgba(0,0,0,.35); cursor: pointer; white-space: nowrap; }
+  @media (max-width: 700px) {
+    #ui .tabs { flex-wrap: nowrap; overflow-x: auto; max-width: 96vw; justify-content: flex-start; padding: 0 4px; scrollbar-width: none; }
+    #ui .tabs button { font-size: 13px; padding: 7px 10px; white-space: nowrap; flex: none; }
+    #ui .brand { display: none; } #ui .hint { font-size: 11px; bottom: 12px; }
+  }
   /* recording overlays */
   .ov { position: fixed; left: 0; right: 0; pointer-events: none; text-align: center; transition: none; }
   #hook { top: 0; padding: 64px 70px 90px; background: linear-gradient(rgba(16,20,25,.92) 0%, rgba(16,20,25,.75) 60%, rgba(16,20,25,0) 100%); font: 700 74px/1.04 'Barlow Condensed'; color: #fff; letter-spacing: -.005em; }
@@ -45,7 +50,8 @@
 <div id="ui">
   <div class="brand"><b>i.Mak</b> Drive Handbook</div>
   <div class="tabs"></div>
-  <div class="hint">Drag the red dial · pick an answer · lift the flap · ← → turn pages</div>
+  <button id="side"></button>
+  <div class="hint">Drag the red dial · tap an answer · lift the flap · tabs turn pages</div>
 </div>
 <div id="hook" class="ov"></div>
 <div id="cap" class="ov"></div>
