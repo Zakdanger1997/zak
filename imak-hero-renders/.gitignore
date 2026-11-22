@@ -3,3 +3,4 @@ parts/
 preview/
 out/
 *.log
+__pycache__/
