@@ -13,7 +13,7 @@ A 12-page A4 product brochure for i.Mak Redüktör, modelled on the structure of
 | 3 | Gearboxes for mixing and agitating processes | Characteristics, applications, torque-by-series chart, series selection table |
 | 4 | 4DSM | Vertical agitator / aerator unit: features, technical data, exploded and 3D views, site photo |
 | 5 | Heavy-duty drives | MA/MK monobloc agitator drive with callouts, MA/MK size table, A and IPR series |
-| 6 | From the impeller to the gearbox | Tank cut-away diagram, six-step sizing, load classes, service factors |
+| 6 | From the impeller to the gearbox | 3D-rendered cut-away agitator tank with the i.Mak drive, six-step sizing, load classes, service factors |
 | 7 | Water and wastewater | Application photos and drive mapping for each treatment stage |
 | 8 | Output shafts, bearings and sealing | Option codes, exploded view, bearing-spacing diagram |
 | 9 | Lubrication, cooling and monitoring | Option tiles with i.Mak codes, C2–C5 corrosion protection |
@@ -28,6 +28,10 @@ A 12-page A4 product brochure for i.Mak Redüktör, modelled on the structure of
 python3 tools/prepare_assets.py RAW          # needs Pillow, numpy, scipy
 python3 tools/make_ticks.py                   # background line pattern as flat PNGs
 # 2. PDF (Playwright + Chromium)
+# optional: page-6 tank figure (pip install bpy; about 15 min on 4 CPU cores)
+python3 tools/render_tank.py                  # Blender/Cycles cut-away tank -> assets/tank-scene.png
+python3 tools/compose_tank.py                 # seat the i.Mak drive on the flange -> assets/tank-diagram.png
+python3 tools/tank_labels.py                  # write labels and leader lines into brochure.html
 node tools/build_pdf.js                       # -> imak-mixing-agitating-brochure-EN.pdf
 node tools/build_pdf.js --png /tmp/pages      # also writes one PNG per page for review
 ```
