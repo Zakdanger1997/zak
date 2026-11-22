@@ -17,19 +17,22 @@
   .t { position: absolute; left: 0; right: 0; text-align: center; color: #fff; opacity: 0; font-family: 'Barlow Condensed'; }
   .t .m { font-weight: 700; letter-spacing: .01em; line-height: .95; }
   .t .s { font: 600 30px Barlow; letter-spacing: .42em; margin-top: 20px; text-transform: uppercase; }
-  .dark .t { color: #14181d; }
+  .t { text-shadow: 0 4px 28px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
+  .dark .t { color: #14181d; text-shadow: none; }
   .t.hook { top: 250px; } .t.hook .m { font-size: 150px; } .t.hook b { color: #ff3b2f; }
   .t.title { top: 190px; } .t.title .m { font-size: 128px; }
+  .t.top2 { top: 1290px; } .t.top2 .m { font-size: 120px; } .t.top2 .s { font-size: 26px; }
   .t.big { top: 300px; } .t.big .m { font-size: 230px; } .t.big .s { font-size: 36px; }
   .t.spec, .t.spec2 { text-align: left; left: 80px; top: 1180px; right: auto; }
   .t.spec2 { left: auto; right: 80px; text-align: right; top: 1390px; }
   .t.spec .m, .t.spec2 .m { font-size: 150px; } .t.spec .s, .t.spec2 .s { font-size: 26px; letter-spacing: .3em; margin-top: 8px; }
   .t.label, .t.label2 { top: 170px; } .t.label .m, .t.label2 .m { font-size: 84px; } .t.label .s, .t.label2 .s { font-size: 28px; }
-  .t.stack { top: 220px; } .t.stack .row { font-weight: 700; font-size: 150px; line-height: 1.02; } .t.stack .row small { font: 600 44px Barlow; letter-spacing: .2em; margin-left: 14px; color: #ffb21f; }
+  .t.stack { top: 760px; left: 70px; right: auto; text-align: left; } .t.stack .row { font-weight: 700; font-size: 128px; line-height: 1.05; } .t.stack .row small { font: 600 42px Barlow; letter-spacing: .16em; margin-left: 16px; color: #ff5a4e; }
   .t.list { top: 210px; text-align: left; left: 90px; } .t.list .row { font: 700 74px 'Barlow Condensed'; margin: 10px 0; display: flex; align-items: center; gap: 26px; } .t.list .row i { width: 22px; height: 22px; background: #ff3b2f; display: inline-block; transform: rotate(45deg); }
   .shade-top { position: absolute; left: 0; right: 0; top: 0; height: 760px; background: linear-gradient(rgba(5,8,12,.78), rgba(5,8,12,.0)); opacity: 0; }
   .shade-bot { position: absolute; left: 0; right: 0; bottom: 0; height: 620px; background: linear-gradient(rgba(5,8,12,0), rgba(5,8,12,.82)); }
   #cap { position: absolute; left: 70px; right: 70px; bottom: 210px; text-align: center; font: 600 50px/1.25 Barlow; color: rgba(255,255,255,.55); text-wrap: balance; }
+  #cap span { white-space: nowrap; }
   #cap span.on { color: #fff; } #cap span.past { color: rgba(255,255,255,.92); }
   .dark-cap #cap { color: rgba(20,24,29,.45); } .dark-cap #cap span.on, .dark-cap #cap span.past { color: #14181d; }
   #wm { position: absolute; left: 60px; top: 64px; width: 210px; opacity: .92; }
@@ -66,14 +69,14 @@
 <div id="flash"></div>
 <script>
 // window.setup(timeline, frames, photos) once, then window.renderAt(t) per frame (returns a promise).
-let TL, FR, PH, LU;
+let TL, FR, PH, LU, DIRS = {};
 const $ = (s) => document.querySelector(s);
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2;
 const titleEls = [];
 
-window.setup = (tl, frames, photos, lineup) => {
-  TL = tl; FR = frames; PH = photos; LU = lineup;
+window.setup = (tl, frames, photos, lineup, dirs) => {
+  TL = tl; FR = frames; PH = photos; LU = lineup; DIRS = dirs || {};
   TL.segments.forEach((s, si) => (s.titles || []).forEach((t) => {
     const d = document.createElement('div');
     d.className = 't ' + t.t;
@@ -91,7 +94,7 @@ function frameFor(shot, srcT) {
   const want = Math.round(srcT * 24);
   let best = list[0];
   for (const f of list) { if (f <= want) best = f; else break; }
-  return `render/${shot}/${String(best).padStart(4, '0')}.png`;
+  return `render/${DIRS[shot] || shot}/${String(best).padStart(4, '0')}.png`;
 }
 
 function setImg(layer, src, scale = 1, x = 0, y = 0) {
@@ -129,11 +132,12 @@ window.renderAt = async (t) => {
   if (lineupOn) {
     // pan across the wide lineup still (smallest -> biggest)
     const k = ease(clamp((t - s.start) / (s.end - s.start)));
-    const h = 1920, w = h * LU.w / LU.h, sc = 1.0 + 0.06 * k;
+    const h = 2080, w = h * LU.w / LU.h, sc = 1.0 + 0.06 * k;
     const x = -(w * sc - 1080) * (0.04 + 0.92 * k);
     const el = $('#lineup');
     el.style.width = w + 'px';
-    el.style.transform = `translate(${x}px, ${-60 - 40 * k}px) scale(${sc})`;
+    el.style.height = h + 'px';
+    el.style.transform = `translate(${x}px, ${-80 - 30 * k}px) scale(${sc})`;
     el.style.transformOrigin = '0 50%';
   }
   // current segment on A; crossfade from the previous one over 0.35 s at each cut

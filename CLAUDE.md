@@ -70,6 +70,10 @@ salesably-marketplace/
 │   ├── dist/                # imak-drive-handbook.html: single self-contained file (works by double-click)
 │   ├── video/               # drive-handbook-4x5.mp4 (1080x1350)
 │   └── linkedin/            # POST.md (post text + plan), carousel.pdf, cover.jpg
+├── imak-irc-video/          # Stand-alone video project (not a plugin): IRC crane hoist video, 9:16
+│   ├── tools/               # irc_scene.py (Blender), render_queue.sh, interp.py, voiceover.py, timeline.py, soundtrack.py, compose.js
+│   ├── compose.html         # frame-by-frame compositor; assets/ (logos, photos + SOURCES.md), audio/, video/
+│   └── render/              # gitignored render frames
 ├── imak-reduktor-secim/     # Stand-alone web app (not a plugin): i.Mak gearbox selector
 │   ├── index.html           # Single-page app, TR/EN, no dependencies
 │   ├── data/                # Generated: catalog.js (performance tables), applications.js

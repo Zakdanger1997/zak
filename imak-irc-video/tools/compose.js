@@ -28,6 +28,9 @@ const srv = http.createServer((req, res) => {
     const p = path.join(ROOT, 'render', d);
     if (fs.statSync(p).isDirectory()) frames[d] = fs.readdirSync(p).filter((f) => /^\d{4}\.png$/.test(f)).map((f) => +f.slice(0, 4)).sort((x, y) => x - y);
   }
+  // prefer interpolated full-rate sequences (render/<shot>_i) over the raw renders
+  const dirs = {};
+  for (const k of Object.keys(frames)) if (k.endsWith('_i') && frames[k].length) { const b = k.slice(0, -2); frames[b] = frames[k]; dirs[b] = k; }
   const photos = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets', 'photos.json')));
   let lineup = { w: 3200, h: 1800 };
   const browser = await chromium.launch();
@@ -35,7 +38,7 @@ const srv = http.createServer((req, res) => {
   page.on('pageerror', (e) => console.log('pageerror', e.message));
   await page.goto(`http://localhost:${srv.address().port}/compose.html`);
   await page.evaluate(() => document.fonts.ready);
-  await page.evaluate(([t, f, p, l]) => window.setup(t, f, p, l), [tl, frames, photos, lineup]);
+  await page.evaluate(([t, f, p, l, d]) => window.setup(t, f, p, l, d), [tl, frames, photos, lineup, dirs]);
   const fps = tl.fps, n = Math.round(tl.total * fps);
   let ff = null;
   if (out) {

@@ -7,6 +7,7 @@ time range to play), a still (lineup) or photos (Ken Burns), and the on-screen t
 """
 import json
 import os
+import re
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 L = {l["id"]: l for l in json.load(open(os.path.join(ROOT, "audio", "lines.json")))["lines"]}
@@ -17,8 +18,9 @@ order = ["hook", "intro", "housing", "sizes", "ratios", "spline", "drum", "lift"
 t = 0.8
 voice = []
 for k in order:
+    cap = re.sub(r"(\d) (Nm|kW|t|m/min|HRC|to)\b", "\\1\u00a0\\2", L[k]["caption"]).replace(" – ", "\u00a0–\u00a0").replace("IRC ", "IRC\u00a0")
     voice.append({"id": k, "file": L[k]["file"], "start": round(t, 3), "dur": L[k]["dur"],
-                  "words": [[round(t + a, 3), round(t + b, 3), w] for a, b, w in L[k]["words"]], "caption": L[k]["caption"]})
+                  "words": [[round(t + a, 3), round(t + b, 3), w] for a, b, w in L[k]["words"]], "caption": cap})
     t += L[k]["dur"] + GAP[k]
 S = {v["id"]: v["start"] for v in voice}
 E = {v["id"]: v["start"] + v["dur"] for v in voice}
@@ -39,7 +41,7 @@ segments = [
         {"t": "spec2", "text": "GG22", "sub": "CAST-IRON MONOBLOC", "from": S["housing"] + 1.6, "to": S["sizes"] - 0.3}]),
     seg(S["sizes"] - 0.15, S["ratios"] - 0.2, still="lineup", titles=[
         {"t": "title", "text": "7 SIZES", "sub": "IRC 63 – IRC 143", "from": S["sizes"] + 0.2},
-        {"t": "spec", "text": "29,771 Nm", "sub": "MAX. OUTPUT TORQUE", "from": S["sizes"] + 4.4}]),
+        {"t": "top2", "text": "29,771 Nm", "sub": "MAX. OUTPUT TORQUE", "from": S["sizes"] + 4.4}]),
     seg(S["ratios"] - 0.2, S["spline"] + 0.4, shot="spline", src=(0.0, 0.66), titles=[
         {"t": "big", "text": "24 – 201", "sub": "RATIOS", "from": S["ratios"] + 0.1}]),
     seg(S["spline"] + 0.4, S["spline"] + 7.8, shot="spline", src=(0.66, 3.96), titles=[

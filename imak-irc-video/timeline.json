@@ -138,7 +138,7 @@
      "Lifting"
     ]
    ],
-   "caption": "This is the i.Mak IRC \u2013 a crane drum drive built for one job: lifting."
+   "caption": "This is the i.Mak IRC\u00a0\u2013\u00a0a crane drum drive built for one job: lifting."
   },
   {
    "id": "housing",
@@ -341,7 +341,7 @@
      "torque"
     ]
    ],
-   "caption": "Seven sizes, IRC 63 to IRC 143 \u2013 up to 29,771 Nm of torque."
+   "caption": "Seven sizes, IRC\u00a063\u00a0to IRC\u00a0143\u00a0\u2013\u00a0up to 29,771\u00a0Nm of torque."
   },
   {
    "id": "ratios",
@@ -395,7 +395,7 @@
      "one"
     ]
    ],
-   "caption": "Ratios from 24 to 201."
+   "caption": "Ratios from 24\u00a0to 201."
   },
   {
    "id": "spline",
@@ -539,7 +539,7 @@
      "directly"
     ]
    ],
-   "caption": "DIN 5480 spline output, hardened to 50 HRC. The drum flange slides straight on \u2013 a direct drive into the rope drum."
+   "caption": "DIN 5480 spline output, hardened to 50\u00a0HRC. The drum flange slides straight on\u00a0\u2013\u00a0a direct drive into the rope drum."
   },
   {
    "id": "drum",
@@ -827,7 +827,7 @@
      "minute"
     ]
    ],
-   "caption": "0.37 \u2013 90 kW motors \u00b7 0.5 \u2013 75 t \u00b7 up to 44 m/min"
+   "caption": "0.37\u00a0\u2013\u00a090\u00a0kW motors \u00b7 0.5\u00a0\u2013\u00a075\u00a0t \u00b7 up to 44\u00a0m/min"
   },
   {
    "id": "apps",
@@ -916,7 +916,7 @@
      "M8"
     ]
    ],
-   "caption": "Built for overhead cranes, hoists and winches \u2013 duty classes up to M8."
+   "caption": "Built for overhead cranes, hoists and winches\u00a0\u2013\u00a0duty classes up to M8."
   },
   {
    "id": "options",
@@ -990,7 +990,7 @@
      "supplier"
     ]
    ],
-   "caption": "Single or double brakes, encoders, forced cooling \u2013 one supplier."
+   "caption": "Single or double brakes, encoders, forced cooling\u00a0\u2013\u00a0one supplier."
   },
   {
    "id": "end",
@@ -1099,7 +1099,7 @@
      "from": 18.233999999999998
     },
     {
-     "t": "spec",
+     "t": "top2",
      "text": "29,771 Nm",
      "sub": "MAX. OUTPUT TORQUE",
      "from": 22.433999999999997
