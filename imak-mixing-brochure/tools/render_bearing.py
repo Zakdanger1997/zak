@@ -206,6 +206,7 @@ def main():
     sc, cam = build()
     if "--points-only" not in sys.argv:          # re-export label positions without rendering
         bpy.ops.render.render(write_still=True)
+    bpy.context.view_layer.update()              # camera matrix must be current for the projection
     P = lambda p: T.project(sc, cam, p)
     defl = []                     # exaggerated deflection line from the lower bearing to the hub
     for i in range(13):
