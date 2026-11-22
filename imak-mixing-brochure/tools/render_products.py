@@ -19,7 +19,7 @@ from mathutils import Euler, Vector
 HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "assets")
 ARGS = [a for i, a in enumerate(sys.argv[1:], 1)
-        if not a.startswith("--") and sys.argv[i - 1] != "--samples"]
+        if not a.startswith("--") and sys.argv[i - 1] not in ("--samples", "--exposure", "--spec")]
 PREVIEW = "--preview" in sys.argv
 SAMPLES = int(sys.argv[sys.argv.index("--samples") + 1]) if "--samples" in sys.argv else (12 if PREVIEW else 160)
 
@@ -35,8 +35,17 @@ MODELS = {
     "IRO_61":     ("iro", (90, 0, 0), 0),
     "IRNX_7":     ("irnx", (90, 0, 0), 0),
     "S_90":       ("s", (90, 0, 0), 0),
+    # geared motors with their i.Mak motors
+    "IRKM_93-160_L":  ("irkm", (90, 0, 0), 0),
+    "IRAM_93-160_L":  ("iram", (90, 0, 0), 0),
+    "IRFM_93-160_L":  ("irfm", (90, 0, 0), 0),
+    "YPM_93-160_L":   ("ypm", (90, 0, 0), 0),
+    "IRSDM_83-112_M": ("irsdm", (90, 0, 0), 0),
 }
 VIEW_AZ, VIEW_EL = -38.0, 22.0       # camera direction, same for every unit
+RAL3020 = (0.6038, 0.0018, 0.0015)   # RAL 3020 Traffic Red, sRGB #CC0605 in linear values
+SPEC = float(sys.argv[sys.argv.index("--spec") + 1]) if "--spec" in sys.argv else 0.05
+EXPOSURE = float(sys.argv[sys.argv.index("--exposure") + 1]) if "--exposure" in sys.argv else -0.55
 
 
 def materials():
@@ -52,9 +61,11 @@ def materials():
             p.inputs["Coat Roughness"].default_value = 0.08
         if aniso:
             p.inputs["Anisotropic"].default_value = aniso
+        if metal == 0.0:
+            p.inputs["Specular IOR Level"].default_value = SPEC
         return mt
     return {
-        "paint": m("i.Mak red", (0.60, 0.022, 0.040), 0.0, 0.38, coat=0.25),
+        "paint": m("RAL 3020 traffic red", RAL3020, 0.0, 0.5),
         "steel": m("shaft steel", (0.86, 0.87, 0.88), 1.0, 0.16, aniso=0.3),
         "bore": m("machined", (0.42, 0.43, 0.45), 0.8, 0.38),
     }
@@ -67,7 +78,7 @@ def setup_world(sc):
     env = w.node_tree.nodes.new("ShaderNodeTexEnvironment")
     env.image = bpy.data.images.load(os.path.join(bpy.utils.system_resource("DATAFILES"), "studiolights", "world", "studio.exr"))
     w.node_tree.links.new(env.outputs[0], w.node_tree.nodes["Background"].inputs[0])
-    w.node_tree.nodes["Background"].inputs[1].default_value = 0.45
+    w.node_tree.nodes["Background"].inputs[1].default_value = 0.30
 
 
 def render_one(name, parts_dir):
@@ -129,8 +140,9 @@ def render_one(name, parts_dir):
     sc.cycles.samples = SAMPLES
     sc.cycles.use_denoising = True
     sc.render.film_transparent = True
-    sc.view_settings.view_transform = "AgX"
-    sc.view_settings.look = "AgX - Punchy"
+    sc.view_settings.view_transform = "Standard"      # keeps the RAL colour exact on lit faces
+    sc.view_settings.look = "None"
+    sc.view_settings.exposure = EXPOSURE
     sc.render.resolution_x = sc.render.resolution_y = 420 if PREVIEW else 1200
     out = os.path.join(ASSETS, f"3d-{key}{'-preview' if PREVIEW else ''}.png")
     sc.render.filepath = out

@@ -55,6 +55,8 @@ def main():
     fy = np.clip(np.minimum(np.arange(h), np.arange(h)[::-1]) / (h * 0.05), 0, 1)
     fx = np.clip(np.minimum(np.arange(w), np.arange(w)[::-1]) / (w * 0.10), 0, 1)
     arr[..., 3] = np.where(shadow, arr[..., 3] * np.minimum(fx[None, :], fy[:, None]), arr[..., 3])
+    from ral import recolor
+    arr = recolor(arr)              # housing paint in RAL 3020
     out = Image.fromarray(arr.astype(np.uint8), "RGBA")
     name = "bearing-diagram-preview.png" if PREVIEW else "bearing-diagram.png"
     out.save(os.path.join(A, name), optimize=True)

@@ -19,6 +19,8 @@ import sys
 
 import numpy as np
 from PIL import Image, ImageFilter
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scipy import ndimage
 
 Image.MAX_IMAGE_PIXELS = None
@@ -115,6 +117,11 @@ def resize(im, longest):
     return im
 
 
+# product cut-outs whose red paint is moved to RAL 3020 (tools/ral.py); photos are left as they are
+RAL_ASSETS = {"4dsm-hero", "4dsm-front", "ma-vertical", "mk-unit", "a-unit", "ipr", "ir", "irk", "yp",
+              "irsd", "irs", "s", "irnx", "irc", "motor", "mk-red"}
+
+
 def main(raw):
     os.makedirs(OUT, exist_ok=True)
     for name, (src, op, longest, box) in ASSETS.items():
@@ -137,6 +144,10 @@ def main(raw):
             else:
                 im = white_key(im.convert("RGBA").convert("RGB") if im.mode != "RGBA" else _flatten(im))
             im = resize(trim(im), longest)
+            if name in RAL_ASSETS:
+                import numpy as np
+                from ral import recolor
+                im = Image.fromarray(recolor(np.array(im).astype("float32")).astype("uint8"), "RGBA")
             im.save(os.path.join(OUT, name + ".png"), optimize=True)
         print(f"{name:18s} {op:5s} {im.size[0]}x{im.size[1]}")
 

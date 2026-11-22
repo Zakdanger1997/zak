@@ -73,7 +73,7 @@ def main(src, out, defl=0.3):
             radial = w - gp_Vec(d) * w.Dot(gp_Vec(d))
             convex = radial.Magnitude() > 1e-9 and radial.Dot(n) > 0
             span = abs(s.LastUParameter() - s.FirstUParameter())   # angular extent of the surface
-            if convex and rad <= rmax and span > 0.9 * 3.14159:
+            if convex and 6.0 <= rad <= rmax and span > 0.9 * 3.14159:
                 kind = "steel"
                 if t == GeomAbs_Cylinder:
                     g = GProp_GProps()

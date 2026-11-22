@@ -11,6 +11,8 @@ import os
 import sys
 
 import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -102,7 +104,8 @@ def finish(canvas, pts, top_pad, drive_box):
     fy = np.minimum(np.arange(h), np.arange(h)[::-1]) / (h * 0.06)
     fade = np.clip(np.minimum(fx[None, :], fy[:, None]), 0, 1)
     arr[..., 3] = np.where(shadow, arr[..., 3] * fade, arr[..., 3])
-    arr = deepen_reds(arr)
+    from ral import recolor
+    arr = recolor(arr)              # drive paint and flow arrows in RAL 3020
     out = Image.fromarray(arr.astype(np.uint8), "RGBA")
     W, H = out.size
 
