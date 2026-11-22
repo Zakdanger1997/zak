@@ -1,0 +1,716 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Gearbox oil: leaks, levels, life</title>
+<style>html,body{margin:0;background:#000}canvas{display:block}#out{width:540px;height:960px}#gl{position:absolute;left:-99999px}</style>
+</head><body>
+<canvas id="out" width="1080" height="1920"></canvas>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const W = 1080, H = 1920, FPS = 30;
+const RED = '#c1121c';          // RAL 3020 traffic red (sRGB approximation)
+const ACCENT = '#ffcc00';       // highlight parts and tags
+const OIL = '#c27712';
+const K = 4;                    // model metres -> world units
+
+// ---------- helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const sm = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+const seg = (u, a, b) => sm((u - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const easeOutBack = x => { x = clamp(x); const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const hash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+// ---------- narration / timeline ----------
+const nar = await (await fetch('/narration.json')).json();
+const LEAD = 0.25, TAIL = 0.45;
+let acc = 0;
+const scenes = nar.map(l => {
+  const s = { start: acc, dur: LEAD + l.dur + TAIL, speech: acc + LEAD };
+  s.words = l.words.map(w => ({ w: w.w, t0: w.t0 + s.speech, t1: w.t1 + s.speech }));
+  acc += s.dur; return s;
+});
+const TOTAL = acc;
+// caption chunks: up to 3 words, break on long pauses
+const chunks = [];
+scenes.forEach(s => {
+  let cur = [];
+  s.words.forEach((w, i) => {
+    const prev = s.words[i - 1];
+    if (cur.length && (cur.length >= 3 || (prev && w.t0 - prev.t1 > 0.18))) { chunks.push(cur); cur = []; }
+    cur.push(w);
+  });
+  if (cur.length) chunks.push(cur);
+});
+chunks.forEach((c, i) => { c.t0 = c[0].t0; c.t1 = chunks[i + 1] ? Math.min(chunks[i + 1][0].t0, c[c.length - 1].t1 + 0.6) : c[c.length - 1].t1 + 0.6; });
+// time (in scene seconds) when a word containing `re` is spoken, for syncing labels
+const wordAt = (si, re, nth = 0) => {
+  const s = scenes[si]; const hits = s.words.filter(w => re.test(w.w));
+  const w = hits[Math.min(nth, hits.length - 1)]; return w ? w.t0 - s.start : s.dur * 0.5;
+};
+
+// ---------- renderer ----------
+const gl = document.createElement('canvas'); gl.id = 'gl'; document.body.appendChild(gl);
+const QS = new URLSearchParams(location.search);
+const renderer = new THREE.WebGLRenderer({ canvas: gl, antialias: QS.get('aa') !== '0', preserveDrawingBuffer: true });
+renderer.setSize(W, H, false);
+renderer.setPixelRatio(1);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = QS.get('sh') !== '0';
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;
+
+const scene = new THREE.Scene();
+const pm = new THREE.PMREMGenerator(renderer);
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.55;
+scene.background = new THREE.Color('#41575a');
+scene.fog = new THREE.Fog('#41575a', 9, 24);
+const camera = new THREE.PerspectiveCamera(32, W / H, 0.05, 80);
+
+scene.add(new THREE.HemisphereLight('#dfe9ea', '#3a2e26', 0.55));
+const key = new THREE.DirectionalLight('#fff4e6', 2.6);
+key.position.set(4, 9, 6); key.castShadow = true;
+key.shadow.mapSize.set(1536, 1536);
+Object.assign(key.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 1, far: 30 });
+key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02;
+scene.add(key);
+const rim = new THREE.DirectionalLight('#9fd3ff', 0.9); rim.position.set(-6, 4, -5); scene.add(rim);
+
+// ---------- workshop ----------
+function canvasTex(w, h, draw, rep = [1, 1]) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.repeat.set(...rep); t.anisotropy = 4; return t;
+}
+const woodTex = canvasTex(1024, 1024, (g, w, h) => {
+  g.fillStyle = '#c9a27a'; g.fillRect(0, 0, w, h);
+  for (let p = 0; p < 6; p++) {                // planks
+    const y0 = p * h / 6;
+    g.fillStyle = `hsl(28, ${32 + hash(p) * 10}%, ${58 + hash(p + 9) * 8}%)`; g.fillRect(0, y0, w, h / 6);
+    for (let i = 0; i < 70; i++) {
+      g.strokeStyle = `rgba(110,70,40,${0.05 + hash(p * 99 + i) * 0.12})`; g.lineWidth = 1 + hash(i * 7 + p) * 2;
+      const y = y0 + hash(i + p * 13) * h / 6; g.beginPath(); g.moveTo(0, y);
+      for (let x = 0; x <= w; x += 64) g.lineTo(x, y + Math.sin(x / 140 + i) * 3);
+      g.stroke();
+    }
+    g.fillStyle = 'rgba(60,40,25,.35)'; g.fillRect(0, y0, w, 2);
+  }
+}, [2, 1]);
+const bench = new THREE.Mesh(new THREE.BoxGeometry(14, 0.3, 7),
+  new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.62 }));
+bench.position.set(0, -0.15, 0); bench.receiveShadow = true; scene.add(bench);
+const wallTex = canvasTex(1024, 512, (g, w, h) => {
+  g.fillStyle = '#4b6466'; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 400; i++) { g.fillStyle = `rgba(${hash(i) > .5 ? 180 : 20},60,50,${hash(i + 3) * 0.08})`; g.fillRect(hash(i * 3) * w, hash(i * 5) * h, 4 + hash(i * 7) * 30, 2 + hash(i * 11) * 12); }
+  g.strokeStyle = 'rgba(20,30,30,.5)'; g.lineWidth = 3;
+  for (let x = 0; x < w; x += 256) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+});
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(40, 16), new THREE.MeshStandardMaterial({ map: wallTex, roughness: 0.9 }));
+wall.position.set(0, 5, -7); scene.add(wall);
+// shelf with blurred props
+const shelfMat = new THREE.MeshStandardMaterial({ color: '#6c7476', roughness: 0.8 });
+for (const y of [1.6, 3.4]) {
+  const sh = new THREE.Mesh(new THREE.BoxGeometry(12, 0.12, 1.2), shelfMat); sh.position.set(0, y, -6.3); scene.add(sh);
+  for (let i = 0; i < 14; i++) {
+    const r = hash(i * 3 + y), b = new THREE.Mesh(new THREE.BoxGeometry(0.4 + r * 0.6, 0.3 + hash(i + y) * 0.7, 0.6),
+      new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.05 + r * 0.5, 0.25, 0.35 + r * 0.2), roughness: 0.8 }));
+    b.position.set(-5.5 + i * 0.85, y + 0.06 + b.geometry.parameters.height / 2, -6.3); scene.add(b);
+  }
+}
+const floorMat = new THREE.MeshStandardMaterial({ color: '#2b3335', roughness: 1 });
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 20), floorMat); floor.rotation.x = -Math.PI / 2; floor.position.y = -3; scene.add(floor);
+
+// ---------- materials ----------
+const steel = new THREE.MeshStandardMaterial({ color: '#d3d6da', metalness: 1, roughness: 0.28 });
+const gearSteel = () => new THREE.MeshStandardMaterial({ color: '#c6c9ce', metalness: 0.95, roughness: 0.32, emissive: '#ff2a00', emissiveIntensity: 0 });
+const accentMat = new THREE.MeshStandardMaterial({ color: ACCENT, roughness: 0.35, metalness: 0.05, emissive: ACCENT, emissiveIntensity: 0.12 });
+const rubberOld = new THREE.MeshStandardMaterial({ color: '#4a3a2c', roughness: 0.9 });
+const darkMat = new THREE.MeshStandardMaterial({ color: '#1d1a17', roughness: 0.6, metalness: 0.4 });
+const oilDrop = new THREE.MeshPhysicalMaterial({ color: '#d98a1a', roughness: 0.05, metalness: 0, clearcoat: 1, transparent: true, opacity: 0.92, emissive: '#5a2a00', emissiveIntensity: 0.25 });
+
+// ---------- gear geometry ----------
+function gearGeo(z, m, width, helix = 0.35, bore = 0) {
+  const rp = m * z / 2, ra = rp + m, rf = rp - 1.25 * m, p = Math.PI * 2 / z;
+  const s = new THREE.Shape();
+  for (let i = 0; i < z; i++) {
+    const b = i * p;
+    const pts = [[rf, b - 0.5 * p], [rf, b - 0.27 * p], [ra, b - 0.11 * p], [ra, b + 0.11 * p], [rf, b + 0.27 * p]];
+    pts.forEach(([r, a], j) => { const x = r * Math.cos(a), y = r * Math.sin(a); (i === 0 && j === 0) ? s.moveTo(x, y) : s.lineTo(x, y); });
+  }
+  s.closePath();
+  if (bore) { const h = new THREE.Path(); h.absarc(0, 0, bore, 0, Math.PI * 2, true); s.holes.push(h); }
+  const g = new THREE.ExtrudeGeometry(s, { depth: width, bevelEnabled: true, bevelThickness: m * 0.25, bevelSize: m * 0.2, bevelSegments: 1, curveSegments: 6 });
+  g.translate(0, 0, -width / 2);
+  const pos = g.attributes.position;
+  for (let i = 0; i < pos.count; i++) {   // helical twist
+    const x = pos.getX(i), y = pos.getY(i), zz = pos.getZ(i), a = zz / rp * helix;
+    pos.setXY(i, x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a));
+  }
+  g.deleteAttribute('normal'); g.computeVertexNormals();
+  return { geo: g, rp };
+}
+
+// ---------- load the real i.Mak IR 93 geared motor ----------
+const gltf = await new GLTFLoader().loadAsync('/models/iram_lo.glb');
+gltf.scene.updateMatrixWorld(true);
+const bodyGeos = [], shaftGeos = [];
+gltf.scene.traverse(o => {
+  if (!o.isMesh) return;
+  const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld);
+  for (const k of Object.keys(g.attributes)) if (k !== 'position' && k !== 'normal') g.deleteAttribute(k);
+  if (!g.attributes.normal) g.computeVertexNormals();
+  if (!g.index) g.setIndex([...Array(g.attributes.position.count).keys()]);
+  const ng = g;
+  g.computeBoundingBox(); const b = g.boundingBox;
+  const isShaft = b.min.z >= 0.3365 && Math.abs(b.min.x) <= 0.0326 && Math.abs(b.max.x) <= 0.0326;
+  (isShaft ? shaftGeos : bodyGeos).push(ng);
+});
+const BODY_GEO = mergeGeometries(bodyGeos, false);
+const SHAFT_GEO = mergeGeometries(shaftGeos, false);
+SHAFT_GEO.translate(0, -0.0214, 0);   // spin about its own axis
+const SHAFT_Y = 0.0214, SHAFT_R = 0.03, COVER_Z = 0.337;
+const INNER = { x0: -0.122, x1: 0.122, y0: -0.165, y1: 0.205, z0: -0.07, z1: 0.27 };
+const PORTS = [   // breather / plug positions on the gear housing (local metres) and outward normals
+  { p: V(0, 0.2395, 0.12), n: V(0, 1, 0) },
+  { p: V(0.1849, 0.06, 0.12), n: V(1, 0, 0) },
+  { p: V(-0.1849, 0.06, 0.12), n: V(-1, 0, 0) },
+  { p: V(-0.12, 0.17, 0.299), n: V(0, 0, 1) },
+  { p: V(0.12, 0.17, -0.0985), n: V(0, 0, -1) },
+  { p: V(0.12, -0.17, 0.12), n: V(0, -1, 0) },
+];
+
+function breatherMesh() {
+  const g = new THREE.Group();
+  const hex = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.012, 6), accentMat); hex.position.y = 0.006;
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.02, 12), accentMat); stem.position.y = 0.02;
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.017, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), accentMat); cap.position.y = 0.028;
+  const capB = new THREE.Mesh(new THREE.CylinderGeometry(0.017, 0.017, 0.004, 20), accentMat); capB.position.y = 0.028;
+  g.add(hex, stem, cap, capB); g.traverse(o => o.castShadow = true); return g;
+}
+
+function makeUnit() {
+  const u = {};
+  u.root = new THREE.Group();          // world placement
+  u.orient = new THREE.Group();        // mounting position rotation, pivot at gear-unit centre
+  u.model = new THREE.Group();         // model metres, scaled
+  u.root.add(u.orient); u.orient.add(u.model);
+  u.model.scale.setScalar(K);
+  u.model.position.set(0, -0.02 * K, -0.1 * K);   // put gear-unit centre at pivot
+  u.bodyMat = new THREE.MeshPhysicalMaterial({ color: RED, roughness: 0.42, metalness: 0.08, clearcoat: 0.35, clearcoatRoughness: 0.4, side: THREE.DoubleSide });
+  u.body = new THREE.Mesh(BODY_GEO, u.bodyMat); u.body.castShadow = true; u.body.receiveShadow = true;
+  u.model.add(u.body);
+  u.shaft = new THREE.Mesh(SHAFT_GEO, steel); u.shaft.position.y = SHAFT_Y; u.shaft.castShadow = true; u.model.add(u.shaft);
+  // worn groove band on the shaft where the seal lip runs
+  u.groove = new THREE.Mesh(new THREE.CylinderGeometry(SHAFT_R * 1.006, SHAFT_R * 1.006, 0.01, 40, 1, true), darkMat);
+  u.groove.rotation.x = Math.PI / 2; u.groove.position.set(0, SHAFT_Y, 0.352); u.model.add(u.groove);
+  // seals
+  const sealGeo = new THREE.TorusGeometry(0.037, 0.0075, 14, 48);
+  u.seal = new THREE.Mesh(sealGeo, accentMat); u.seal.position.set(0, SHAFT_Y, 0.341); u.model.add(u.seal);
+  u.oldSeal = new THREE.Mesh(sealGeo, rubberOld); u.oldSeal.position.copy(u.seal.position); u.model.add(u.oldSeal);
+  // internals: two helical stages
+  u.internals = new THREE.Group(); u.model.add(u.internals);
+  const m = 0.006, O = V(0, SHAFT_Y, 0), I = V(0, SHAFT_Y, 0).add(V(Math.cos(-2.18), Math.sin(-2.18), 0).multiplyScalar(m * (35 + 12) / 2));
+  const IN = I.clone().add(V(Math.cos(0.8), Math.sin(0.8), 0).multiplyScalar(m * (28 + 10) / 2));
+  const mk = (z, w, pos, zPos, bore) => {
+    const { geo } = gearGeo(z, m, w, 0.32, bore); const mat = gearSteel();
+    const mesh = new THREE.Mesh(geo, mat); mesh.position.set(pos.x, pos.y, zPos); u.internals.add(mesh); mesh.castShadow = true; return mesh;
+  };
+  u.g2 = mk(35, 0.05, O, 0.2, 0.026);   // output gear
+  u.p2 = mk(12, 0.056, I, 0.2, 0);      // intermediate pinion
+  u.g1 = mk(28, 0.04, I, 0.02, 0.012);  // intermediate gear
+  u.p1 = mk(10, 0.046, IN, 0.02, 0);    // input pinion (motor)
+  u.p2.material = u.p1.material;        // the hot pair shares one material
+  const shaftBar = (p, z0, z1, r) => { const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, z1 - z0, 20), steel); c.rotation.x = Math.PI / 2; c.position.set(p.x, p.y, (z0 + z1) / 2); u.internals.add(c); return c; };
+  shaftBar(O, -0.05, COVER_Z, 0.026); shaftBar(I, -0.07, 0.26, 0.012); shaftBar(IN, -0.09, 0.06, 0.011);
+  // bearings (simple rings) on the output shaft
+  u.bearings = [];
+  for (const z of [0.29, -0.04]) {
+    const b = new THREE.Mesh(new THREE.TorusGeometry(0.036, 0.009, 10, 32), gearSteel()); b.position.set(O.x, O.y, z); u.internals.add(b); u.bearings.push(b);
+  }
+  u.bearings[0].material = u.p1.material;
+  u.meshPoint = I.clone().lerp(IN, 28 / 38); u.meshPoint.z = 0.02;
+  u.I = I; u.IN = IN; u.O = O;
+  // oil: interior box clipped by a world-horizontal plane, plus a computed cap
+  u.oilPlane = new THREE.Plane(V(0, -1, 0), 0);
+  u.oilMat = new THREE.MeshStandardMaterial({ color: OIL, roughness: 0.15, metalness: 0, transparent: true, opacity: 0.62, depthWrite: false, clippingPlanes: [u.oilPlane], side: THREE.DoubleSide, emissive: '#3a1a00', emissiveIntensity: 0.3 });
+  const ib = INNER;
+  u.oil = new THREE.Mesh(new THREE.BoxGeometry(ib.x1 - ib.x0, ib.y1 - ib.y0, ib.z1 - ib.z0), u.oilMat);
+  u.oil.position.set((ib.x0 + ib.x1) / 2, (ib.y0 + ib.y1) / 2, (ib.z0 + ib.z1) / 2); u.oil.renderOrder = 2;
+  u.model.add(u.oil);
+  u.capMat = new THREE.MeshStandardMaterial({ color: '#e09a2a', roughness: 0.08, transparent: true, opacity: 0.7, depthWrite: false, side: THREE.DoubleSide, emissive: '#5a2a00', emissiveIntensity: 0.3 });
+  u.cap = new THREE.Mesh(new THREE.BufferGeometry(), u.capMat); u.cap.renderOrder = 3; scene.add(u.cap);
+  u.capRim = new THREE.LineLoop(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: '#ffe2a0' })); scene.add(u.capRim);
+  // breather + level plug
+  u.breather = breatherMesh(); u.model.add(u.breather);
+  u.plug = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.01, 6), accentMat); u.plug.rotation.x = Math.PI / 2; u.model.add(u.plug);
+  scene.add(u.root);
+  return u;
+}
+const A = makeUnit(), B = makeUnit();
+
+// place breather on a port (index) with an optional lift
+function seatBreather(u, port, lift = 0) {
+  const pt = PORTS[port];
+  u.breather.position.copy(pt.p).addScaledVector(pt.n, lift);
+  u.breather.quaternion.setFromUnitVectors(V(0, 1, 0), pt.n);
+}
+function topPort(u) {
+  u.root.updateMatrixWorld(true);
+  const q = new THREE.Quaternion(); u.model.getWorldQuaternion(q);
+  let best = 0, by = -9;
+  PORTS.forEach((pt, i) => { const y = pt.n.clone().applyQuaternion(q).y; if (y > by) { by = y; best = i; } });
+  return best;
+}
+function setOil(u, worldY, show = true) {
+  u.oil.visible = u.cap.visible = u.capRim.visible = show;
+  if (!show) return;
+  u.oilPlane.constant = worldY;           // keeps y <= worldY
+  u.root.updateMatrixWorld(true);
+  const ib = INNER, cs = [];
+  for (const x of [ib.x0, ib.x1]) for (const y of [ib.y0, ib.y1]) for (const z of [ib.z0, ib.z1]) cs.push(V(x, y, z).applyMatrix4(u.model.matrixWorld));
+  const edges = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+  const pts = [];
+  edges.forEach(([a, b]) => { const p = cs[a], q = cs[b]; if ((p.y - worldY) * (q.y - worldY) < 0) { const k = (worldY - p.y) / (q.y - p.y); pts.push(p.clone().lerp(q, k)); } });
+  if (pts.length < 3) { u.cap.visible = u.capRim.visible = false; return; }
+  const c = pts.reduce((s, p) => s.add(p), V(0, 0, 0)).multiplyScalar(1 / pts.length);
+  pts.sort((p, q) => Math.atan2(p.z - c.z, p.x - c.x) - Math.atan2(q.z - c.z, q.x - c.x));
+  const arr = [];
+  pts.forEach((p, i) => { const q = pts[(i + 1) % pts.length]; arr.push(c.x, c.y, c.z, p.x, p.y, p.z, q.x, q.y, q.z); });
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); g.computeVertexNormals();
+  u.cap.geometry.dispose(); u.cap.geometry = g;
+  const rg = new THREE.BufferGeometry().setFromPoints(pts); u.capRim.geometry.dispose(); u.capRim.geometry = rg;
+}
+function ghost(u, op) {
+  const m = u.bodyMat; const g = op < 0.999;
+  m.transparent = g; m.opacity = op; m.depthWrite = !g; m.side = g ? THREE.FrontSide : THREE.DoubleSide;
+  u.body.renderOrder = g ? 4 : 0; m.needsUpdate = true;
+}
+const local = (u, p) => { u.root.updateMatrixWorld(true); return p.clone().applyMatrix4(u.model.matrixWorld); };
+
+// ---------- particles ----------
+const dropGeo = new THREE.SphereGeometry(1, 16, 12);
+const drops = Array.from({ length: 40 }, () => { const d = new THREE.Mesh(dropGeo, oilDrop); d.castShadow = true; scene.add(d); return d; });
+const puddle = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshPhysicalMaterial({ color: '#7a4207', roughness: 0.03, clearcoat: 1, transparent: true, opacity: 0.85 }));
+puddle.rotation.x = -Math.PI / 2; scene.add(puddle);
+const bubbleMat = new THREE.MeshStandardMaterial({ color: '#fff3d6', roughness: 0.1, transparent: true, opacity: 0.55, depthWrite: false });
+const bubbles = Array.from({ length: 70 }, () => { const b = new THREE.Mesh(dropGeo, bubbleMat); b.renderOrder = 5; scene.add(b); return b; });
+const sparkMat = new THREE.MeshBasicMaterial({ color: '#ffd27a' });
+const sparks = Array.from({ length: 36 }, () => { const s = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), sparkMat); scene.add(s); return s; });
+const airMat = new THREE.MeshStandardMaterial({ color: '#e8f6ff', transparent: true, opacity: 0.5, depthWrite: false, roughness: 0.2 });
+const puffs = Array.from({ length: 16 }, () => { const b = new THREE.Mesh(dropGeo, airMat); scene.add(b); return b; });
+// pressure arrows
+const arrowMat = new THREE.MeshStandardMaterial({ color: '#ff3b2f', emissive: '#ff2a1a', emissiveIntensity: 0.6, roughness: 0.4 });
+function arrowMesh() {
+  const g = new THREE.Group();
+  const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.35, 12), arrowMat); shaft.position.y = 0.175;
+  const head = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.2, 16), arrowMat); head.position.y = 0.45;
+  g.add(shaft, head); scene.add(g); return g;
+}
+const arrows = Array.from({ length: 5 }, arrowMesh);
+
+// ---------- 2D overlay ----------
+const out = document.getElementById('out'), ctx = out.getContext('2d');
+const anton = new FontFace('Anton', 'url(/node_modules/@fontsource/anton/files/anton-latin-400-normal.woff2)');
+const inter = new FontFace('Inter', 'url(/node_modules/@fontsource/inter/files/inter-latin-800-normal.woff2)', { weight: '800' });
+document.fonts.add(await anton.load()); document.fonts.add(await inter.load());
+
+function project(p) { const v = p.clone().project(camera); return { x: (v.x + 1) / 2 * W, y: (1 - v.y) / 2 * H, z: v.z }; }
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+// tag with leader line to a 3D point
+function tag(text, p3, k, dx = 0, dy = -260, opts = {}) {
+  if (k <= 0) return;
+  const p = project(p3), a = clamp(k * 1.5), s = easeOutBack(clamp(k * 1.3));
+  ctx.save(); ctx.globalAlpha = a;
+  const fs = opts.size || 54; ctx.font = `${fs}px Anton`;
+  const tw = ctx.measureText(text).width, bw = tw + 44, bh = fs + 30;
+  const tx = clamp(p.x + dx, bw / 2 + 30, W - bw / 2 - 30); let ty = clamp(p.y + dy, 120, H - 120);
+  if (ty > 1200 - bh / 2 && ty < 1460 + bh / 2) ty = (ty < 1330) ? 1200 - bh / 2 : 1460 + bh / 2;
+  // leader
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.moveTo(tx, ty + bh / 2); ctx.lineTo(lerp(tx, p.x, s), lerp(ty + bh / 2, p.y, s)); ctx.stroke();
+  ctx.beginPath(); ctx.arc(p.x, p.y, 12 * s, 0, Math.PI * 2); ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(p.x, p.y, 5 * s, 0, Math.PI * 2); ctx.fill();
+  // box
+  ctx.translate(tx, ty); ctx.scale(s, s);
+  const bg = opts.bg || ACCENT, fg = opts.fg || '#141414';
+  rr(-bw / 2, -bh / 2, bw, bh, 10); ctx.fillStyle = bg; ctx.fill();
+  ctx.shadowBlur = 0; ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke();
+  ctx.fillStyle = fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, 3);
+  ctx.restore();
+}
+// floating badge (no leader)
+function badge(text, x, y, k, opts = {}) {
+  if (k <= 0) return;
+  const s = easeOutBack(clamp(k * 1.3));
+  ctx.save(); ctx.globalAlpha = clamp(k * 1.5); ctx.translate(x, y); ctx.scale(s, s);
+  const fs = opts.size || 64; ctx.font = `${fs}px Anton`;
+  const tw = ctx.measureText(text).width, bw = tw + 52, bh = fs + 34;
+  ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 16;
+  rr(-bw / 2, -bh / 2, bw, bh, 12); ctx.fillStyle = opts.bg || ACCENT; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+  ctx.fillStyle = opts.fg || '#141414'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, 4);
+  ctx.restore();
+}
+function thermometer(x, y, temp, k, tMin = 20, tMax = 100) {
+  if (k <= 0) return;
+  ctx.save(); ctx.globalAlpha = clamp(k * 2);
+  const h = 420, f = clamp((temp - tMin) / (tMax - tMin));
+  ctx.shadowColor = 'rgba(0,0,0,.4)'; ctx.shadowBlur = 14;
+  rr(x - 40, y, 80, h, 40); ctx.fillStyle = 'rgba(20,20,20,.75)'; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+  const col = temp > 80 ? '#ff3b2f' : temp > 60 ? '#ff9a1a' : '#ffd23f';
+  rr(x - 22, y + 18 + (h - 36) * (1 - f), 44, (h - 36) * f, 22); ctx.fillStyle = col; ctx.fill();
+  ctx.font = '72px Anton'; ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
+  ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 12;
+  ctx.fillText(`${Math.round(temp)}°C`, x, y + h + 86);
+  ctx.restore();
+}
+function meter(label, x, y, f, k, col) {
+  if (k <= 0) return;
+  ctx.save(); ctx.globalAlpha = clamp(k * 2);
+  const w = 520, h = 46;
+  ctx.font = '50px Anton'; ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 10;
+  ctx.fillText(label, x, y - 18); ctx.shadowBlur = 0;
+  rr(x, y, w, h, 23); ctx.fillStyle = 'rgba(20,20,20,.7)'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke();
+  rr(x + 7, y + 7, (w - 14) * clamp(f), h - 14, 16); ctx.fillStyle = col; ctx.fill();
+  ctx.restore();
+}
+function check(text, x, y, k) {
+  if (k <= 0) return;
+  ctx.save(); ctx.globalAlpha = clamp(k * 2); const dx = (1 - easeOutBack(clamp(k * 1.4))) * -80;
+  ctx.translate(x + dx, y);
+  ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 14;
+  ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI * 2); ctx.fillStyle = '#2fbf5b'; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+  ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(-18, 2); ctx.lineTo(-5, 15); ctx.lineTo(19, -13); ctx.stroke();
+  ctx.font = '62px Anton'; ctx.fillStyle = '#fff'; ctx.textBaseline = 'middle'; ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 12;
+  ctx.fillText(text, 66, 4);
+  ctx.restore();
+}
+function cross(p3, k) {
+  if (k <= 0) return; const p = project(p3), s = easeOutBack(clamp(k * 1.3)) * 34;
+  ctx.save(); ctx.lineCap = 'round'; ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 10;
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 22; ctx.beginPath(); ctx.moveTo(p.x - s, p.y - s); ctx.lineTo(p.x + s, p.y + s); ctx.moveTo(p.x + s, p.y - s); ctx.lineTo(p.x - s, p.y + s); ctx.stroke();
+  ctx.strokeStyle = '#ff2a1a'; ctx.lineWidth = 12; ctx.stroke(); ctx.restore();
+}
+function captions(t) {
+  const c = chunks.find(c => t >= c.t0 && t < c.t1); if (!c) return;
+  ctx.save(); ctx.font = '96px Anton'; ctx.textBaseline = 'middle';
+  const sp = 26, ws = c.map(w => ctx.measureText(w.w).width), tot = ws.reduce((a, b) => a + b, 0) + sp * (c.length - 1);
+  let x = W / 2 - tot / 2; const y = 1330;
+  const pop = easeOutBack(clamp((t - c.t0) / 0.18));
+  c.forEach((w, i) => {
+    const said = t >= w.t0 - 0.03;
+    ctx.save(); ctx.translate(x + ws[i] / 2, y); const sc = said && t < w.t1 + 0.05 ? 1.06 : 1; ctx.scale(sc * (0.9 + 0.1 * pop), sc * (0.9 + 0.1 * pop));
+    ctx.lineJoin = 'round'; ctx.lineWidth = 14; ctx.strokeStyle = 'rgba(0,0,0,.85)'; ctx.strokeText(w.w, -ws[i] / 2, 0);
+    ctx.fillStyle = said ? '#ffffff' : 'rgba(255,255,255,.5)'; ctx.fillText(w.w, -ws[i] / 2, 0);
+    ctx.restore(); x += ws[i] + sp;
+  });
+  ctx.restore();
+}
+function vignette() {
+  const g = ctx.createRadialGradient(W / 2, H * 0.45, H * 0.3, W / 2, H * 0.5, H * 0.75);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.45)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+// ---------- scene state ----------
+const Q = e => new THREE.Quaternion().setFromEuler(new THREE.Euler(...e));
+const MOUNTS = [   // illustrative mounting positions M1..M6
+  ['M1', Q([0, 0, 0])], ['M2', Q([0, 0, Math.PI])], ['M3', Q([Math.PI / 2, 0, 0])],
+  ['M4', Q([-Math.PI / 2, 0, 0])], ['M5', Q([0, 0, Math.PI / 2])], ['M6', Q([0, 0, -Math.PI / 2])],
+];
+const FOOT = 0.2036 * K - 0.02 * K;   // root height so the feet sit on the bench (pivot is 0.02*K above model origin... see model offset)
+function resetUnit(u) {
+  u.root.visible = true; u.root.position.set(0, 0.2036 * K + 0.02 * K, 0); u.root.scale.setScalar(1);
+  u.orient.quaternion.identity(); ghost(u, 1);
+  u.internals.visible = false; setOil(u, 0, false);
+  u.seal.visible = true; u.seal.position.z = 0.341; u.seal.scale.setScalar(1);
+  u.oldSeal.visible = false; u.groove.visible = false;
+  u.breather.visible = true; seatBreather(u, 0);
+  u.plug.visible = false;
+  u.p1.material.emissiveIntensity = 0;
+}
+function spin(u, t, speed = 1) {
+  const a = t * speed * 9;       // input pinion angle
+  u.p1.rotation.z = a; u.g1.rotation.z = -a * 10 / 28 + 0.11; u.p2.rotation.z = u.g1.rotation.z;
+  u.g2.rotation.z = -u.p2.rotation.z * 12 / 35 + 0.05; u.shaft.rotation.z = u.g2.rotation.z;
+}
+function hideFx() {
+  drops.forEach(d => d.visible = false); puddle.visible = false; bubbles.forEach(b => b.visible = false);
+  sparks.forEach(s => s.visible = false); puffs.forEach(p => p.visible = false); arrows.forEach(a => a.visible = false);
+}
+// drips from the bottom of the shaft seal down to the bench
+function drip(u, t, rate, n0 = 0, count = 6) {
+  const src = local(u, V(0, SHAFT_Y - 0.046, 0.344));
+  for (let i = 0; i < count; i++) {
+    const d = drops[n0 + i], ph = (t * rate + i / count) % 1;
+    const grow = clamp(ph / 0.6), fall = clamp((ph - 0.6) / 0.4);
+    const r = 0.03 + 0.03 * grow;
+    d.visible = true; d.scale.set(r, r * (1 + 0.6 * grow + 0.4 * fall), r);
+    d.position.set(src.x, src.y - r - fall * fall * (src.y - r), src.z);
+    if (fall >= 1) d.visible = false;
+  }
+}
+// droplets creeping out along the shaft past a worn seal
+function creep(u, t, k) {
+  for (let i = 0; i < 8; i++) {
+    const d = drops[20 + i], ph = (t * 0.35 + i / 8) % 1, a = -Math.PI / 2 + (hash(i) - 0.5) * 1.6;
+    const p = local(u, V(Math.cos(a) * SHAFT_R * 1.02, SHAFT_Y + Math.sin(a) * SHAFT_R * 1.02, 0.348 + ph * 0.09));
+    const r = 0.03 * k * (0.6 + 0.6 * hash(i + 4)) * Math.sin(Math.PI * clamp(ph * 1.2));
+    d.visible = r > 0.002; d.position.copy(p); d.scale.set(r, r, r * 1.6);
+  }
+}
+
+// camera helper
+function cam(pos, tgt, fov = 32) { camera.position.copy(pos); camera.fov = fov; camera.updateProjectionMatrix(); camera.lookAt(tgt); }
+const CTR = V(0, 0.2036 * K + 0.02 * K, 0);   // gear unit centre when sitting on the bench
+
+// ---------- the nine scenes ----------
+const draw2D = [];   // per-frame overlay callbacks
+function sceneFn(i, u, d, t) {
+  const S = scenes[i];
+  switch (i) {
+    case 0: { // hook: geared motor on the bench, a drip from the shaft seal
+      spin(A, t, 0.6);
+      const k = u / d;
+      cam(V(lerp(4.0, 3.4, k), lerp(2.5, 2.2, k), lerp(5.2, 4.5, k)), V(0.2, 0.8, 0.4), 34);
+      drip(A, t, 0.9);
+      puddle.visible = true; const pr = 0.12 + 0.22 * k; puddle.scale.set(pr * 1.3, pr, 1);
+      const src = local(A, V(0, 0, 0.344)); puddle.position.set(src.x, 0.004, src.z);
+      draw2D.push(() => {
+        tag('OIL LEAK', local(A, V(0, SHAFT_Y - 0.05, 0.344)), seg(u, wordAt(0, /leaks/), wordAt(0, /leaks/) + 0.5), 140, -330);
+        badge('i.Mak IR 93', W / 2, 250, seg(u, 0.2, 0.8), { bg: '#ffffff', size: 56 });
+      });
+      break;
+    }
+    case 1: { // the shaft seal and the worn groove
+      spin(A, t, 0.6);
+      const k = u / d;
+      const tSeal = wordAt(1, /seal/), tGroove = wordAt(1, /groove/);
+      const pull = seg(u, tSeal + 1.0, tSeal + 2.4);          // explode the seal forward
+      A.seal.visible = false; A.oldSeal.visible = true; A.oldSeal.position.z = 0.341 + pull * 0.085;
+      A.groove.visible = true;
+      const tg = local(A, V(0, SHAFT_Y, 0.37));
+      cam(V(tg.x + lerp(1.55, 1.25, k), tg.y + lerp(0.75, 0.6, k), tg.z + lerp(2.2, 1.85, k)), tg, 30);
+      creep(A, t, seg(u, tGroove, tGroove + 1));
+      draw2D.push(() => {
+        tag('SHAFT SEAL', local(A, V(0, SHAFT_Y + 0.044, A.oldSeal.position.z)), seg(u, tSeal - 0.2, tSeal + 0.4), -120, -300);
+        tag('LIP HARDENS', local(A, V(0.04, SHAFT_Y + 0.01, A.oldSeal.position.z)), seg(u, wordAt(1, /hardens/), wordAt(1, /hardens/) + 0.4), 200, -150, { size: 46, bg: '#ffffff' });
+        tag('WORN GROOVE', local(A, V(0, SHAFT_Y - SHAFT_R, 0.352)), seg(u, tGroove - 0.2, tGroove + 0.4), -60, 300);
+      });
+      break;
+    }
+    case 2: { // heat -> pressure -> blocked breather pushes oil out
+      spin(A, t, 1);
+      const k = u / d;
+      ghost(A, 0.24); A.internals.visible = true;
+      setOil(A, CTR.y - 0.05);
+      seatBreather(A, 1);        // breather on the side, under oil splash -> blocked
+      cam(V(lerp(3.8, 3.4, k), lerp(2.3, 2.1, k), lerp(5.0, 4.5, k)), V(0, CTR.y + 0.05, 0.3), 34);
+      const tHeat = wordAt(2, /heats/), tAir = wordAt(2, /expands/), tBlock = wordAt(2, /blocked/), tPush = wordAt(2, /pushes/);
+      const temp = lerp(30, 85, seg(u, tHeat - 0.3, tPush));
+      // pressure arrows on housing faces
+      const press = seg(u, tAir - 0.2, tAir + 0.6), pulse = 1 + 0.12 * Math.sin(t * 9);
+      const faces = [[V(0, 0.25, 0.1), V(0, 1, 0)], [V(0.19, 0.05, 0.1), V(1, 0, 0)], [V(-0.19, 0.05, 0.1), V(-1, 0, 0)], [V(0, 0.13, 0.34), V(0, 0, 1)], [V(-0.1, -0.1, 0.31), V(0, 0, 1)]];
+      faces.forEach(([p, n], j) => {
+        const a = arrows[j]; a.visible = press > 0.01; a.position.copy(local(A, p.clone().addScaledVector(n, 0.01)));
+        a.quaternion.setFromUnitVectors(V(0, 1, 0), n); a.scale.setScalar(press * pulse * 0.9);
+      });
+      if (u > tPush - 0.3) drip(A, t, 1.6, 0, 6);
+      draw2D.push(() => {
+        thermometer(940, 330, temp, seg(u, tHeat - 0.5, tHeat));
+        tag('AIR EXPANDS', local(A, V(0, 0.2, 0.1)), seg(u, tAir - 0.2, tAir + 0.4), -200, -330);
+        tag('BREATHER BLOCKED', local(A, PORTS[1].p), seg(u, tBlock - 0.2, tBlock + 0.4), -60, 360, { bg: '#ff3b2f', fg: '#fff' });
+        cross(local(A, PORTS[1].p.clone().addScaledVector(PORTS[1].n, 0.03)), seg(u, tBlock, tBlock + 0.4));
+      });
+      break;
+    }
+    case 3: { // the fix: new seal, breather to the top
+      spin(A, t, 0.8);
+      const k = u / d;
+      ghost(A, lerp(0.35, 1, seg(u, d - 1.6, d - 0.6))); A.internals.visible = true;
+      setOil(A, CTR.y - 0.05);
+      const tSeal = wordAt(3, /seal/), tBr = wordAt(3, /breather/), tHigh = wordAt(3, /highest/);
+      const out = seg(u, 0.1, tSeal - 0.2), inn = seg(u, tSeal - 0.1, tSeal + 1.0);
+      A.oldSeal.visible = out < 1; A.oldSeal.position.z = 0.341 + out * 0.2; A.oldSeal.position.y = SHAFT_Y + out * out * 0.12;
+      A.seal.visible = inn > 0; A.seal.position.z = 0.341 + (1 - inn) * 0.22;
+      A.groove.visible = false;
+      // breather: lift off the side port, fly to the top port
+      const mv = seg(u, tBr, tHigh + 0.5);
+      if (mv <= 0) seatBreather(A, 1);
+      else if (mv >= 1) seatBreather(A, 0);
+      else {
+        const a = PORTS[1].p.clone().addScaledVector(PORTS[1].n, 0.06), b = PORTS[0].p.clone().addScaledVector(PORTS[0].n, 0.06);
+        const p = a.clone().lerp(b, mv); p.y += Math.sin(mv * Math.PI) * 0.08;
+        A.breather.position.copy(p);
+        A.breather.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(V(0, 1, 0), PORTS[1].n).slerp(new THREE.Quaternion(), mv));
+        if (mv > 0.92) seatBreather(A, 0, (1 - mv) * 0.6);
+      }
+      const breathe = seg(u, tHigh + 0.6, tHigh + 1.0);
+      const bp = local(A, PORTS[0].p.clone().add(V(0, 0.05, 0)));
+      puffs.forEach((p, j) => { const ph = (t * 0.7 + j / puffs.length) % 1; p.visible = breathe > 0; const r = 0.04 + ph * 0.1; p.scale.setScalar(r * breathe); airMat.opacity = 0.45 * (1 - ph) + 0.05; p.position.set(bp.x + Math.sin(j * 2.3 + ph * 4) * 0.12 * ph, bp.y + ph * 0.9, bp.z + Math.cos(j * 1.7) * 0.1 * ph); });
+      const tgt = V(0, CTR.y + 0.15, 0.4);
+      cam(V(lerp(2.6, 2.3, k), lerp(2.6, 2.2, k), lerp(3.9, 3.5, k)), tgt, 34);
+      draw2D.push(() => {
+        tag('NEW SEAL', local(A, V(0, SHAFT_Y - 0.045, A.seal.position.z)), seg(u, tSeal, tSeal + 0.5), 120, 330);
+        tag('BREATHER ON TOP', local(A, PORTS[0].p.clone().add(V(0, 0.04, 0))), seg(u, tHigh - 0.1, tHigh + 0.5), -100, -330);
+      });
+      break;
+    }
+    case 4: { // six mounting positions, oil level follows gravity
+      spin(A, t, 0.5);
+      ghost(A, 0.3); A.internals.visible = true;
+      A.root.position.set(0, CTR.y + 0.9, 0);
+      const t0 = wordAt(4, /six/) - 0.6, step = (d - t0 - 0.4) / 6;
+      let idx = 0, q = MOUNTS[0][1].clone();
+      for (let j = 1; j < 6; j++) {
+        const ts = t0 + j * step; const k = seg(u, ts - 0.55, ts);
+        if (k > 0) { q = MOUNTS[j - 1][1].clone().slerp(MOUNTS[j][1], k); if (k >= 1) idx = j; }
+      }
+      A.orient.quaternion.copy(q);
+      A.root.scale.setScalar(0.85);
+      seatBreather(A, topPort(A));
+      setOil(A, A.root.position.y - 0.12);
+      cam(V(3.9, CTR.y + 1.7, 6.5), V(0, CTR.y + 0.75, 0), 36);
+      const label = MOUNTS[idx][0];
+      draw2D.push(() => {
+        badge(label, W / 2, 300, seg(u, t0 - 0.3, t0 + 0.2), { size: 120 });
+        tag('OIL LEVEL', V(1.0, A.root.position.y - 0.12, 0.3), seg(u, wordAt(4, /level/) - 0.2, wordAt(4, /level/) + 0.3), 180, 300, { size: 46 });
+      });
+      break;
+    }
+    case 5: { // M1 vs M2 quantities, fill to the level plug
+      spin(A, t, 0.4); spin(B, t, 0.4);
+      for (const [u2, x, mi] of [[A, 2.55, 0], [B, 0.95, 1]]) {
+        u2.root.visible = true; ghost(u2, 0.3); u2.internals.visible = true; u2.root.scale.setScalar(0.55);
+        u2.root.position.set(0, x, 0); u2.orient.quaternion.copy(MOUNTS[mi][1]);
+        seatBreather(u2, topPort(u2));
+      }
+      const yA = A.root.position.y - 0.18, yB = B.root.position.y + 0.14;
+      setOil(A, yA); setOil(B, yB);
+      cam(V(1.6, 2.6, 7.0), V(0, 1.75, 0), 34);
+      const t1 = wordAt(5, /M1/), t2 = wordAt(5, /M2/), tPlug = wordAt(5, /plug/);
+      // level plugs sit on the camera-facing side at the oil level
+      const plugK = seg(u, tPlug - 0.3, tPlug + 0.2);
+      A.plug.visible = B.plug.visible = plugK > 0;
+      A.plug.position.set(-0.125, 0, 0.3); { const w = V(0, yA, 0).applyMatrix4(A.model.matrixWorld.clone().invert()); A.plug.position.y = w.y; }
+      B.plug.position.set(0.125, 0, 0.3); { const w = V(0, yB, 0).applyMatrix4(B.model.matrixWorld.clone().invert()); B.plug.position.y = w.y; }
+      A.plug.scale.setScalar(1 + 0.4 * plugK); B.plug.scale.setScalar(1 + 0.4 * plugK);
+      draw2D.push(() => {
+        badge('M1', 190, project(V(0, 2.55, 0)).y - 120, seg(u, t1 - 0.4, t1), { size: 90 });
+        badge('M2', 190, project(V(0, 0.95, 0)).y - 120, seg(u, t2 - 0.4, t2), { size: 90 });
+        badge('0.16 L', 880, project(V(0, 2.55, 0)).y - 120, seg(u, t1 - 0.1, t1 + 0.4), { bg: '#ffffff', size: 76 });
+        badge('0.29 L', 880, project(V(0, 0.95, 0)).y - 120, seg(u, t2 - 0.1, t2 + 0.4), { bg: '#ffffff', size: 76 });
+        badge('NEARLY DOUBLE', W / 2, 1640, seg(u, wordAt(5, /twice/) - 0.1, wordAt(5, /twice/) + 0.4), { bg: '#ff3b2f', fg: '#fff', size: 56 });
+        tag('LEVEL PLUG', local(A, A.plug.position), plugK, -60, -300, { size: 46 });
+      });
+      break;
+    }
+    case 6: { // too little oil: dry upper gears, heat, wear
+      spin(A, t, 1.6);
+      ghost(A, 0.18); A.internals.visible = true;
+      const k = u / d;
+      setOil(A, CTR.y - 0.52);
+      const tDry = wordAt(6, /dry/), tMetal = wordAt(6, /Metal/), tWear = wordAt(6, /wear/);
+      const heat = seg(u, tDry - 0.3, tWear + 0.6);
+      A.p1.material.emissiveIntensity = heat * 1.4;
+      const mp = local(A, A.meshPoint);
+      const sk = seg(u, tMetal - 0.3, tMetal + 0.2);
+      sparks.forEach((s, j) => {
+        const ph = (t * 2.2 + hash(j)) % 1; s.visible = sk > 0;
+        const dir = V(hash(j + 1) - 0.5, hash(j + 2) * 0.8 + 0.1, hash(j + 3) - 0.2).normalize();
+        s.position.copy(mp).addScaledVector(dir, ph * 0.55); s.position.y -= ph * ph * 0.25;
+        const L = 0.05 * (1 - ph) * sk; s.scale.set(0.012, L + 0.001, 0.012); s.lookAt(mp);
+      });
+      const tg = local(A, V(-0.02, 0.02, 0.1));
+      cam(V(tg.x + lerp(2.2, 1.9, k), tg.y + lerp(1.3, 1.1, k), tg.z + lerp(4.4, 3.9, k)), tg, 32);
+      draw2D.push(() => {
+        badge('TOO LITTLE OIL', W / 2, 260, seg(u, 0.1, 0.6), { bg: '#ff3b2f', fg: '#fff', size: 70 });
+        tag('RUNNING DRY', mp, seg(u, tDry - 0.2, tDry + 0.4), -160, -330);
+        meter('WEAR', 280, 1560, heat * 0.95, seg(u, tWear - 0.6, tWear), '#ff3b2f');
+      });
+      break;
+    }
+    case 7: { // too much oil: churning, heat, oil life halves
+      spin(A, t, 1.6);
+      ghost(A, 0.2); A.internals.visible = true;
+      const k = u / d;
+      setOil(A, CTR.y + 0.55);
+      const tChurn = wordAt(7, /churn/), tHeat = wordAt(7, /heat/), tTen = wordAt(7, /ten/), tHalf = wordAt(7, /half/);
+      const ch = seg(u, tChurn - 0.4, tChurn + 0.4);
+      bubbles.forEach((b, j) => {
+        const g = j % 2 ? A.g2 : A.g1, c = local(A, V(g.position.x, g.position.y, g.position.z));
+        const ang = t * (2 + hash(j) * 2) + hash(j + 7) * 6.28, rad = (0.4 + hash(j + 3) * 0.35) * K * 0.12;
+        b.visible = ch > 0; const r = (0.012 + hash(j + 5) * 0.025) * ch;
+        b.scale.setScalar(r); b.position.set(c.x + Math.cos(ang) * rad * 1.3, c.y + Math.sin(ang) * rad * 1.3, c.z + (hash(j + 9) - 0.5) * 0.25);
+        if (b.position.y > CTR.y + 0.53) b.visible = false;
+      });
+      const temp = lerp(70, 92, seg(u, tHeat - 0.5, tTen + 0.6));
+      const tg = V(0, CTR.y + 0.1, 0.3);
+      cam(V(lerp(3.6, 3.2, k), lerp(2.5, 2.3, k), lerp(5.4, 4.9, k)), tg, 34);
+      draw2D.push(() => {
+        badge('TOO MUCH OIL', W / 2, 260, seg(u, 0.1, 0.6), { bg: '#ff3b2f', fg: '#fff', size: 70 });
+        tag('CHURNING', local(A, V(A.O.x + 0.1, A.O.y + 0.06, 0.25)), seg(u, tChurn - 0.2, tChurn + 0.4), 170, -300);
+        thermometer(940, 420, temp, seg(u, tHeat - 0.6, tHeat - 0.1));
+        const lk = seg(u, tTen, tTen + 0.5), hk = seg(u, tHalf - 0.2, tHalf + 0.3);
+        if (lk > 0) {
+          ctx.save(); ctx.globalAlpha = lk; ctx.textAlign = 'center'; ctx.font = '58px Anton'; ctx.fillStyle = '#fff'; ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 14;
+          ctx.fillText('OIL LIFE (RULE OF THUMB)', W / 2, 1500);
+          ctx.font = '96px Anton'; ctx.fillText('80°C: ~10,000 h', W / 2, 1610);
+          ctx.globalAlpha = hk; ctx.fillStyle = '#ff5a4a'; ctx.fillText('90°C: ~5,000 h', W / 2, 1720);
+          ctx.restore();
+        }
+      });
+      break;
+    }
+    case 8: { // recap
+      spin(A, t, 0.6);
+      const k = u / d;
+      ghost(A, lerp(1, 0.35, seg(u, wordAt(8, /fill/) - 0.3, wordAt(8, /fill/) + 0.3)));
+      A.internals.visible = A.bodyMat.opacity < 0.99;
+      setOil(A, CTR.y - 0.05, A.internals.visible);
+      const ang = lerp(0.75, 0.25, k);
+      cam(V(Math.sin(ang) * 5.4, 2.4, Math.cos(ang) * 5.4), V(0, CTR.y + 0.3, 0.3), 34);
+      const t1 = wordAt(8, /stop/), t2 = wordAt(8, /breather/), t3 = wordAt(8, /fill/), tEnd = wordAt(8, /few/);
+      draw2D.push(() => {
+        check('STOP THE LEAK', 150, 230, seg(u, t1 - 0.2, t1 + 0.3));
+        check('BREATHER ON TOP', 150, 345, seg(u, t2 - 0.2, t2 + 0.3));
+        check('RIGHT LEVEL, RIGHT POSITION', 150, 460, seg(u, t3 - 0.2, t3 + 0.3));
+        const e = seg(u, tEnd - 0.2, tEnd + 0.4);
+        if (e > 0) badge('CHECK THE OIL. SAVE THE GEARBOX.', W / 2, 1580, e, { size: 54 });
+      });
+      break;
+    }
+  }
+}
+
+// ---------- seek ----------
+window.__info = { total: TOTAL, fps: FPS, frames: Math.ceil(TOTAL * FPS), scenes: scenes.map(s => [s.start, s.dur]) };
+window.__seek = (t) => {
+  t = clamp(t, 0, TOTAL - 1e-4);
+  let i = scenes.findIndex(s => t >= s.start && t < s.start + s.dur); if (i < 0) i = scenes.length - 1;
+  const u = t - scenes[i].start, d = scenes[i].dur;
+  draw2D.length = 0; hideFx(); resetUnit(A); resetUnit(B); B.root.visible = false;
+  sceneFn(i, u, d, t);
+  // keep caps in sync after any late transforms
+  renderer.render(scene, camera);
+  ctx.drawImage(gl, 0, 0, W, H);
+  vignette();
+  draw2D.forEach(f => f());
+  captions(t);
+  // fade from/to black at the very start and end
+  const fade = Math.min(clamp(t / 0.35), clamp((TOTAL - t) / 0.5));
+  if (fade < 1) { ctx.fillStyle = `rgba(0,0,0,${1 - fade})`; ctx.fillRect(0, 0, W, H); }
+  return true;
+};
+window.__frame = (q = 0.9) => out.toDataURL('image/jpeg', q);
+window.__bench = (t) => { const a = performance.now(); window.__seek(t); gl.getContext('webgl2').finish(); const b = performance.now(); out.toDataURL('image/jpeg', .93); return [b - a, performance.now() - b, renderer.info.render.triangles, BODY_GEO.index.count/3]; };
+window.__ready = true;
+</script></body></html>
