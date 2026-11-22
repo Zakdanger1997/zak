@@ -17,7 +17,7 @@ X0, Y0, W = 93.0, 33.0, 75.0          # figure position and width on the page (m
 H = W * J["aspect"]
 LX = X0 + W + 4.0                      # label column x (mm)
 LABELS = [  # anchor key, label html
-    ("drive", "<b>i.Mak agitator drive</b><br>MA gear unit + motor"),
+    ("drive", "<b>i.Mak agitator drive</b><br>MA 703 + IEC motor"),
     ("bridge_end", "<b>Bridge</b>"),
     ("coupling", "<b>Rigid coupling</b>"),
     ("shaft", "<b>Agitator shaft</b>"),

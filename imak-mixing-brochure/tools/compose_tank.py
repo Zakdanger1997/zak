@@ -16,6 +16,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 A = os.path.join(HERE, "..", "assets")
 PREVIEW = "--preview" in sys.argv
+REAL = "drive3d" in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "tank-points.json")).read()
 
 # Output flange of ma-vertical.png, measured on the image: bottom edge of the grey
 # flange plate (front point) and its full width.
@@ -38,6 +39,9 @@ def main():
     scene = Image.open(os.path.join(A, "tank-preview.png" if PREVIEW else "tank-scene.png")).convert("RGBA")
     pts = json.load(open(os.path.join(A, "tank-points-preview.json" if PREVIEW else "tank-points.json")))
     scene = clean_shadow(scene)
+    if REAL:      # the real MA + motor are already part of the 3D render
+        canvas, top_pad, x0_dummy = scene, 0, None
+        return finish(canvas, pts, top_pad, None)
     drive = Image.open(os.path.join(A, "ma-vertical.png")).convert("RGBA")
     # cut off the shaft stub below the flange (it sits inside the pedestal)
     drive = drive.crop((0, 0, drive.width, DRIVE_FLANGE_BOTTOM_Y + 1))
@@ -63,6 +67,10 @@ def main():
     canvas.alpha_composite(Image.merge("RGBA", (sh.point(lambda v: 0),) * 3 + (sh,)))
     canvas.alpha_composite(drive, (ox, oy + top_pad))
 
+    return finish(canvas, pts, top_pad, (ox, oy, drive.width, drive.height))
+
+
+def finish(canvas, pts, top_pad, drive_box):
     # crop tight to the equipment (not to the floor shadow) and fade the shadow out at the edges
     arr = np.array(canvas).astype(np.float32)
     solid = (arr[..., 3] > 6) & (arr[..., :3].max(axis=2) >= 10)
@@ -83,12 +91,16 @@ def main():
     def rel(p, dy=top_pad):
         return [round((p[0] - x0) / W * 100, 2), round((p[1] + dy - y0) / H * 100, 2)]
     anchors = {k: rel(v) for k, v in pts.items() if k not in ("size",)}
-    anchors["drive"] = rel((ox + drive.width * 0.72, oy + drive.height * 0.35), dy=top_pad)
+    if drive_box:
+        ox, oy, dw, dh = drive_box
+        anchors["drive"] = rel((ox + dw * 0.72, oy + dh * 0.35), dy=top_pad)
+    else:
+        anchors["drive"] = anchors["drive3d"]
     anchors["aspect"] = round(H / W, 4)
     name = "tank-diagram-preview" if PREVIEW else "tank-diagram"
     out.save(os.path.join(A, name + ".png"), optimize=True)
     json.dump(anchors, open(os.path.join(A, name + ".json"), "w"), indent=1)
-    print(name, out.size, "scale", round(s, 3))
+    print(name, out.size)
 
 
 if __name__ == "__main__":
