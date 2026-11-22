@@ -70,6 +70,23 @@ def main():
     return finish(canvas, pts, top_pad, (ox, oy, drive.width, drive.height))
 
 
+def deepen_reds(arr):
+    """Bring the red paint and flow arrows back to i.Mak red (the tank lighting washes them out)."""
+    rgb = arr[..., :3] / 255.0
+    mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+    red = (rgb[..., 0] == mx) & (mx - mn > 0.18) & (rgb[..., 0] > rgb[..., 1] * 1.5)
+    sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
+    new_sat = np.clip(sat * 1.45, 0, 0.97)
+    new_v = mx * 0.86
+    # rebuild colour keeping hue: channels scale between min and max
+    k = (rgb - mn[..., None]) / np.maximum(mx - mn, 1e-6)[..., None]
+    new_min = new_v * (1 - new_sat)
+    out = new_min[..., None] + k * (new_v - new_min)[..., None]
+    rgb = np.where(red[..., None], out, rgb)
+    arr[..., :3] = rgb * 255.0
+    return arr
+
+
 def finish(canvas, pts, top_pad, drive_box):
     # crop tight to the equipment (not to the floor shadow) and fade the shadow out at the edges
     arr = np.array(canvas).astype(np.float32)
@@ -85,6 +102,7 @@ def finish(canvas, pts, top_pad, drive_box):
     fy = np.minimum(np.arange(h), np.arange(h)[::-1]) / (h * 0.06)
     fade = np.clip(np.minimum(fx[None, :], fy[:, None]), 0, 1)
     arr[..., 3] = np.where(shadow, arr[..., 3] * fade, arr[..., 3])
+    arr = deepen_reds(arr)
     out = Image.fromarray(arr.astype(np.uint8), "RGBA")
     W, H = out.size
 

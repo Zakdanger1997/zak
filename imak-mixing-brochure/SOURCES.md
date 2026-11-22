@@ -49,3 +49,10 @@ Every picture in the brochure is an i.Mak product render, an image from an i.Mak
 Fonts: Barlow and Barlow Condensed (SIL Open Font License, `fonts/OFL-LICENSE.txt`).
 
 Technical data: i.Mak B00 2025 product overview, 4DS 2024, 4DSM 2021, A 2024 and ADK/ADS 2024 catalogues, i.Mak website (About us, History, Water treatment), all from imakreduktor.com.
+
+## 3D renders
+
+`3d-*.png` (pages 2, 5, 11, 12) and the drive on the page-6 tank are rendered from i.Mak's official
+STEP models in `3d/`, downloaded from the public i-Guide configurator
+(https://iguide.imakreduktor.com). The motor on the page-6 drive, the tank, the page-8 gear unit and
+the page-8 section are modelled for illustration (`tools/render_tank.py`, `tools/render_bearing.py`).
