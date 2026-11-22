@@ -14,8 +14,8 @@ TOP = 104.0                       # block top on the page (mm)
 ROWS = [  # (baseline y in block mm, image height mm, [(asset, label html)])
     (40, 30, [("3d-ma.png", "<b>MA</b> monobloc"), ("3d-mk.png", "<b>MK</b> monobloc"),
               ("4dsm-hero.png", "<b>4DSM</b> agitator"), ("ipr.png", "<b>IPR</b> planetary")]),
-    (80, 26, [("3d-irk.png", "<b>IRK</b>"), ("3d-ir.png", "<b>IR</b>"), ("3d-yp.png", "<b>YP</b>"),
-              ("3d-irsd.png", "<b>IRSD</b>"), ("3d-irc.png", "<b>IRC</b> hoist")]),
+    (80, 22, [("3d-irkm.png", "<b>IRK</b>"), ("3d-iram.png", "<b>IR</b>"), ("3d-ypm.png", "<b>YP</b>"),
+              ("3d-irsdm.png", "<b>IRSD</b>"), ("3d-irc.png", "<b>IRC</b> hoist")]),
     (113, 21, [("motor.png", "<b>Motors</b> IE2–IE4"), ("3d-s.png", "<b>S</b> aluminium"),
                ("3d-irnx.png", "<b>IRNX</b>"), ("3d-iro.png", "<b>IRO</b>")]),
 ]
