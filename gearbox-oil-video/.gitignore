@@ -4,3 +4,4 @@ test/
 models/
 *.log
 voice.wav
+*.mp4
