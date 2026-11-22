@@ -15,7 +15,7 @@ A 12-page A4 product brochure for i.Mak Redüktör, modelled on the structure of
 | 5 | Heavy-duty drives | MA/MK monobloc agitator drive with callouts, MA/MK size table, A and IPR series |
 | 6 | From the impeller to the gearbox | 3D-rendered cut-away agitator tank with the i.Mak drive, six-step sizing, load classes, service factors |
 | 7 | Water and wastewater | Application photos and drive mapping for each treatment stage |
-| 8 | Output shafts, bearings and sealing | Option codes, exploded view, 3D half-section of the output stage with a / x dimensions and deflection |
+| 8 | Output shafts, bearings and sealing | Option codes, exploded view, 3D half-section of a two-stage agitator gear unit (Z1–Z4, bearings, coupling) with a / x dimensions and deflection |
 | 9 | Lubrication, cooling and monitoring | Option tiles with i.Mak codes, C2–C5 corrosion protection |
 | 10 | Inside an i.Mak gearbox | IRK and YP cut-aways, materials, production |
 | 11 | Geared motors | IR, IRK, YP, IRSD, motors and motor options |
