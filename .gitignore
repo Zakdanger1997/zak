@@ -3,3 +3,8 @@ node_modules/
 
 # yt-dlp skill default download folder (media is not committed)
 downloads/
+
+# brochure render previews and caches
+imak-mixing-brochure/assets/*-preview.*
+imak-mixing-brochure/assets/tank-points-preview.json
+__pycache__/
