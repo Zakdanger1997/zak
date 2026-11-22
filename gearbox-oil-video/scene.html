@@ -422,9 +422,13 @@ function vignette() {
 
 // ---------- scene state ----------
 const Q = e => new THREE.Quaternion().setFromEuler(new THREE.Euler(...e));
-const MOUNTS = [   // illustrative mounting positions M1..M6
-  ['M1', Q([0, 0, 0])], ['M2', Q([0, 0, Math.PI])], ['M3', Q([Math.PI / 2, 0, 0])],
-  ['M4', Q([-Math.PI / 2, 0, 0])], ['M5', Q([0, 0, Math.PI / 2])], ['M6', Q([0, 0, -Math.PI / 2])],
+const MOUNTS = [   // i.Mak foot-mounted positions P1..P6 (IR catalogue 2026 Rev.01, p. 29)
+  ['P1', Q([0, 0, 0])],                 // feet down
+  ['P2', Q([-Math.PI / 2, 0, 0])],      // vertical, motor down
+  ['P3', Q([0, 0, Math.PI])],           // feet up (ceiling)
+  ['P4', Q([Math.PI / 2, 0, 0])],       // vertical, motor up
+  ['P5', Q([0, 0, Math.PI / 2])],       // wall, feet to one side
+  ['P6', Q([0, 0, -Math.PI / 2])],      // wall, feet to the other side
 ];
 const FOOT = 0.2036 * K - 0.02 * K;   // root height so the feet sit on the bench (pivot is 0.02*K above model origin... see model offset)
 function resetUnit(u) {
@@ -588,27 +592,27 @@ function sceneFn(i, u, d, t) {
     }
     case 5: { // M1 vs M2 quantities, fill to the level plug
       spin(A, t, 0.4); spin(B, t, 0.4);
-      for (const [u2, x, mi] of [[A, 2.55, 0], [B, 0.95, 1]]) {
-        u2.root.visible = true; ghost(u2, 0.3); u2.internals.visible = true; u2.root.scale.setScalar(0.55);
-        u2.root.position.set(0, x, 0); u2.orient.quaternion.copy(MOUNTS[mi][1]);
+      for (const [u2, x, mi] of [[A, -0.62, 0], [B, 0.62, 3]]) {
+        u2.root.visible = true; ghost(u2, 0.3); u2.internals.visible = true; u2.root.scale.setScalar(0.5);
+        u2.root.position.set(x, mi ? 1.15 : 1.75, 0); u2.orient.quaternion.copy(MOUNTS[mi][1]);
         seatBreather(u2, topPort(u2));
       }
-      const yA = A.root.position.y - 0.18, yB = B.root.position.y + 0.14;
+      const yA = A.root.position.y - 0.12, yB = B.root.position.y + 0.22;
       setOil(A, yA); setOil(B, yB);
-      cam(V(1.6, 2.6, 7.0), V(0, 1.75, 0), 34);
-      const t1 = wordAt(5, /M1/), t2 = wordAt(5, /M2/), tPlug = wordAt(5, /plug/);
+      cam(V(0.25, 2.1, 7.8), V(0, 1.6, 0), 34);
+      const t1 = wordAt(5, /P1/), t2 = wordAt(5, /P4/), tPlug = wordAt(5, /plug/);
       // level plugs sit on the camera-facing side at the oil level
       const plugK = seg(u, tPlug - 0.3, tPlug + 0.2);
       A.plug.visible = B.plug.visible = plugK > 0;
       A.plug.position.set(-0.125, 0, 0.3); { const w = V(0, yA, 0).applyMatrix4(A.model.matrixWorld.clone().invert()); A.plug.position.y = w.y; }
-      B.plug.position.set(0.125, 0, 0.3); { const w = V(0, yB, 0).applyMatrix4(B.model.matrixWorld.clone().invert()); B.plug.position.y = w.y; }
+      B.plug.position.set(-0.125, 0.2395, 0); B.plug.rotation.set(0, 0, 0); { const w = V(0, yB, 0).applyMatrix4(B.model.matrixWorld.clone().invert()); B.plug.position.z = w.z; }
       A.plug.scale.setScalar(1 + 0.4 * plugK); B.plug.scale.setScalar(1 + 0.4 * plugK);
       draw2D.push(() => {
-        badge('M1', 190, project(V(0, 2.55, 0)).y - 120, seg(u, t1 - 0.4, t1), { size: 90 });
-        badge('M2', 190, project(V(0, 0.95, 0)).y - 120, seg(u, t2 - 0.4, t2), { size: 90 });
-        badge('0.16 L', 880, project(V(0, 2.55, 0)).y - 120, seg(u, t1 - 0.1, t1 + 0.4), { bg: '#ffffff', size: 76 });
-        badge('0.29 L', 880, project(V(0, 0.95, 0)).y - 120, seg(u, t2 - 0.1, t2 + 0.4), { bg: '#ffffff', size: 76 });
-        badge('NEARLY DOUBLE', W / 2, 1640, seg(u, wordAt(5, /twice/) - 0.1, wordAt(5, /twice/) + 0.4), { bg: '#ff3b2f', fg: '#fff', size: 56 });
+        badge('P1', project(V(-0.62, 1.75, 0)).x, 330, seg(u, t1 - 0.4, t1), { size: 90 });
+        badge('P4', project(V(0.62, 1.15, 0)).x, 330, seg(u, t2 - 0.4, t2), { size: 90 });
+        badge('8 L', project(V(-0.62, 1.75, 0)).x, 1490, seg(u, t1 - 0.1, t1 + 0.4), { bg: '#ffffff', size: 76 });
+        badge('10 L', project(V(0.62, 1.15, 0)).x, 1490, seg(u, t2 - 0.1, t2 + 0.4), { bg: '#ffffff', size: 76 });
+        badge('+25% OIL, SAME GEARBOX', W / 2, 1640, seg(u, wordAt(5, /standing/) - 0.1, wordAt(5, /standing/) + 0.4), { bg: '#ff3b2f', fg: '#fff', size: 56 });
         tag('LEVEL PLUG', local(A, A.plug.position), plugK, -60, -300, { size: 46 });
       });
       break;

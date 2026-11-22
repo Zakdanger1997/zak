@@ -1,6 +1,6 @@
 # Gearbox oil: leaks, levels and life (3D explainer reel)
 
-An 83-second vertical (9:16, 1080×1920, 30 fps) English explainer modelled on the
+An 84-second vertical (9:16, 1080×1920, 30 fps) English explainer modelled on the
 "What if…" 3D engineering reels: a real product on a workshop bench, one highlight
 colour, word-by-word captions and tag labels. Topic: why gearboxes leak oil, how to fix
 it, why the oil level depends on the mounting position, and what too little or too much
@@ -40,10 +40,10 @@ python3 build_audio.py && ./encode.sh
 2. Shaft seal: the lip hardens or the shaft wears a groove.
 3. Heat expands the air; a blocked breather pushes oil past the seals.
 4. Fix: new seal on a clean shaft, breather moved to the highest port.
-5. Six mounting positions; the oil level follows gravity (positions shown are illustrative).
-6. NORD SK 072.1 needs 0.16 L in M1 and 0.29 L in M2: fill to the level plug.
-   ([NORD oil quantity table](https://media.nord.com/res/Document/97342.pdf);
-   [SEW: check the oil level plug, refill after a position change](https://download.sew-eurodrive.com/download/html/31964060/en-EN/53068520331.html))
+5. Six foot-mounted positions, P1 to P6 (i.Mak's naming; flange units use V1 to V6); the oil level follows gravity.
+6. i.Mak IR 93 oil quantities: 8 L in P1 (and P3, P5, P6), 10 L in P2, P4 and V2/V4 (+25 %): fill to the level plug.
+   ([i.Mak IR catalogue 2026 Rev.01, p. 29 "Oil Quantities Per Mounting Position"](https://www.imakreduktor.com/wp-content/uploads/2026/07/IR_Katalog_2026_Rev.01.pdf);
+   the same page shows the vent, level and drain plug for every position)
 7. Too little oil: dry gears and bearings, wear.
 8. Too much oil: churning losses and heat; rule of thumb 80 °C ≈ 10,000 h, 90 °C ≈ 5,000 h of oil life
    ([SEW churning losses](https://download.sew-eurodrive.com/download/html/33348626/en-EN/55361833867.html);
@@ -51,7 +51,7 @@ python3 build_audio.py && ./encode.sh
    the halving rule is a simplification, see [Precision Lubrication](https://precisionlubrication.com/articles/heat-halve-lubricant-lifespan/)).
 9. Recap and kicker.
 
-The 0.16 L / 0.29 L figures are NORD's, used to show the effect of the mounting position;
-for an i.Mak unit, use the oil quantities in the i.Mak catalogue for that series and size.
+The P1-P6 orientations follow the drawings on that catalogue page (P2 motor down, P3 feet up,
+P4 motor up, P5/P6 wall mounted).
 
 Fonts: Anton and Inter (OFL, via Fontsource).
