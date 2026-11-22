@@ -406,26 +406,19 @@
   <div class="abs" style="left:15mm; top:178mm; width:180mm;">
     <h2 class="dk">Why bearing spacing matters</h2>
   </div>
-  <div class="abs" style="left:15mm; top:186mm; width:88mm; height:62mm;">
-    <svg width="88mm" height="62mm" viewBox="0 0 88 62">
-      <defs><marker id="ar2" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#c8102e"/></marker></defs>
-      <rect x="18" y="2" width="38" height="20" rx="1" fill="#c8102e" opacity=".9"/>
-      <rect x="22" y="22" width="30" height="4" fill="#a50d25"/>
-      <g fill="#2a2b2e"><rect x="31" y="6" width="12" height="4"/><rect x="31" y="16" width="12" height="4"/></g>
-      <rect x="35.5" y="4" width="3" height="56" fill="#a7abb0" stroke="#6d7378" stroke-width=".25"/>
-      <line x1="10" y1="8" x2="31" y2="8" stroke="#8e1b1e" stroke-width=".25"/><line x1="10" y1="18" x2="31" y2="18" stroke="#8e1b1e" stroke-width=".25"/>
-      <line x1="12" y1="8" x2="12" y2="18" stroke="#2a2b2e" stroke-width=".3"/>
-      <text x="4" y="14.4" font-size="3.2" font-family="Barlow" font-weight="600" fill="#2a2b2e">a</text>
-      <path d="M39 50 L52 50" stroke="#c8102e" stroke-width=".7" marker-end="url(#ar2)"/>
-      <text x="53.5" y="51.2" font-size="3.4" font-family="Barlow" font-weight="600" fill="#c8102e">F<tspan font-size="2.2" dy=".7">R</tspan></text>
-      <line x1="60" y1="18" x2="60" y2="50" stroke="#2a2b2e" stroke-width=".3"/>
-      <line x1="58.5" y1="18" x2="61.5" y2="18" stroke="#2a2b2e" stroke-width=".3"/><line x1="58.5" y1="50" x2="61.5" y2="50" stroke="#2a2b2e" stroke-width=".3"/>
-      <text x="62.5" y="35" font-size="3.2" font-family="Barlow" font-weight="600" fill="#2a2b2e">x</text>
-      <path d="M37 59 Q38 52 40 48" stroke="#c8102e" stroke-width=".4" stroke-dasharray="1 .8" fill="none"/>
-      <text x="44" y="60" font-size="2.6" font-family="Barlow" fill="#6b6e73">shaft deflection</text>
-    </svg>
-  </div>
-  <div class="abs" style="left:107mm; top:188mm; width:88mm;">
+  <!-- bearing figure -->
+  <img class="abs" src="assets/bearing-diagram-preview.png" style="left:24.8mm; top:186.0mm; height:91.0mm;" alt="">
+  <svg class="lines" width="210mm" height="297mm" viewBox="0 0 210 297">
+    <defs>
+      <marker id="dm" viewBox="0 0 6 6" refX="3" refY="3" markerWidth="3.2" markerHeight="3.2" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 z" fill="#2a2b2e"/></marker>
+      <marker id="fr" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#c8102e"/></marker>
+    </defs>
+    <line x1="41.8" y1="205.5" x2="16.2" y2="205.5" stroke="#6b6e73" stroke-width=".2"/><line x1="41.1" y1="223.7" x2="16.2" y2="223.7" stroke="#6b6e73" stroke-width=".2"/><line x1="50.8" y1="269.7" x2="16.2" y2="269.7" stroke="#6b6e73" stroke-width=".2"/><line x1="24.7" y1="205.5" x2="24.7" y2="223.7" stroke="#2a2b2e" stroke-width=".3" marker-start="url(#dm)" marker-end="url(#dm)"/><line x1="17.7" y1="223.7" x2="17.7" y2="269.7" stroke="#2a2b2e" stroke-width=".3" marker-start="url(#dm)" marker-end="url(#dm)"/><text x="23.5" y="215.8" font-size="3.6" font-family="Barlow" font-weight="700" fill="#2a2b2e" text-anchor="end">a</text><text x="16.5" y="247.9" font-size="3.6" font-family="Barlow" font-weight="700" fill="#2a2b2e" text-anchor="end">x</text><path d="M53.6 269.7 L68.6 269.7" stroke="#c8102e" stroke-width=".7" marker-end="url(#fr)"/><text x="69.8" y="271.0" font-size="3.6" font-family="Barlow" font-weight="700" fill="#c8102e">F<tspan font-size="2.4" dy=".8">R</tspan></text><polyline points="50.17,223.63 50.21,227.64 50.31,231.61 50.50,235.56 50.74,239.46 51.07,243.33 51.46,247.16 51.91,250.94 52.44,254.70 53.04,258.40 53.70,262.07 54.43,265.70 55.23,269.29" fill="none" stroke="#c8102e" stroke-width=".45" stroke-dasharray="1.2 .9"/><text x="56.7" y="275.8" font-size="2.7" font-family="Barlow" fill="#c8102e">deflection (exaggerated)</text>
+    <g stroke="#8e1b1e" stroke-width=".22" fill="#8e1b1e"><line x1="73.0" y1="191.5" x2="91.8" y2="191.5"/><circle cx="73.0" cy="191.5" r=".55"/><line x1="59.6" y1="197.3" x2="91.8" y2="199.1"/><circle cx="59.6" cy="197.3" r=".55"/><line x1="54.3" y1="204.4" x2="91.8" y2="204.4"/><circle cx="54.3" cy="204.4" r=".55"/><line x1="54.9" y1="222.7" x2="91.8" y2="222.7"/><circle cx="54.9" cy="222.7" r=".55"/><line x1="53.2" y1="226.2" x2="91.8" y2="230.3"/><circle cx="53.2" cy="226.2" r=".55"/><line x1="66.3" y1="228.4" x2="91.8" y2="235.5"/><circle cx="66.3" cy="228.4" r=".55"/><line x1="52.9" y1="247.5" x2="91.8" y2="247.5"/><circle cx="52.9" cy="247.5" r=".55"/><line x1="54.4" y1="266.9" x2="91.8" y2="266.9"/><circle cx="54.4" cy="266.9" r=".55"/></g>
+  </svg>
+  <div class="lab" style="left:93.0mm; top:189.9mm;"><b>Gear unit housing</b><br>i.Mak red, cast iron</div><div class="lab" style="left:93.0mm; top:197.5mm;"><b>Output gear</b></div><div class="lab" style="left:93.0mm; top:202.8mm;"><b>Upper bearing</b><br>tapered roller</div><div class="lab" style="left:93.0mm; top:221.1mm;"><b>Lower bearing</b><br>tapered roller</div><div class="lab" style="left:93.0mm; top:228.7mm;"><b>Shaft seal</b></div><div class="lab" style="left:93.0mm; top:233.9mm;"><b>Mounting flange</b></div><div class="lab" style="left:93.0mm; top:245.9mm;"><b>Agitator shaft</b></div><div class="lab" style="left:93.0mm; top:265.3mm;"><b>Impeller hub</b></div>
+  <!-- /bearing figure -->
+  <div class="abs" style="left:121mm; top:188mm; width:74mm;">
     <p>The agitator shaft acts as a lever: a radial force F<sub>R</sub> at distance x from the lower bearing creates a bending moment that the bearing pair with spacing a must carry. The larger a and the stronger the bearings, the higher the permissible load and the smaller the deflection at the impeller – often without an additional bearing in the tank.</p>
     <ul class="tri">
       <li>Higher permissible radial and axial loads</li>

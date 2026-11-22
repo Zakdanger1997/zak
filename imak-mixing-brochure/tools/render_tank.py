@@ -173,6 +173,8 @@ def cut(o, cutter, transfer=True):
             m.material_mode = "TRANSFER"
         except (TypeError, AttributeError):
             pass
+    es = o.modifiers.new("flat cut faces", "EDGE_SPLIT")
+    es.split_angle = math.radians(35)
 
 
 def in_wedge(az_deg):
