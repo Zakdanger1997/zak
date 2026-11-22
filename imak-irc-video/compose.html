@@ -62,6 +62,7 @@
   <p>Producing powerful solutions since 1973</p>
   <div class="url">imakreduktor.com</div>
 </div>
+<div id="credit" style="position:absolute;right:40px;bottom:40px;font:500 20px Barlow;color:rgba(255,255,255,.7);opacity:0"></div>
 <div id="flash"></div>
 <script>
 // window.setup(timeline, frames, photos) once, then window.renderAt(t) per frame (returns a promise).
@@ -111,6 +112,7 @@ function segVisual(s, t, layer) {
     const n = PH.length, per = (s.end - s.start) / n, i = Math.min(n - 1, Math.floor((t - s.start) / per));
     const kk = clamp((t - s.start - i * per) / per);
     setImg(layer, PH[i].src, 1.08 + 0.10 * kk, (PH[i].dx || 0) * kk, (PH[i].dy || 0) * kk);
+    if (layer.id === 'A') { $('#credit').textContent = PH[i].credit || ''; }
     return true;
   }
   return false;
@@ -185,6 +187,7 @@ window.renderAt = async (t) => {
     });
     cap.style.opacity = 1;
   } else { cap.style.opacity = 0; cap.dataset.id = ''; }
+  $('#credit').style.opacity = s.photos ? 1 : 0;
   // end card
   const endS = segs[segs.length - 1].start;
   $('#end').style.opacity = clamp((t - endS) / 0.5);

@@ -1,2 +1,4 @@
-[{"src": "assets/photos/imak_other_01_IRS_steel_plant_crane_bg.jpg", "dx": -40},
- {"src": "assets/photos/imak_irc_05_IRC_at_India_fair.jpg", "dy": -30}]
+[{"src": "assets/photos/overhead_01_new_bridge_crane_install_portrait.jpg", "dy": -40, "credit": "Photo: NASA/Kim Shiflett"},
+ {"src": "assets/photos/hoist_drum_03_rope_drum_big_gear.jpg", "dx": -60, "credit": "Photo: Klaus Bailly, CC BY-SA 4.0"},
+ {"src": "assets/photos/hook_load_09_big_yellow_hook_portrait.jpg", "dy": 40, "credit": "Photo: Wainuiomartian, CC0"},
+ {"src": "assets/photos/overhead_04_VAB_175t_crane_trolley.jpg", "dx": 60, "credit": "Photo: NASA/KSC"}]
