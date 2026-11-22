@@ -33,7 +33,7 @@ SAMPLES = int(sys.argv[sys.argv.index("--samples") + 1]) if "--samples" in sys.a
 # ---- output stage ----
 SR = 0.0575                       # output shaft radius (Ø115)
 ZU, ZL = 0.36, 0.02               # upper / lower output bearing centre -> spacing a = 0.34
-ZF = -0.90                        # impeller hub: radial force acts here
+ZF = -0.56                        # impeller hub: radial force acts here
 SHAFT_BOT = ZF - 0.07
 
 # ---- gear train (module, teeth) ----
@@ -317,8 +317,8 @@ def build():
     cam_data.lens = 85
     cam = bpy.data.objects.new("cam", cam_data)
     bpy.context.collection.objects.link(cam)
-    target = Vector((-0.20, 0, 0.0))
-    az, elev, dist = math.radians(-106), math.radians(19), 5.4
+    target = Vector((-0.20, 0, 0.12))
+    az, elev, dist = math.radians(-106), math.radians(19), 4.9
     cam.location = target + dist * Vector((math.cos(elev) * math.cos(az), math.cos(elev) * math.sin(az), math.sin(elev)))
     cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
     sc.camera = cam

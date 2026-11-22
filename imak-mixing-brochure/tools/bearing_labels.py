@@ -21,14 +21,18 @@ PREVIEW = "--preview" in sys.argv
 sys.path.insert(0, HERE)
 from compose_tank import clean_shadow  # noqa: E402
 
-Y0, HMAX = 186.0, 84.0           # figure top and height on the page (mm)
-XC = 46.0                        # figure centre x (mm)
-LX = 93.0                        # label column x (mm)
+Y0, HMAX = 161.0, 112.0           # figure top and height on the page (mm)
+X0_FIX = 27.0                    # figure left edge (mm); dimensions a / x sit to its left
 LABELS = [
-    ("gear", "<b>Output gear</b>"),
-    ("chamber", "<b>Gear unit housing</b><br>i.Mak red, cast iron"),
-    ("brg_up", "<b>Upper bearing</b><br>tapered roller"),
-    ("brg_lo", "<b>Lower bearing</b><br>tapered roller"),
+    ("lantern", "<b>Motor adapter</b> + coupling"),
+    ("z1", "<b>Input pinion Z1</b>"),
+    ("brg_int", "<b>Ball bearings</b>"),
+    ("chamber", "<b>Housing</b> GG cast iron"),
+    ("z2", "<b>Gear Z2</b>"),
+    ("z3", "<b>Pinion Z3</b>"),
+    ("z4", "<b>Output gear Z4</b>"),
+    ("brg_up", "<b>Upper bearing</b> tapered roller"),
+    ("brg_lo", "<b>Lower bearing</b> tapered roller"),
     ("seal", "<b>Shaft seal</b>"),
     ("flange", "<b>Mounting flange</b>"),
     ("shaft", "<b>Agitator shaft</b>"),
@@ -57,7 +61,8 @@ def main():
 
     H = HMAX
     W = H * w / h
-    X0 = XC - W / 2
+    X0 = X0_FIX
+    LX = X0 + W + 3.0
     k = W / w
 
     def mm(p):
@@ -80,14 +85,14 @@ def main():
     g.append(f'<text x="{dxa - 1.2:.1f}" y="{(bu[1] + bl[1]) / 2 + 1.2:.1f}" font-size="3.6" font-family="Barlow" font-weight="700" fill="#2a2b2e" text-anchor="end">a</text>')
     g.append(f'<text x="{dxx - 1.2:.1f}" y="{(bl[1] + fz[1]) / 2 + 1.2:.1f}" font-size="3.6" font-family="Barlow" font-weight="700" fill="#2a2b2e" text-anchor="end">x</text>')
     # radial force
-    ft = mm(pts["force_to"])
-    g.append(f'<path d="M{fz[0] + 0.8:.1f} {fz[1]:.1f} L{ft[0] + 3:.1f} {fz[1]:.1f}" stroke="#c8102e" stroke-width=".7" marker-end="url(#fr)"/>')
-    g.append(f'<text x="{ft[0] + 4.2:.1f}" y="{fz[1] + 1.3:.1f}" font-size="3.6" font-family="Barlow" font-weight="700" fill="#c8102e">F<tspan font-size="2.4" dy=".8">R</tspan></text>')
+    fx_end = fz[0] + 10.0
+    g.append(f'<path d="M{fz[0] + 0.8:.1f} {fz[1]:.1f} L{fx_end:.1f} {fz[1]:.1f}" stroke="#c8102e" stroke-width=".7" marker-end="url(#fr)"/>')
+    g.append(f'<text x="{fx_end - 4:.1f}" y="{fz[1] + 5.2:.1f}" font-size="3.6" font-family="Barlow" font-weight="700" fill="#c8102e">F<tspan font-size="2.4" dy=".8">R</tspan></text>')
     # deflection line (exaggerated)
     d = " ".join(f"{mm(p)[0]:.2f},{mm(p)[1]:.2f}" for p in pts["deflection"])
     g.append(f'<polyline points="{d}" fill="none" stroke="#c8102e" stroke-width=".45" stroke-dasharray="1.2 .9"/>')
     last = mm(pts["deflection"][-1])
-    g.append(f'<text x="{last[0] + 1.5:.1f}" y="{last[1] + 6.5:.1f}" font-size="2.7" font-family="Barlow" fill="#c8102e">deflection (exaggerated)</text>')
+    g.append(f'<text x="{fz[0] - 9:.1f}" y="{fz[1] + 9:.1f}" font-size="2.7" font-family="Barlow" fill="#c8102e" text-anchor="end">deflection (exaggerated)</text>')
 
     items = sorted((mm(pts[key])[1], key, html) for key, html in LABELS)
     lines, labs, ly_prev, two = [], [], -99, False
