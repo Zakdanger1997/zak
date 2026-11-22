@@ -25,6 +25,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, "..", "assets")
 PREVIEW = "--preview" in sys.argv
 SAMPLES = int(sys.argv[sys.argv.index("--samples") + 1]) if "--samples" in sys.argv else (24 if PREVIEW else 256)
+# --real-drive PARTS_DIR: put the real i.Mak MA 703 (from step_parts.py) with a modelled motor on the bridge
+REAL = sys.argv[sys.argv.index("--real-drive") + 1] if "--real-drive" in sys.argv else None
+MA_BOTTOM = 0.249     # MA 703-G00: housing face below the hollow output, model z (mm/1000), flipped
+MA_TOP = 0.249
+MA_INPUT_X = -0.497   # input shaft axis (output axis is x = 0)
 
 # ---------------- dimensions ----------------
 R = 1.05            # tank inner radius
@@ -182,6 +187,49 @@ def in_wedge(az_deg):
     return abs(d) < CUT_HALF + 4
 
 
+# ---------------- real i.Mak drive ----------------
+def real_drive(steel, polish, frame_mat):
+    """MA 703 from the official STEP (hollow output on x = 0) stood upright, plus a modelled IEC motor."""
+    red = mat("i.Mak red", (0.50, 0.005, 0.016), rough=0.40, coat=0.15)
+    machined = mat("machined", (0.42, 0.43, 0.45), metallic=0.8, rough=0.38)
+    parts = {"paint": red, "steel": polish, "bore": machined}
+    z_base = FLANGE_TOP + MA_BOTTOM
+    for part, m in parts.items():
+        f = os.path.join(REAL, f"MA703-G00_{part}.stl")
+        if not os.path.exists(f):
+            continue
+        bpy.ops.wm.stl_import(filepath=f, global_scale=0.001)
+        o = bpy.context.selected_objects[0]
+        o.data.materials.append(m)
+        bpy.ops.object.shade_auto_smooth(angle=math.radians(32))
+        o.rotation_euler = (math.pi, 0, 0)          # input shaft (model -Z) up, hollow output down
+        o.location = (0, 0, z_base)
+    # PAM lantern + IEC motor on the input shaft
+    x = MA_INPUT_X
+    zt = FLANGE_TOP + MA_BOTTOM + MA_TOP             # top face of the housing
+    cyl("lantern_ft", 0.20, zt, zt + 0.03, red, loc=(x, 0), bevel=0.004)
+    cyl("lantern", 0.16, zt + 0.03, zt + 0.22, red, loc=(x, 0), bevel=0.004)
+    for k in range(4):                                # lantern windows (dark recesses)
+        a = math.radians(45 + 90 * k)
+        b = box(f"lwin{k}", (0.012, 0.12, 0.12), (x + 0.158 * math.cos(a), 0.158 * math.sin(a), zt + 0.125), machined)
+        b.rotation_euler[2] = a
+    cyl("lantern_top", 0.22, zt + 0.22, zt + 0.25, red, loc=(x, 0), bevel=0.004)
+    zm = zt + 0.25
+    cyl("motor_flange", 0.21, zm, zm + 0.04, red, loc=(x, 0), bevel=0.005)
+    cyl("motor_body", 0.17, zm + 0.04, zm + 0.62, red, loc=(x, 0), bevel=0.01)
+    for k in range(28):                               # cooling fins
+        a = 2 * math.pi * k / 28
+        b = box(f"fin{k}", (0.035, 0.008, 0.52), (x + 0.185 * math.cos(a), 0.185 * math.sin(a), zm + 0.34), red, bevel=0.002)
+        b.rotation_euler[2] = a
+    cyl("fan_cover", 0.19, zm + 0.62, zm + 0.80, red, loc=(x, 0), bevel=0.02)
+    cyl("fan_cap", 0.15, zm + 0.80, zm + 0.83, red, loc=(x, 0), bevel=0.02)
+    box("terminal_box", (0.20, 0.17, 0.15), (x + 0.0, -0.25, zm + 0.42), red, bevel=0.012)
+    box("tb_lid", (0.21, 0.02, 0.16), (x, -0.335, zm + 0.42), red, bevel=0.006)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.035, minor_radius=0.011, location=(x + 0.12, 0, zm + 0.66), rotation=(math.pi / 2, 0, 0))
+    bpy.context.object.data.materials.append(steel)
+    return zm + 0.83
+
+
 # ---------------- scene ----------------
 def build():
     clean()
@@ -265,14 +313,22 @@ def build():
     for y in (-0.24, 0.24):
         for part, (sx, sy, sz, dz) in {"tf": (2.75, 0.16, 0.022, BEAM_H - 0.011), "bf": (2.75, 0.16, 0.022, 0.011), "web": (2.75, 0.016, BEAM_H, BEAM_H / 2)}.items():
             box(f"beam{y}{part}", (sx, sy, sz), (0, y, BEAM_Z + dz), paint, bevel=0.003)
-    box("plate", (0.95, 0.75, PLATE_T), (0, 0, BEAM_Z + BEAM_H + PLATE_T / 2), paint_lt, bevel=0.004)
+    if REAL:
+        z0 = BEAM_Z + BEAM_H
+        box("plate", (1.06, 0.66, PLATE_T), (-0.175, 0, z0 + PLATE_T / 2), paint_lt, bevel=0.004)
+        box("frame", (0.96, 0.56, PED_H + FL_T), (-0.175, 0, z0 + PLATE_T + (PED_H + FL_T) / 2), paint_lt, bevel=0.01)
+        real_drive(steel, polish, paint_lt)
+    else:
+        box("plate", (0.95, 0.75, PLATE_T), (0, 0, BEAM_Z + BEAM_H + PLATE_T / 2), paint_lt, bevel=0.004)
     z0 = BEAM_Z + BEAM_H + PLATE_T
-    cyl("pedestal", 0.25, z0, z0 + PED_H, paint_lt, bevel=0.004)
-    for i in range(6):
+    if not REAL:
+        cyl("pedestal", 0.25, z0, z0 + PED_H, paint_lt, bevel=0.004)
+    for i in range(0 if REAL else 6):
         a = i * math.pi / 3
         box(f"rib{i}", (0.05, 0.016, PED_H * 0.85), (0.29 * math.cos(a), 0.29 * math.sin(a), z0 + PED_H * 0.43), paint_lt).rotation_euler[2] = a
-    cyl("flange", FLANGE_R, z0 + PED_H, FLANGE_TOP, paint_lt, verts=128, bevel=0.004)
-    for i in range(12):
+    if not REAL:
+        cyl("flange", FLANGE_R, z0 + PED_H, FLANGE_TOP, paint_lt, verts=128, bevel=0.004)
+    for i in range(0 if REAL else 12):
         a = i * math.pi / 6 + math.pi / 12
         cyl(f"bolt{i}", 0.018, FLANGE_TOP, FLANGE_TOP + 0.022, polish, verts=6, loc=(0.285 * math.cos(a), 0.285 * math.sin(a)))
 
@@ -387,8 +443,8 @@ def build():
     cam_data.lens = 85
     cam = bpy.data.objects.new("cam", cam_data)
     bpy.context.collection.objects.link(cam)
-    target = Vector((0, 0, 1.25))
-    elev, dist = math.radians(17), 17.0
+    target = Vector((-0.12, 0, 1.75)) if REAL else Vector((0, 0, 1.25))
+    elev, dist = (math.radians(15), 20.0) if REAL else (math.radians(17), 17.0)
     cam.location = target + Vector((0, -math.cos(elev) * dist, math.sin(elev) * dist))
     cam.rotation_euler = (target - cam.location).to_track_quat("-Z", "Y").to_euler()
     sc.camera = cam
@@ -404,7 +460,11 @@ def build():
     r.film_transparent = True
     sc.view_settings.view_transform = "AgX"
     sc.view_settings.look = "AgX - Punchy"
+    if REAL:
+        sc.view_settings.exposure = -0.45     # keeps the red of the real drive saturated
     r.resolution_x, r.resolution_y = (600, 820) if PREVIEW else (1500, 2050)
+    if REAL:
+        r.resolution_x, r.resolution_y = (600, 900) if PREVIEW else (1500, 2250)
     r.resolution_percentage = 100
     r.filepath = os.path.join(ASSETS, "tank-preview.png" if PREVIEW else "tank-scene.png")
     return sc, cam
@@ -422,6 +482,8 @@ def main():
     pts = {
         "size": [sc.render.resolution_x, sc.render.resolution_y],
         "flange_front_top": project(sc, cam, (0, -FLANGE_R, FLANGE_TOP)),
+        "drive3d": project(sc, cam, (MA_INPUT_X + 0.19, -0.1, FLANGE_TOP + MA_BOTTOM + MA_TOP + 0.6)),
+        "gearbox3d": project(sc, cam, (0.26, -0.26, FLANGE_TOP + 0.25)),
         "flange_left": project(sc, cam, (-FLANGE_R, 0, FLANGE_TOP)),
         "flange_right": project(sc, cam, (FLANGE_R, 0, FLANGE_TOP)),
         "bridge_end": project(sc, cam, (1.37, -0.24, BEAM_Z + BEAM_H / 2)),
