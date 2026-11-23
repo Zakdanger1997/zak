@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>i.Mak – Solutions for baking process</title>
+<style>
+  @font-face { font-family: Barlow; font-weight: 500; src: url(fonts/barlow-latin-500-normal.woff2); }
+  @font-face { font-family: Barlow; font-weight: 600; src: url(fonts/barlow-latin-600-normal.woff2); }
+  @font-face { font-family: 'Barlow Condensed'; font-weight: 600; src: url(fonts/barlow-condensed-latin-600-normal.woff2); }
+  @font-face { font-family: 'Barlow Condensed'; font-weight: 700; src: url(fonts/barlow-condensed-latin-700-normal.woff2); }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #1d2633; font-family: Barlow; }
+  .full { position: absolute; inset: 0; }
+  .full img, .full video { position: absolute; width: 100%; height: 100%; object-fit: cover; }
+  #logoCard { background: radial-gradient(circle at 50% 45%, #ffffff 0%, #e9ebee 55%, #cfd3d8 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  #logoCard img { position: static; width: 760px; height: auto; object-fit: contain; }
+  #logoCard .tag { font: 600 30px Barlow; letter-spacing: .5em; color: #4a5260; margin-top: 30px; text-transform: uppercase; }
+  #titleCard { background: #1d2633; }
+  .title { position: absolute; left: 150px; top: 430px; color: #fff; }
+  .title .k { font: 600 34px Barlow; letter-spacing: .32em; text-transform: uppercase; opacity: .85; }
+  .title .h { font: 700 120px 'Barlow Condensed'; text-transform: uppercase; line-height: 1; margin-top: 8px; }
+  .title .bar { width: 120px; height: 8px; background: #cc0605; margin-top: 26px; }
+  #corner { position: absolute; left: 70px; top: 56px; color: #fff; }
+  #corner .k { font: 600 20px Barlow; letter-spacing: .3em; opacity: .8; }
+  #corner .h { font: 700 46px 'Barlow Condensed'; letter-spacing: .02em; }
+  #stationTag { position: absolute; left: 70px; top: 56px; background: #fff; color: #1d2633; font: 600 34px Barlow; padding: 14px 30px 14px 26px; border-left: 10px solid #cc0605; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  .card { position: absolute; right: 70px; top: 56px; width: 380px; background: #fff; box-shadow: 0 16px 40px rgba(0,0,0,.3); padding: 22px 26px 24px; }
+  .card img { width: 100%; height: 230px; object-fit: contain; }
+  .card .s { font: 700 40px 'Barlow Condensed'; color: #cc0605; margin-top: 8px; }
+  .card .d { font: 500 22px Barlow; color: #3a4350; margin-top: 2px; line-height: 1.3; }
+  .card.second { top: 470px; }
+  #wm { position: absolute; right: 60px; bottom: 44px; width: 170px; }
+  #credit { position: absolute; right: 40px; bottom: 30px; font: 500 18px Barlow; color: rgba(255,255,255,.75); }
+  .el { opacity: 0; }
+</style>
+</head>
+<body>
+<div id="footage" class="full el"><img id="fimg"><video id="fvid" muted playsinline></video></div>
+<div id="line" class="full el"><img id="limg"></div>
+<div id="corner" class="el"><div class="k">SOLUTIONS FOR</div><div class="h">BAKING PROCESS</div></div>
+<div id="stationTag" class="el"></div>
+<div id="card1" class="card el"><img><div class="s"></div><div class="d"></div></div>
+<div id="card2" class="card second el"><img><div class="s"></div><div class="d"></div></div>
+<img id="wm" class="el" src="assets/logo-white.png">
+<div id="credit" class="el"></div>
+<div id="titleCard" class="full el"><div class="title"><div class="k">Solutions for</div><div class="h">Baking process</div><div class="bar"></div></div></div>
+<div id="logoCard" class="full el"><img src="assets/logo.png"><div class="tag">Gearboxes and drives</div></div>
+<script>
+let TL, FR;
+const $ = (s) => document.querySelector(s);
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = (x) => 1 - (1 - x) ** 3;
+const fade = (t, a, b, f = 0.4) => Math.min(clamp((t - a) / f), clamp((b - t) / f));
+window.setup = (tl, frames) => { TL = tl; FR = frames; };
+const seek = (v, t) => new Promise((r) => { if (Math.abs(v.currentTime - t) < 0.001) return r(); v.onseeked = () => r(); v.currentTime = t; });
+
+window.renderAt = async (t) => {
+  const S = TL.segments;
+  // logo cards
+  const lg = S.logo, end = S.end;
+  $('#logoCard').style.opacity = Math.max(fade(t, lg[0] - 1, lg[1]), clamp((t - end[0]) / 0.6));
+  $('#titleCard').style.opacity = fade(t, S.title[0], S.title[1]);
+  const tk = clamp((t - S.title[0]) / 0.8);
+  $('.title').style.transform = `translateX(${(1 - ease(tk)) * -80}px)`;
+  // footage segments (photos with Ken Burns, or video clips)
+  const fs = TL.footage.find((f) => t >= f.start && t < f.end);
+  const foot = $('#footage');
+  if (fs) {
+    const k = (t - fs.start) / (fs.end - fs.start);
+    const inSeg = TL.footage.filter((f) => f.group === fs.group);
+    const gStart = inSeg[0].start, gEnd = inSeg[inSeg.length - 1].end;
+    foot.style.opacity = fade(t, gStart, gEnd, 0.35);
+    if (fs.video) {
+      const v = $('#fvid');
+      if (v.getAttribute('src') !== fs.src) { v.setAttribute('src', fs.src); await new Promise((r) => { v.onloadeddata = r; }); }
+      await seek(v, (fs.in || 0) + (t - fs.start));
+      v.style.display = 'block'; $('#fimg').style.display = 'none';
+      v.style.transform = `scale(${1.02 + 0.03 * k})`;
+    } else {
+      const im = $('#fimg');
+      if (im.getAttribute('src') !== fs.src) { im.setAttribute('src', fs.src); await new Promise((r) => { im.onload = im.onerror = r; }); }
+      im.style.display = 'block'; $('#fvid').style.display = 'none';
+      im.style.transform = `scale(${1.06 + 0.10 * k}) translate(${(fs.dx || 0) * k}px, ${(fs.dy || 0) * k}px)`;
+    }
+    $('#credit').textContent = fs.credit || '';
+    $('#credit').style.opacity = foot.style.opacity;
+  } else { foot.style.opacity = 0; $('#credit').style.opacity = 0; }
+  // 3D line
+  const L3 = S.line;
+  const lineOn = t >= L3[0] - 0.4 && t < L3[1] + 0.4;
+  $('#line').style.opacity = fade(t, L3[0], L3[1], 0.4);
+  if (lineOn) {
+    const lt = clamp(t - L3[0], 0, L3[1] - L3[0] - 0.01);
+    const want = Math.round(lt * 24), list = FR;
+    let best = list[0];
+    for (const f of list) { if (f <= want) best = f; else break; }
+    const src = `render/${TL.dir}/${String(best).padStart(4, '0')}.png`;
+    const im = $('#limg');
+    if (im.getAttribute('src') !== src) { im.setAttribute('src', src); await new Promise((r) => { im.onload = im.onerror = r; }); }
+    // overview title, station tag, cards
+    const st = TL.stations.find((s) => lt >= s.t0 && lt < s.t1);
+    const ovOn = !st;
+    $('#corner').style.opacity = lineOn ? (st ? Math.max(0, 1 - (lt - st.t0) / 0.3) * (lt - st.t0 < 0.3 ? 1 : 0) : fade(lt, -1, 1e9)) : 0;
+    if (st) {
+      const tag = $('#stationTag');
+      tag.textContent = st.name;
+      const k = clamp((lt - st.t0) / 0.5), o = fade(lt, st.t0, st.t1, 0.4);
+      tag.style.opacity = o; tag.style.transform = `translateX(${(1 - ease(k)) * -60}px)`;
+      st.cards.forEach((c, i) => {
+        const el = $('#card' + (i + 1));
+        const c0 = st.t0 + 1.0 + i * 1.6;
+        if (el.dataset.s !== c.s) { el.querySelector('img').src = c.img; el.querySelector('.s').textContent = c.s; el.querySelector('.d').textContent = c.d; el.dataset.s = c.s; }
+        const kk = clamp((lt - c0) / 0.5);
+        el.style.opacity = fade(lt, c0, st.t1 - 0.2, 0.35);
+        el.style.transform = `translateX(${(1 - ease(kk)) * 80}px)`;
+      });
+      for (let i = st.cards.length; i < 2; i++) $('#card' + (i + 1)).style.opacity = 0;
+    } else {
+      $('#stationTag').style.opacity = 0; $('#card1').style.opacity = 0; $('#card2').style.opacity = 0;
+    }
+    $('#wm').style.opacity = $('#line').style.opacity;
+  } else {
+    ['#corner', '#stationTag', '#card1', '#card2', '#wm'].forEach((s) => ($(s).style.opacity = 0));
+  }
+  await Promise.all([...document.images].filter((i) => i.getAttribute('src')).map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })));
+};
+</script>
+</body>
+</html>

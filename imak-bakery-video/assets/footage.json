@@ -1,0 +1,6 @@
+[{"group": "intro", "src": "assets/footage/v03.webm", "video": true, "in": 0, "dur": 3.0, "credit": "Video: Beachfront B-Roll, CC BY 3.0"},
+ {"group": "intro", "src": "assets/footage/p07_rolls_tray_from_oven.jpg", "dur": 2.6, "dx": -30, "credit": "Photo: Chmee2, CC BY 3.0"},
+ {"group": "intro", "src": "assets/footage/v04.webm", "video": true, "in": 0.5, "dur": 3.0, "credit": "Video: Robert Cole, CC0"},
+ {"group": "outro", "src": "assets/footage/p01_cookies_from_oven_conveyor.jpg", "dur": 3.0, "dx": 40, "credit": "Photo: Jerome C. Baysmore, U.S. Air Force (public domain)"},
+ {"group": "outro", "src": "assets/footage/p02_cookies_conveyor_qc.jpg", "dur": 2.8, "dx": -30, "credit": "Photo: Jerome C. Baysmore, U.S. Air Force (public domain)"},
+ {"group": "outro", "src": "assets/footage/p05_bread_racks.jpg", "dur": 3.0, "dy": -25, "credit": "Photo: Chmee2, CC BY 3.0"}]
