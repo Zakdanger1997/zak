@@ -1,6 +1,6 @@
 """Lay out the social post: headline top-left, i.Mak badge top-right, spline call-out,
 white brand band at the bottom. Works at any size (everything scales with the width).
-python3 tools/post_layout.py <raw_render.png> <out.jpg> [--lang tr|en]
+python3 tools/post_layout.py <raw_render.png> <out.jpg> [--lang tr|en] [--copy irc|irnx]
 """
 import json
 import os
@@ -14,7 +14,8 @@ LOGO = os.path.join(ROOT, "brand", "imak_logo.png")
 RED = (205, 20, 25)
 DARK = (32, 32, 36)
 
-COPY = {
+COPY = {}
+COPY["irc"] = {
     "tr": {
         "h1": "Vinç Tahriğinde",
         "h2": "Güvenli Bağlantı",
@@ -32,14 +33,32 @@ COPY = {
         "site": "www.imakreduktor.com",
     },
 }
+COPY["irnx"] = {
+    "tr": {
+        "h1": "Maden ve Çimentoda",
+        "h2": "Doğrudan Montaj",
+        "sub": "IRNX Serisi mil üstü redüktör: içi boş çıkış mili tambur miline\ndoğrudan oturur, tork kolu ile dakikalar içinde devrededir.",
+        "call": "İÇİ BOŞ ÇIKIŞ MİLİ",
+        "call2": "Tambur miline doğrudan montaj, kaplin ve şase yok",
+        "site": "www.imakreduktor.com",
+    },
+    "en": {
+        "h1": "Mining and Cement",
+        "h2": "Mounted Directly",
+        "sub": "IRNX shaft-mounted gear unit: the hollow output shaft sits straight on\nthe pulley shaft, held by a torque arm. No coupling, no base frame.",
+        "call": "HOLLOW OUTPUT SHAFT",
+        "call2": "Direct mount on the pulley shaft, no coupling",
+        "site": "www.imakreduktor.com",
+    },
+}
 
 
 def font(name, size):
     return ImageFont.truetype(os.path.join(FONTS, name), int(size))
 
 
-def main(src, dst, lang="tr", spline_xy=None):
-    c = COPY[lang]
+def main(src, dst, lang="tr", spline_xy=None, copy="irc"):
+    c = COPY[copy][lang]
     if spline_xy is None:
         meta = os.path.splitext(src)[0] + ".json"
         spline_xy = tuple(json.load(open(meta))["spline"]) if os.path.exists(meta) else (0.47, 0.595)
@@ -86,8 +105,12 @@ def main(src, dst, lang="tr", spline_xy=None):
     px, py = spline_xy[0] * W, spline_xy[1] * H
     fc = font("Inter-SemiBold.otf", 24 * u)
     fc2 = font("Inter-Regular.otf", 20 * u)
-    lx, ly = px - 40 * u, py + 92 * u
-    draw.line([(px, py), (px - 30 * u, ly - 18 * u), (lx, ly - 18 * u)], fill="white", width=int(3 * u))
+    if py / H > 0.66:                               # too close to the band: put the box above the point
+        lx, ly = px - 40 * u, py - 130 * u
+        draw.line([(px, py), (px - 30 * u, ly + 80 * u), (lx, ly + 80 * u)], fill="white", width=int(3 * u))
+    else:
+        lx, ly = px - 40 * u, py + 92 * u
+        draw.line([(px, py), (px - 30 * u, ly - 18 * u), (lx, ly - 18 * u)], fill="white", width=int(3 * u))
     draw.ellipse([px - 7 * u, py - 7 * u, px + 7 * u, py + 7 * u], fill="white", outline=RED, width=int(3 * u))
     draw.ellipse([px - 16 * u, py - 16 * u, px + 16 * u, py + 16 * u], outline="white", width=int(2 * u))
     tw = draw.textlength(c["call"], font=fc)
@@ -117,6 +140,7 @@ def main(src, dst, lang="tr", spline_xy=None):
 
 
 if __name__ == "__main__":
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    args = [a for a in sys.argv[1:] if not a.startswith("--") and a not in ("tr", "en", "irc", "irnx")]
     lang = sys.argv[sys.argv.index("--lang") + 1] if "--lang" in sys.argv else "tr"
-    main(args[0], args[1], lang)
+    copy = sys.argv[sys.argv.index("--copy") + 1] if "--copy" in sys.argv else "irc"
+    main(args[0], args[1], lang, copy=copy)

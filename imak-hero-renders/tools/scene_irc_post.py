@@ -14,11 +14,12 @@ import bmesh
 from mathutils import Vector, Matrix
 import hero_lib as H
 
+PHOTO = bool(os.environ.get("PHOTO"))      # product only, transparent background for compositing on a photo
 H.fresh()
 mats = H.M()
 # deeper, less glossy red: real painted cast iron rather than a clear-coated show finish
 mats["paint"] = H.mat("imak red", (0.52, 0.012, 0.012), 0.0, 0.52, coat=0.08, spec=0.38, bump=(900, 0.05))
-H.world_dark(0.30, haze=0.003, tint=(0.85, 0.9, 1.0))
+H.world_dark(0.30 if not PHOTO else 0.45, haze=0.0 if PHOTO else 0.003, tint=(0.85, 0.9, 1.0))
 crane_m = H.mat("crane yellow", (0.72, 0.40, 0.02), 0.0, 0.42, coat=0.2, bump=(300, 0.02))
 drum_m = H.mat("drum", (0.22, 0.22, 0.21), 0.85, 0.42, bump=(200, 0.03))
 rope_m = H.mat("rope", (0.17, 0.16, 0.14), 0.9, 0.6, aniso=0.6)
@@ -65,36 +66,44 @@ def circle(n, r):
     return [(r * math.cos(2 * math.pi * i / n), r * math.sin(2 * math.pi * i / n)) for i in range(n)]
 
 
-# ---------------------------------------------------------------- hall
-H.plane("floor", (80, 80), conc, loc=(0, 0, -6.5))
-H.box("backwall", (60, 0.4, 14), wall_m, loc=(0, 14, 0.5))
-for i in range(-4, 5):
-    H.box(f"roofbeam{i}", (0.3, 30, 0.6), frame, loc=(i * 6, 2, 5.5))
-H.box("roof", (60, 30, 0.1), wall_m, loc=(0, 2, 5.9))
-sky_m = H.mat("skylight", (1, 1, 1), 0.0, 0.5, emit=((1.0, 0.97, 0.9), 1.2))
-for i in range(-4, 4):
-    H.box(f"sky{i}", (0.9, 26, 0.05), sky_m, loc=(i * 6 + 3, 2, 5.84))
-for i in range(-4, 5):
-    H.box(f"colA{i}", (0.35, 0.35, 12.5), frame, loc=(i * 6 + 2, -2.2, -0.25))
-    H.box(f"colB{i}", (0.35, 0.35, 12.5), frame, loc=(i * 6 + 2, 13.5, -0.25))
-H.box("runway2", (60, 0.3, 0.6), frame, loc=(0, 13.2, 0.9))
-win_m = H.mat("window", (1, 1, 1), 0.0, 0.5, emit=((0.85, 0.92, 1.0), 1.1))
-for i in range(-5, 6):
-    H.box(f"win{i}", (3.6, 0.05, 1.6), win_m, loc=(i * 5 + 2.5, 13.78, 2.6))
-    H.box(f"winb{i}", (3.6, 0.05, 1.0), win_m, loc=(i * 5 + 2.5, 13.78, -1.2))
-H.box("girder2", (0.5, 14.4, 0.9), crane_m, loc=(3.5, 6.3, 1.9))
-H.box("girder2b", (0.5, 14.4, 0.9), crane_m, loc=(4.6, 6.3, 1.9))
+if not PHOTO:
+    # ---------------------------------------------------------------- hall
+    H.plane("floor", (80, 80), conc, loc=(0, 0, -6.5))
+    H.box("backwall", (60, 0.4, 14), wall_m, loc=(0, 14, 0.5))
+    for i in range(-4, 5):
+        H.box(f"roofbeam{i}", (0.3, 30, 0.6), frame, loc=(i * 6, 2, 5.5))
+    H.box("roof", (60, 30, 0.1), wall_m, loc=(0, 2, 5.9))
+    sky_m = H.mat("skylight", (1, 1, 1), 0.0, 0.5, emit=((1.0, 0.97, 0.9), 1.2))
+    for i in range(-4, 4):
+        H.box(f"sky{i}", (0.9, 26, 0.05), sky_m, loc=(i * 6 + 3, 2, 5.84))
+    for i in range(-4, 5):
+        H.box(f"colA{i}", (0.35, 0.35, 12.5), frame, loc=(i * 6 + 2, -2.2, -0.25))
+        H.box(f"colB{i}", (0.35, 0.35, 12.5), frame, loc=(i * 6 + 2, 13.5, -0.25))
+    H.box("runway2", (60, 0.3, 0.6), frame, loc=(0, 13.2, 0.9))
+    win_m = H.mat("window", (1, 1, 1), 0.0, 0.5, emit=((0.85, 0.92, 1.0), 1.1))
+    for i in range(-5, 6):
+        H.box(f"win{i}", (3.6, 0.05, 1.6), win_m, loc=(i * 5 + 2.5, 13.78, 2.6))
+        H.box(f"winb{i}", (3.6, 0.05, 1.0), win_m, loc=(i * 5 + 2.5, 13.78, -1.2))
+    H.box("girder2", (0.5, 14.4, 0.9), crane_m, loc=(3.5, 6.3, 1.9))
+    H.box("girder2b", (0.5, 14.4, 0.9), crane_m, loc=(4.6, 6.3, 1.9))
 
 # ---------------------------------------------------------------- hoist trolley frame
 WZ = 1.30                       # drum / output axis height
 FY = 0.42                        # hoist frame beam y (behind the unit)
-H.box("frame_beam", (2.9, 0.26, 0.28), crane_m, loc=(0.7, FY, WZ + 1.30), bevel=0.004)
-H.box("frame_beam2", (2.9, 0.26, 0.28), crane_m, loc=(0.7, FY + 0.95, WZ + 1.30), bevel=0.004)
-for x in (-0.65, 2.05):
-    H.box(f"frame_x{x}", (0.26, 1.0, 0.22), crane_m, loc=(x, FY + 0.47, WZ + 1.30))
+if not PHOTO:
+    H.box("frame_beam", (2.9, 0.26, 0.28), crane_m, loc=(0.7, FY, WZ + 1.30), bevel=0.004)
+    H.box("frame_beam2", (2.9, 0.26, 0.28), crane_m, loc=(0.7, FY + 0.95, WZ + 1.30), bevel=0.004)
+    for x in (-0.65, 2.05):
+        H.box(f"frame_x{x}", (0.26, 1.0, 0.22), crane_m, loc=(x, FY + 0.47, WZ + 1.30))
 # gearbox hangs on a vertical plate welded under the beam
-H.box("mount_plate", (0.03, 0.30, 1.40), crane_m, loc=(-0.23, 0.02, WZ + 0.46), bevel=0.003)
-H.box("mount_gusset", (0.03, 0.26, 0.26), crane_m, loc=(-0.23, 0.02 + 0.15 + 0.13, WZ + 1.16 - 0.13))
+if PHOTO:                                                   # wall-bracket style mounting, photo supplies the hall
+    H.box("mount_plate", (0.03, 0.30, 0.60), frame, loc=(-0.23, 0.02, WZ + 0.26), bevel=0.003)
+    H.box("mount_base", (0.36, 0.30, 0.03), frame, loc=(-0.40, 0.02, WZ - 0.04), bevel=0.003)
+    for s_ in (-1, 1):
+        H.box(f"mount_rib{s_}", (0.34, 0.02, 0.26), frame, loc=(-0.40, 0.02 + s_ * 0.14, WZ + 0.10))
+else:
+    H.box("mount_plate", (0.03, 0.30, 1.40), crane_m, loc=(-0.23, 0.02, WZ + 0.46), bevel=0.003)
+    H.box("mount_gusset", (0.03, 0.26, 0.26), crane_m, loc=(-0.23, 0.02 + 0.15 + 0.13, WZ + 1.16 - 0.13))
 
 # ---------------------------------------------------------------- IRC 93 (shaft face to +X) + motor
 u = H.load_unit("IRC_93", mats, spin=-90)        # shaft face now looks to +X
@@ -146,8 +155,9 @@ H.box("ped_base", (0.22, 0.30, 0.03), crane_m, loc=(DX0 + 1.08, out_c.y, WZ - 0.
 H.box("ped_col", (0.16, 0.18, 0.22), crane_m, loc=(DX0 + 1.08, out_c.y, WZ - 0.21))
 H.cyl("ped_brg", 0.085, 0.11, mats["steel"], loc=(DX0 + 1.08, out_c.y, WZ), axis="X", seg=96, chamfer=0.006)
 H.cyl("ped_shaft", 0.035, 0.10, spline_m, loc=(DX0 + 1.03, out_c.y, WZ), axis="X", seg=48)
-H.box("ped_hanger", (0.16, 0.03, 1.16), crane_m, loc=(DX0 + 1.08, out_c.y + 0.10, WZ + 0.58))
-H.box("ped_hanger2", (0.16, 0.42, 0.03), crane_m, loc=(DX0 + 1.08, out_c.y + 0.30, WZ + 1.15))
+if not PHOTO:
+    H.box("ped_hanger", (0.16, 0.03, 1.16), crane_m, loc=(DX0 + 1.08, out_c.y + 0.10, WZ + 0.58))
+    H.box("ped_hanger2", (0.16, 0.42, 0.03), crane_m, loc=(DX0 + 1.08, out_c.y + 0.30, WZ + 1.15))
 
 # ---------------------------------------------------------------- dust in the air
 dust_m = H.mat("dust", (0.9, 0.85, 0.7), 0.0, 0.6)
@@ -182,7 +192,7 @@ import json
 sc = bpy.context.scene
 bpy.context.view_layer.update()
 ndc = world_to_camera_view(sc, sc.camera, Vector((SX0 + SL * 0.55, out_c.y, GZ + out_c.z + 0.03)))
-json.dump({"spline": [ndc.x, 1 - (ndc.y + sc.camera.data.shift_y)]}, open(os.path.join(H.PREVIEW_DIR if H.PREVIEW else H.OUT, "irc_post_raw.json"), "w"))
+json.dump({"spline": [ndc.x, 1 - (ndc.y + sc.camera.data.shift_y)]}, open(os.path.join(H.PREVIEW_DIR if H.PREVIEW else H.OUT, "irc_post_raw" + ("_photo" if PHOTO else "") + ".json"), "w"))
 skip = os.environ.get("SKIP", "").split(",")
 if "motor" in skip:
     for o in m["objs"]:
@@ -201,4 +211,4 @@ if os.environ.get("NORENDER"):
     for sh in u["shafts"]:
         print("IRC shaft r=%.3f c=(%.3f %.3f %.3f) axis=(%.0f %.0f %.0f)" % (sh["r"], *sh["c"], *sh["axis"]))
 else:
-    H.render("irc_post_raw", w=2160, h=2700, exposure=-0.7)
+    H.render("irc_post_raw" + ("_photo" if PHOTO else ""), w=2160, h=2700, exposure=-0.7, transparent=PHOTO)
