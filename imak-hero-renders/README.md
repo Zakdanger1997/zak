@@ -26,3 +26,12 @@ python3 tools/scene_conveyor.py --preview --scale 0.33 --samples 48   # quick lo
 `tools/hero_lib.py` holds the shared materials, the dark hall, lights, camera and render
 settings (Cycles, adaptive 512 samples, OpenImageDenoise, Khronos PBR Neutral view transform
 so the RAL colour stays honest). Each final takes roughly an hour on four CPU cores.
+
+## Social post: IRC 93 hoist drive (4:5)
+
+`tools/scene_irc_post.py` renders the IRC 93 (STEP) with the motor borrowed from the IRAM 93-160 L
+model (cut at the motor front, joined by a bell adapter) on a hoist frame, driving a rope drum through
+its splined output shaft; the shaft and the splined drum hub are pulled apart so the spline is visible.
+Output `out/irc_post_raw.png` (2160x2700) plus `irc_post_raw.json` with the spline's screen position.
+`tools/post_layout.py raw.png out.jpg --lang tr|en` adds the headline, i.Mak badge, spline call-out and
+the brand band. Debug: `CAM=input` (front view of the bell joint), `SKIP=motor,bell`, `NORENDER=1`.
