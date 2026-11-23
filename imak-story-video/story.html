@@ -122,6 +122,26 @@ function path(pts, t0, t1, o = {}) {
   it.len = 0;
   return it;
 }
+function dot(x, y, r, t0, t1, color) {
+  const el = document.createElement('div');
+  el.style.cssText = `width:${2 * r}px;height:${2 * r}px;border-radius:50%;background:${color};box-shadow:0 2px 6px rgba(0,0,0,.25)`;
+  return reg(el, { x: x - r, y: y - r, t0, t1, from: { s: 0, o: 0 }, dur: 0.45 });
+}
+function ring(x, y, r, t0, t1) {
+  const el = document.createElement('div');
+  el.style.cssText = `width:${2 * r}px;height:${2 * r}px;border-radius:50%;border:4px solid ${RED}`;
+  return reg(el, { x: x - r, y: y - r, t0, t1, from: { s: 0.3, o: 0 }, dur: 0.6, pulse: true });
+}
+function arc(x0, y0, x1, y1, lift, t0, t1) {
+  const L = Math.hypot(x1 - x0, y1 - y0), nx = (y1 - y0) / L, ny = -(x1 - x0) / L;     // perpendicular, bulging up/left
+  const sgn = ny > 0 ? -1 : 1;
+  const pts = [], mx = (x0 + x1) / 2 + nx * L * lift * sgn, my = (y0 + y1) / 2 + ny * L * lift * sgn;
+  for (let i = 0; i <= 120; i++) {
+    const u = i / 120;
+    pts.push([(1 - u) * (1 - u) * x0 + 2 * u * (1 - u) * mx + u * u * x1, (1 - u) * (1 - u) * y0 + 2 * u * (1 - u) * my + u * u * y1]);
+  }
+  return path(pts, t0, t1, { draw: 0.7, width: 5 });
+}
 function counter(x, y, size, to, t0, t1, o = {}) {
   const it = txt('0', 'serif' + (o.cls ? ' ' + o.cls : ''), x, y, size, t0, t1, o);
   it.count = { to, dur: o.cdur || 1.2, suffix: o.suffix || '' };
@@ -185,16 +205,33 @@ function build(TL) {
   loopy(130, 640, 900, 640, 4, 14, a + 1.2, b, { draw: 0.9, width: 6 });
   img(C + 'barcode2012.png', 1190, 220, 470, a + 0.3, b, { r: -6, from: { r: -60, s: 0.2, o: 0 }, dur: 0.8 });
 
-  // 2019 partners
+  // 2019 partners: world map, Istanbul, routes to the assembly centres
   a = S.y2019 - 0.2; b = END('y2019');
-  txt('Assembly centres', 'sans', 125, 90, 36, a, b);
-  txt('Partners', 'serif', 118, 135, 150, a + 0.2, b);
-  const pt = [['hudaco2019', 'Hudaco · 2019', 130, 380, -4, W('y2019', 'Hudaco', 2.2)], ['sipco2019', 'SIPCO · 2019', 720, 430, 3, W('y2019', 'SIPCO', 3.2)], ['egasen2021', 'EGASEN · 2021', 1300, 370, -2, W('y2019', 'EGASEN', 4.2)]];
-  for (const [n, lab, x, y, r, t] of pt) {
-    img(C + n + '.png', x, y, 470, t - 0.35, b, { r, from: { y: -700, r: r * 6, o: 1 }, dur: 0.75 });
-    txt(lab, 'ital', x + 80, y + 455, 48, t, b);
+  const MX = 80, MY = 250, LON0 = -128, LAT1 = 72, MS = 1760 / 280;
+  const P = (lon, lat) => [MX + (lon - LON0) * MS, MY + (LAT1 - lat) * MS];
+  txt('Assembly centres', 'sans', 125, 40, 34, a, b);
+  txt('Partners', 'serif', 118, 80, 120, a + 0.1, b);
+  brush(700, 80, 600, 120, a + 0.5, b);
+  txt('worldwide', 'serif w', 710, 80, 120, a + 0.55, b, { from: { o: 0 }, dur: 0.25 });
+  img('assets/world.svg', MX, MY, 1760, a, b, { from: { s: 1.06, o: 0 }, dur: 0.8, ease: easeOut, wob: 0, noShadow: true, op: 1 });
+  // i.Mak network (offices, partners and assembly centres listed on imakreduktor.com)
+  const net = [[-95.1, 29.5], [-71.2, 46.8], [-74.1, 4.7], [-79.9, -2.2], [-46.6, -23.5], [-73.1, -36.8], [-7.6, 33.6], [30.9, 29.9],
+    [28.2, -26.2], [-8.5, 42.4], [-0.8, 47.0], [10.6, 44.7], [6.2, 51.4], [-1.5, 52.5], [37.6, 55.8], [16.1, 51.2], [30.1, 49.8], [73.1, 49.8], [80.3, 13.1]];
+  net.forEach(([lon, lat], i) => { const [x, y] = P(lon, lat); dot(x, y, 9, a + 0.6 + i * 0.05, b, '#cc0605'); });
+  const [ix, iy] = P(28.98, 41.01);
+  dot(ix, iy, 20, a + 0.4, b, '#cc0605');
+  ring(ix, iy, 46, a + 0.5, b);
+  txt('Istanbul', 'ital', ix + 26, iy - 70, 46, a + 0.6, b);
+  const part = [['sipco2019', 'SIPCO · USA · 2019', -95.12, 29.54, 150, 560, -4, W('y2019', 'SIPCO', 3.2)],
+                ['egasen2021', 'EGASEN · Spain · 2021', -8.64, 42.43, 560, 600, 3, W('y2019', 'EGASEN', 4.2)],
+                ['hudaco2019', 'Hudaco · South Africa · 2019', 28.16, -26.21, 1180, 660, -3, W('y2019', 'Hudaco', 2.2)]];
+  for (const [n, lab, lon, lat, px, py, r, t] of part) {
+    const [x, y] = P(lon, lat);
+    arc(ix, iy, x, y, 0.32, t - 0.45, b);
+    dot(x, y, 16, t - 0.05, b, '#cc0605');
+    img(C + n + '.png', px, py, 270, t, b, { r, from: { y: -500, r: r * 6, o: 1 }, dur: 0.7 });
+    txt(lab, 'ital', px - 10, py + 255, 40, t + 0.2, b);
   }
-  loopy(360, 860, 1560, 860, 5, 22, a + 1.2, b, { draw: 2.2, width: 5 });
 
   // 2022 foundry
   a = S.y2022 - 0.2; b = END('y2022');
@@ -323,6 +360,8 @@ window.renderAt = (t) => {
       if (it.exit === 'up') y -= 200 * ee; else x -= 260 * ee;
       o *= 1 - ee;
     }
+    if (it.op) o *= it.op;
+    if (it.pulse) { const ph = ((t - it.t0) % 1.6) / 1.6; s *= 0.6 + ph * 0.8; o *= 1 - ph; }
     el.style.opacity = o;
     el.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg) scale(${s})`;
     if (it.wipeEl) {

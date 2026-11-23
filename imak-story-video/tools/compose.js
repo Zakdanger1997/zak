@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const ROOT = path.join(__dirname, '..');
-const types = { '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.json': 'application/json' };
+const types = { '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/png', '.jpg': 'image/jpeg', '.woff2': 'font/woff2', '.json': 'application/json', '.svg': 'image/svg+xml' };
 const srv = http.createServer((req, res) => {
   const f = path.join(ROOT, decodeURIComponent(req.url.split('?')[0]));
   fs.readFile(f, (e, d) => {
