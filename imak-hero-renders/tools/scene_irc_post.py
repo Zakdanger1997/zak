@@ -16,6 +16,8 @@ import hero_lib as H
 
 H.fresh()
 mats = H.M()
+# deeper, less glossy red: real painted cast iron rather than a clear-coated show finish
+mats["paint"] = H.mat("imak red", (0.52, 0.012, 0.012), 0.0, 0.52, coat=0.08, spec=0.38, bump=(900, 0.05))
 H.world_dark(0.30, haze=0.003, tint=(0.85, 0.9, 1.0))
 crane_m = H.mat("crane yellow", (0.72, 0.40, 0.02), 0.0, 0.42, coat=0.2, bump=(300, 0.02))
 drum_m = H.mat("drum", (0.22, 0.22, 0.21), 0.85, 0.42, bump=(200, 0.03))
@@ -166,8 +168,8 @@ sun.color = (1.0, 0.85, 0.65)
 so = bpy.data.objects.new("sun", sun)
 bpy.context.collection.objects.link(so)
 so.rotation_euler = (math.radians(52), 0, math.radians(-35))
-H.light_area("key", (1.6, -2.4, GZ + 1.9), target, 650, 1.8, (1.0, 0.95, 0.88))
-H.light_area("fill", (-2.6, -2.0, GZ + 0.6), target, 260, 4.0, (0.85, 0.9, 1.0))
+H.light_area("key", (1.6, -2.4, GZ + 1.9), target, 520, 1.4, (1.0, 0.94, 0.86))
+H.light_area("fill", (-2.6, -2.0, GZ + 0.6), target, 150, 4.0, (0.85, 0.9, 1.0))
 H.light_area("rim", (0.2, 2.8, GZ + 2.4), target, 1200, 1.2, (1.0, 0.8, 0.6))
 H.light_area("spline_acc", (0.45, -0.9, GZ + 0.05), Vector((SX0 + SL / 2, out_c.y, GZ + out_c.z)), 60, 0.3, (1.0, 0.95, 0.9))
 if os.environ.get("CAM") == "input":
@@ -199,4 +201,4 @@ if os.environ.get("NORENDER"):
     for sh in u["shafts"]:
         print("IRC shaft r=%.3f c=(%.3f %.3f %.3f) axis=(%.0f %.0f %.0f)" % (sh["r"], *sh["c"], *sh["axis"]))
 else:
-    H.render("irc_post_raw", w=2160, h=2700, exposure=-0.55)
+    H.render("irc_post_raw", w=2160, h=2700, exposure=-0.7)
