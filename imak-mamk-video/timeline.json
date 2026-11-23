@@ -1,0 +1,1198 @@
+{
+ "total": 85.97,
+ "fps": 30,
+ "voice": [
+  {
+   "id": "hook",
+   "file": "line_00.mp3",
+   "start": 0.8,
+   "dur": 5.112,
+   "words": [
+    [
+     0.9,
+     1.415,
+     "Seventy"
+    ],
+    [
+     1.427,
+     1.819,
+     "thousand"
+    ],
+    [
+     1.831,
+     2.125,
+     "newton"
+    ],
+    [
+     2.138,
+     2.628,
+     "metres"
+    ],
+    [
+     2.982,
+     3.62,
+     "Twenty-four"
+    ],
+    [
+     3.632,
+     3.914,
+     "hours"
+    ],
+    [
+     3.926,
+     3.987,
+     "a"
+    ],
+    [
+     4.0,
+     4.379,
+     "day"
+    ],
+    [
+     4.735,
+     4.906,
+     "In"
+    ],
+    [
+     4.919,
+     4.992,
+     "the"
+    ],
+    [
+     5.004,
+     5.556,
+     "dust"
+    ]
+   ],
+   "caption": "70,000\u00a0Nm. 24 hours a day. In the dust."
+  },
+  {
+   "id": "intro",
+   "file": "line_01.mp3",
+   "start": 6.462,
+   "dur": 7.92,
+   "words": [
+    [
+     6.562,
+     6.881,
+     "This"
+    ],
+    [
+     6.905,
+     7.015,
+     "is"
+    ],
+    [
+     7.028,
+     7.138,
+     "the"
+    ],
+    [
+     7.163,
+     7.64,
+     "Eemak"
+    ],
+    [
+     7.763,
+     8.045,
+     "M"
+    ],
+    [
+     8.155,
+     8.449,
+     "A"
+    ],
+    [
+     8.572,
+     8.743,
+     "and"
+    ],
+    [
+     8.854,
+     9.086,
+     "M"
+    ],
+    [
+     9.099,
+     9.332,
+     "K"
+    ],
+    [
+     9.344,
+     9.908,
+     "series"
+    ],
+    [
+     10.361,
+     10.949,
+     "heavy-duty"
+    ],
+    [
+     10.962,
+     11.599,
+     "industrial"
+    ],
+    [
+     11.611,
+     12.273,
+     "gearboxes"
+    ],
+    [
+     12.285,
+     12.432,
+     "for"
+    ],
+    [
+     12.444,
+     12.984,
+     "mines"
+    ],
+    [
+     12.996,
+     13.192,
+     "and"
+    ],
+    [
+     13.204,
+     13.511,
+     "steel"
+    ],
+    [
+     13.523,
+     14.025,
+     "plants"
+    ]
+   ],
+   "caption": "This is the i.Mak MA / MK series\u00a0\u2013\u00a0heavy-duty gearboxes for mines and steel plants."
+  },
+  {
+   "id": "types",
+   "file": "line_02.mp3",
+   "start": 14.732,
+   "dur": 5.64,
+   "words": [
+    [
+     14.832,
+     15.126,
+     "M"
+    ],
+    [
+     15.273,
+     15.494,
+     "A"
+    ],
+    [
+     15.543,
+     15.739,
+     "with"
+    ],
+    [
+     15.751,
+     16.254,
+     "parallel"
+    ],
+    [
+     16.266,
+     16.842,
+     "shafts"
+    ],
+    [
+     17.196,
+     17.49,
+     "M"
+    ],
+    [
+     17.503,
+     17.858,
+     "K"
+    ],
+    [
+     18.152,
+     18.226,
+     "a"
+    ],
+    [
+     18.25,
+     19.034,
+     "bevel-helical"
+    ],
+    [
+     19.047,
+     19.537,
+     "right-angle"
+    ],
+    [
+     19.549,
+     20.027,
+     "drive"
+    ]
+   ],
+   "caption": "MA: parallel shafts. MK: bevel-helical, right-angle."
+  },
+  {
+   "id": "sizes",
+   "file": "line_03.mp3",
+   "start": 20.772,
+   "dur": 6.912,
+   "words": [
+    [
+     20.872,
+     21.24,
+     "Nine"
+    ],
+    [
+     21.252,
+     21.84,
+     "sizes"
+    ],
+    [
+     21.901,
+     22.122,
+     "from"
+    ],
+    [
+     22.134,
+     22.502,
+     "forty"
+    ],
+    [
+     22.514,
+     22.649,
+     "to"
+    ],
+    [
+     22.661,
+     22.894,
+     "one"
+    ],
+    [
+     22.906,
+     23.249,
+     "hundred"
+    ],
+    [
+     23.262,
+     23.36,
+     "and"
+    ],
+    [
+     23.372,
+     23.874,
+     "twenty"
+    ],
+    [
+     24.242,
+     24.389,
+     "with"
+    ],
+    [
+     24.401,
+     24.561,
+     "up"
+    ],
+    [
+     24.573,
+     24.671,
+     "to"
+    ],
+    [
+     24.683,
+     25.124,
+     "seventy"
+    ],
+    [
+     25.137,
+     25.615,
+     "thousand"
+    ],
+    [
+     25.627,
+     25.946,
+     "newton"
+    ],
+    [
+     25.958,
+     26.35,
+     "metres"
+    ],
+    [
+     26.362,
+     26.46,
+     "of"
+    ],
+    [
+     26.522,
+     26.865,
+     "output"
+    ],
+    [
+     26.877,
+     27.318,
+     "torque"
+    ]
+   ],
+   "caption": "Nine sizes, 40\u00a0to 120\u00a0\u2013\u00a0up to 70,000\u00a0Nm of torque."
+  },
+  {
+   "id": "gears",
+   "file": "line_04.mp3",
+   "start": 28.084,
+   "dur": 9.264,
+   "words": [
+    [
+     28.184,
+     28.981,
+     "Case-hardened"
+    ],
+    [
+     29.299,
+     29.63,
+     "ground"
+    ],
+    [
+     29.642,
+     30.01,
+     "gears"
+    ],
+    [
+     30.022,
+     30.169,
+     "at"
+    ],
+    [
+     30.182,
+     30.905,
+     "fifty-seven"
+    ],
+    [
+     30.917,
+     31.664,
+     "HRC"
+    ],
+    [
+     32.093,
+     32.204,
+     "in"
+    ],
+    [
+     32.216,
+     32.265,
+     "a"
+    ],
+    [
+     32.277,
+     32.963,
+     "monobloc"
+    ],
+    [
+     32.976,
+     33.588,
+     "cast-iron"
+    ],
+    [
+     33.601,
+     34.177,
+     "housing"
+    ],
+    [
+     34.531,
+     35.095,
+     "Ratios"
+    ],
+    [
+     35.107,
+     35.242,
+     "up"
+    ],
+    [
+     35.254,
+     35.364,
+     "to"
+    ],
+    [
+     35.377,
+     35.72,
+     "five"
+    ],
+    [
+     35.732,
+     36.063,
+     "hundred"
+    ],
+    [
+     36.075,
+     36.247,
+     "and"
+    ],
+    [
+     36.259,
+     36.553,
+     "twelve"
+    ],
+    [
+     36.565,
+     36.663,
+     "to"
+    ],
+    [
+     36.676,
+     37.007,
+     "one"
+    ]
+   ],
+   "caption": "Case-hardened, ground gears at 57\u00a0HRC in a monobloc cast-iron housing. Ratios up to 512\u00a0:\u00a01."
+  },
+  {
+   "id": "drive",
+   "file": "line_05.mp3",
+   "start": 37.798,
+   "dur": 9.0,
+   "words": [
+    [
+     37.898,
+     38.094,
+     "On"
+    ],
+    [
+     38.106,
+     38.168,
+     "a"
+    ],
+    [
+     38.18,
+     38.425,
+     "belt"
+    ],
+    [
+     38.437,
+     39.001,
+     "conveyor"
+    ],
+    [
+     39.405,
+     39.528,
+     "the"
+    ],
+    [
+     39.565,
+     39.834,
+     "M"
+    ],
+    [
+     39.847,
+     40.104,
+     "K"
+    ],
+    [
+     40.116,
+     40.435,
+     "mounts"
+    ],
+    [
+     40.447,
+     40.778,
+     "straight"
+    ],
+    [
+     40.79,
+     40.962,
+     "onto"
+    ],
+    [
+     40.974,
+     41.06,
+     "the"
+    ],
+    [
+     41.072,
+     41.415,
+     "head"
+    ],
+    [
+     41.427,
+     41.758,
+     "pulley"
+    ],
+    [
+     41.771,
+     42.273,
+     "shaft"
+    ],
+    [
+     42.677,
+     42.922,
+     "hollow"
+    ],
+    [
+     42.935,
+     43.462,
+     "shaft"
+    ],
+    [
+     43.793,
+     44.16,
+     "shrink"
+    ],
+    [
+     44.173,
+     44.552,
+     "disc"
+    ],
+    [
+     44.773,
+     44.932,
+     "and"
+    ],
+    [
+     44.957,
+     45.018,
+     "a"
+    ],
+    [
+     45.043,
+     45.741,
+     "rubber-damped"
+    ],
+    [
+     45.753,
+     46.023,
+     "torque"
+    ],
+    [
+     46.06,
+     46.427,
+     "arm"
+    ]
+   ],
+   "caption": "On a belt conveyor, the MK mounts straight on the head pulley: hollow shaft, shrink disc, rubber-damped torque arm."
+  },
+  {
+   "id": "backstop",
+   "file": "line_06.mp3",
+   "start": 47.148,
+   "dur": 4.896,
+   "words": [
+    [
+     47.248,
+     47.469,
+     "On"
+    ],
+    [
+     47.481,
+     47.567,
+     "an"
+    ],
+    [
+     47.579,
+     48.094,
+     "incline"
+    ],
+    [
+     48.204,
+     48.326,
+     "an"
+    ],
+    [
+     48.437,
+     48.866,
+     "optional"
+    ],
+    [
+     48.878,
+     49.466,
+     "backstop"
+    ],
+    [
+     49.54,
+     50.005,
+     "stops"
+    ],
+    [
+     50.018,
+     50.152,
+     "the"
+    ],
+    [
+     50.165,
+     50.496,
+     "loaded"
+    ],
+    [
+     50.508,
+     50.777,
+     "belt"
+    ],
+    [
+     50.79,
+     51.022,
+     "from"
+    ],
+    [
+     51.035,
+     51.268,
+     "running"
+    ],
+    [
+     51.28,
+     51.684,
+     "back"
+    ]
+   ],
+   "caption": "On an incline, an optional backstop stops the loaded belt running back."
+  },
+  {
+   "id": "cooling",
+   "file": "line_07.mp3",
+   "start": 52.494,
+   "dur": 8.352,
+   "words": [
+    [
+     52.594,
+     53.145,
+     "Fans"
+    ],
+    [
+     53.231,
+     53.562,
+     "cooling"
+    ],
+    [
+     53.574,
+     54.101,
+     "coils"
+    ],
+    [
+     54.114,
+     54.285,
+     "and"
+    ],
+    [
+     54.297,
+     54.542,
+     "heat"
+    ],
+    [
+     54.555,
+     55.29,
+     "exchangers"
+    ],
+    [
+     55.327,
+     55.645,
+     "lift"
+    ],
+    [
+     55.658,
+     55.976,
+     "thermal"
+    ],
+    [
+     55.989,
+     56.601,
+     "capacity"
+    ],
+    [
+     56.614,
+     56.822,
+     "up"
+    ],
+    [
+     56.834,
+     56.944,
+     "to"
+    ],
+    [
+     56.957,
+     57.288,
+     "six"
+    ],
+    [
+     57.3,
+     57.729,
+     "hundred"
+    ],
+    [
+     57.741,
+     57.974,
+     "and"
+    ],
+    [
+     57.986,
+     58.476,
+     "forty-eight"
+    ],
+    [
+     58.489,
+     59.077,
+     "kilowatts"
+    ],
+    [
+     59.395,
+     59.518,
+     "for"
+    ],
+    [
+     59.53,
+     60.094,
+     "non-stop"
+    ],
+    [
+     60.106,
+     60.486,
+     "duty"
+    ]
+   ],
+   "caption": "Fans, cooling coils, heat exchangers\u00a0\u2013\u00a0up to 648\u00a0kW thermal capacity for non-stop duty."
+  },
+  {
+   "id": "seal",
+   "file": "line_08.mp3",
+   "start": 61.196,
+   "dur": 7.248,
+   "words": [
+    [
+     61.296,
+     62.031,
+     "Nilos-ring"
+    ],
+    [
+     62.044,
+     62.399,
+     "sealed"
+    ],
+    [
+     62.411,
+     62.901,
+     "bearings"
+    ],
+    [
+     62.914,
+     63.061,
+     "and"
+    ],
+    [
+     63.073,
+     63.686,
+     "corrosion"
+    ],
+    [
+     63.698,
+     64.2,
+     "protection"
+    ],
+    [
+     64.213,
+     64.323,
+     "up"
+    ],
+    [
+     64.335,
+     64.421,
+     "to"
+    ],
+    [
+     64.433,
+     65.083,
+     "C5"
+    ],
+    [
+     65.389,
+     65.597,
+     "built"
+    ],
+    [
+     65.61,
+     65.757,
+     "for"
+    ],
+    [
+     65.769,
+     66.259,
+     "dust"
+    ],
+    [
+     66.541,
+     66.823,
+     "heat"
+    ],
+    [
+     67.093,
+     67.264,
+     "and"
+    ],
+    [
+     67.276,
+     67.558,
+     "heavy"
+    ],
+    [
+     67.571,
+     68.085,
+     "loads"
+    ]
+   ],
+   "caption": "Nilos-ring sealed bearings, corrosion protection up to C5\u00a0\u2013\u00a0built for dust, heat and heavy loads."
+  },
+  {
+   "id": "apps",
+   "file": "line_09.mp3",
+   "start": 68.894,
+   "dur": 9.192,
+   "words": [
+    [
+     68.994,
+     69.3,
+     "Belt"
+    ],
+    [
+     69.313,
+     69.999,
+     "conveyors"
+    ],
+    [
+     70.293,
+     70.624,
+     "bucket"
+    ],
+    [
+     70.636,
+     71.371,
+     "elevators"
+    ],
+    [
+     71.469,
+     72.131,
+     "crushers"
+    ],
+    [
+     72.193,
+     72.683,
+     "mills"
+    ],
+    [
+     72.695,
+     73.001,
+     "and"
+    ],
+    [
+     73.038,
+     73.712,
+     "rolling-mill"
+    ],
+    [
+     73.724,
+     74.031,
+     "roller"
+    ],
+    [
+     74.043,
+     74.594,
+     "tables"
+    ],
+    [
+     74.949,
+     75.219,
+     "From"
+    ],
+    [
+     75.231,
+     75.537,
+     "South"
+    ],
+    [
+     75.549,
+     76.003,
+     "African"
+    ],
+    [
+     76.015,
+     76.481,
+     "mines"
+    ],
+    [
+     76.493,
+     76.616,
+     "to"
+    ],
+    [
+     76.628,
+     77.106,
+     "Moroccan"
+    ],
+    [
+     77.118,
+     77.719,
+     "phosphate"
+    ]
+   ],
+   "caption": "Belt conveyors, bucket elevators, crushers, mills, rolling-mill roller tables\u00a0\u2013\u00a0from South African mines to Moroccan phosphate."
+  },
+  {
+   "id": "end",
+   "file": "line_10.mp3",
+   "start": 78.886,
+   "dur": 4.488,
+   "words": [
+    [
+     78.986,
+     79.501,
+     "Eemak"
+    ],
+    [
+     79.636,
+     79.881,
+     "M"
+    ],
+    [
+     79.991,
+     80.224,
+     "A"
+    ],
+    [
+     80.261,
+     80.444,
+     "and"
+    ],
+    [
+     80.506,
+     80.665,
+     "M"
+    ],
+    [
+     80.677,
+     80.984,
+     "K"
+    ],
+    [
+     81.412,
+     81.609,
+     "Built"
+    ],
+    [
+     81.621,
+     81.731,
+     "for"
+    ],
+    [
+     81.743,
+     81.829,
+     "the"
+    ],
+    [
+     81.841,
+     82.148,
+     "heavy"
+    ],
+    [
+     82.16,
+     82.356,
+     "end"
+    ],
+    [
+     82.368,
+     82.442,
+     "of"
+    ],
+    [
+     82.454,
+     83.006,
+     "industry"
+    ]
+   ],
+   "caption": "i.Mak MA / MK. Built for the heavy end of industry."
+  }
+ ],
+ "segments": [
+  {
+   "start": 0,
+   "end": 6.362,
+   "shot": "dark",
+   "src": [
+    0.0,
+    3.96
+   ],
+   "titles": [
+    {
+     "t": "hook",
+     "text": "<b>70,000</b> Nm",
+     "sub": "24 H A DAY \u00b7 IN THE DUST",
+     "from": 1.0
+    }
+   ]
+  },
+  {
+   "start": 6.362,
+   "end": 14.582,
+   "shot": "studio",
+   "src": [
+    0.0,
+    7.96
+   ],
+   "titles": [
+    {
+     "t": "title",
+     "text": "MA / MK SERIES",
+     "sub": "HEAVY-DUTY INDUSTRIAL GEARBOXES",
+     "from": 6.862
+    }
+   ]
+  },
+  {
+   "start": 14.582,
+   "end": 20.622,
+   "still": "duo",
+   "mode": "push",
+   "titles": [
+    {
+     "t": "label",
+     "text": "MA",
+     "sub": "PARALLEL SHAFT",
+     "from": 14.831999999999999,
+     "cls": "left"
+    },
+    {
+     "t": "label2",
+     "text": "MK",
+     "sub": "BEVEL-HELICAL \u00b7 RIGHT-ANGLE",
+     "from": 17.332,
+     "cls": "right"
+    }
+   ]
+  },
+  {
+   "start": 20.622,
+   "end": 27.884,
+   "still": "lineup",
+   "mode": "pan",
+   "titles": [
+    {
+     "t": "title",
+     "text": "9 SIZES",
+     "sub": "40 \u2013 120",
+     "from": 20.971999999999998
+    },
+    {
+     "t": "top2",
+     "text": "70,000 Nm",
+     "sub": "MAX. OUTPUT TORQUE",
+     "from": 23.772
+    }
+   ]
+  },
+  {
+   "start": 27.884,
+   "end": 37.598,
+   "shot": "dark",
+   "src": [
+    1.0,
+    3.96
+   ],
+   "titles": [
+    {
+     "t": "spec",
+     "text": "57 HRC",
+     "sub": "CASE-HARDENED \u00b7 GROUND",
+     "from": 28.284
+    },
+    {
+     "t": "spec2",
+     "text": "512 : 1",
+     "sub": "MAX. RATIO",
+     "from": 33.684
+    }
+   ]
+  },
+  {
+   "start": 37.598,
+   "end": 46.948,
+   "shot": "drive",
+   "src": [
+    0.0,
+    5.96
+   ],
+   "titles": [
+    {
+     "t": "label",
+     "text": "HOLLOW SHAFT",
+     "sub": "SHRINK DISC \u00b7 NO COUPLING",
+     "from": 40.198,
+     "to": 43.798
+    },
+    {
+     "t": "label",
+     "text": "TORQUE ARM",
+     "sub": "RUBBER-DAMPED",
+     "from": 43.998000000000005
+    }
+   ]
+  },
+  {
+   "start": 46.948,
+   "end": 52.294,
+   "shot": "conveyor",
+   "src": [
+    0.0,
+    5.96
+   ],
+   "titles": [
+    {
+     "t": "label",
+     "text": "BACKSTOP",
+     "sub": "NO ROLL-BACK ON THE INCLINE",
+     "from": 47.548
+    }
+   ]
+  },
+  {
+   "start": 52.294,
+   "end": 68.744,
+   "shot": "steel",
+   "src": [
+    0.0,
+    5.96
+   ],
+   "titles": [
+    {
+     "t": "spec",
+     "text": "648 kW",
+     "sub": "THERMAL CAPACITY",
+     "from": 54.494,
+     "to": 60.995999999999995
+    },
+    {
+     "t": "spec",
+     "text": "C5",
+     "sub": "CORROSION PROTECTION",
+     "from": 61.495999999999995
+    }
+   ]
+  },
+  {
+   "start": 68.744,
+   "end": 78.636,
+   "photos": true,
+   "titles": [
+    {
+     "t": "title",
+     "text": "CONVEYORS \u00b7 CRUSHERS \u00b7 MILLS",
+     "sub": "MINES \u00b7 QUARRIES \u00b7 STEEL PLANTS",
+     "from": 69.194
+    }
+   ]
+  },
+  {
+   "start": 78.636,
+   "end": 85.97,
+   "endcard": true
+  }
+ ],
+ "end": {
+  "h1": "MA / MK SERIES",
+  "h2": "Heavy-duty industrial gearboxes",
+  "p": [
+   "9 sizes \u00b7 6,080 \u2013 70,000 Nm \u00b7 ratios up to 512 : 1",
+   "Producing powerful solutions since 1973"
+  ],
+  "tag": "MA / MK SERIES"
+ }
+}

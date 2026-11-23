@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>i.Mak – video compositor</title>
+<style>
+  @font-face { font-family: Barlow; font-weight: 400; src: url(fonts/barlow-latin-400-normal.woff2); }
+  @font-face { font-family: Barlow; font-weight: 500; src: url(fonts/barlow-latin-500-normal.woff2); }
+  @font-face { font-family: Barlow; font-weight: 600; src: url(fonts/barlow-latin-600-normal.woff2); }
+  @font-face { font-family: 'Barlow Condensed'; font-weight: 500; src: url(fonts/barlow-condensed-latin-500-normal.woff2); }
+  @font-face { font-family: 'Barlow Condensed'; font-weight: 600; src: url(fonts/barlow-condensed-latin-600-normal.woff2); }
+  @font-face { font-family: 'Barlow Condensed'; font-weight: 700; src: url(fonts/barlow-condensed-latin-700-normal.woff2); }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  .layer { position: absolute; inset: 0; overflow: hidden; }
+  .layer img { position: absolute; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  #lineup { position: absolute; top: 0; height: 1920px; left: 0; display: none; }
+  .t { position: absolute; left: 0; right: 0; text-align: center; color: #fff; opacity: 0; font-family: 'Barlow Condensed'; }
+  .t .m { font-weight: 700; letter-spacing: .01em; line-height: .95; }
+  .t .s { font: 600 30px Barlow; letter-spacing: .42em; margin-top: 20px; text-transform: uppercase; }
+  .t { text-shadow: 0 4px 28px rgba(0,0,0,.6), 0 1px 3px rgba(0,0,0,.5); }
+  .dark .t { color: #14181d; text-shadow: none; }
+  .t.hook { top: 250px; } .t.hook .m { font-size: 150px; } .t.hook b { color: #ff3b2f; }
+  .t.title { top: 190px; } .t.title .m { font-size: 128px; }
+  .t.top2 { top: 1290px; } .t.top2 .m { font-size: 120px; } .t.top2 .s { font-size: 26px; }
+  .t.big { top: 300px; } .t.big .m { font-size: 230px; } .t.big .s { font-size: 36px; }
+  .t.spec, .t.spec2 { text-align: left; left: 80px; top: 1180px; right: auto; }
+  .t.spec2 { left: auto; right: 80px; text-align: right; top: 1390px; }
+  .t.spec .m, .t.spec2 .m { font-size: 150px; } .t.spec .s, .t.spec2 .s { font-size: 26px; letter-spacing: .3em; margin-top: 8px; }
+  .t.left { text-align: left; left: 70px; right: auto; top: 1180px; } .t.right { text-align: right; right: 70px; left: auto; top: 1180px; }
+  .t.label, .t.label2 { top: 170px; } .t.label .m, .t.label2 .m { font-size: 84px; } .t.label .s, .t.label2 .s { font-size: 28px; }
+  .t.stack { top: 760px; left: 70px; right: auto; text-align: left; } .t.stack .row { font-weight: 700; font-size: 128px; line-height: 1.05; } .t.stack .row small { font: 600 42px Barlow; letter-spacing: .16em; margin-left: 16px; color: #ff5a4e; }
+  .t.list { top: 210px; text-align: left; left: 90px; } .t.list .row { font: 700 74px 'Barlow Condensed'; margin: 10px 0; display: flex; align-items: center; gap: 26px; } .t.list .row i { width: 22px; height: 22px; background: #ff3b2f; display: inline-block; transform: rotate(45deg); }
+  .shade-top { position: absolute; left: 0; right: 0; top: 0; height: 760px; background: linear-gradient(rgba(5,8,12,.78), rgba(5,8,12,.0)); opacity: 0; }
+  .shade-bot { position: absolute; left: 0; right: 0; bottom: 0; height: 620px; background: linear-gradient(rgba(5,8,12,0), rgba(5,8,12,.82)); }
+  #cap { position: absolute; left: 70px; right: 70px; bottom: 210px; text-align: center; font: 600 50px/1.25 Barlow; color: rgba(255,255,255,.55); text-wrap: balance; }
+  #cap span { white-space: nowrap; }
+  #cap span.on { color: #fff; } #cap span.past { color: rgba(255,255,255,.92); }
+  .dark-cap #cap { color: rgba(20,24,29,.45); } .dark-cap #cap span.on, .dark-cap #cap span.past { color: #14181d; }
+  #wm { position: absolute; left: 60px; top: 64px; width: 210px; opacity: .92; }
+  #tag { position: absolute; right: 64px; top: 78px; font: 600 24px Barlow; letter-spacing: .38em; color: #fff; opacity: .85; }
+  .dark-cap #tag { color: #14181d; }
+  #end { position: absolute; inset: 0; background: #f2f2ef; opacity: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #end img.logo { width: 640px; }
+  #end h1 { font: 700 150px 'Barlow Condensed'; margin: 70px 0 0; color: #14181d; }
+  #end h2 { font: 600 30px Barlow; letter-spacing: .42em; color: #3c444d; margin: 18px 0 80px; text-transform: uppercase; }
+  #end p { font: 500 34px Barlow; color: #3c444d; margin: 6px; }
+  #end .url { font: 600 40px Barlow; color: #cc0605; margin-top: 30px; letter-spacing: .04em; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+</style>
+</head>
+<body>
+<div class="layer" id="A"><img></div>
+<div class="layer" id="B"><img></div>
+<img id="lineup">
+<div class="shade-top" id="shadeTop"></div>
+<div class="shade-bot" id="shadeBot"></div>
+<div id="titles"></div>
+<div id="cap"></div>
+<img id="wm" src="assets/logo-white.png">
+<div id="tag"></div>
+<div id="end">
+  <img class="logo" src="assets/logo.png">
+  <h1></h1>
+  <h2></h2>
+  <div id="endp"></div>
+  <div class="url">imakreduktor.com</div>
+</div>
+<div id="credit" style="position:absolute;right:40px;bottom:40px;font:500 20px Barlow;color:rgba(255,255,255,.7);opacity:0"></div>
+<div id="flash"></div>
+<script>
+// window.setup(timeline, frames, photos) once, then window.renderAt(t) per frame (returns a promise).
+let TL, FR, PH, LU, DIRS = {};
+const $ = (s) => document.querySelector(s);
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2;
+const titleEls = [];
+
+window.setup = (tl, frames, photos, lineup, dirs) => {
+  TL = tl; FR = frames; PH = photos; LU = lineup; DIRS = dirs || {};
+  const E = TL.end || {};
+  $('#end h1').textContent = E.h1 || ''; $('#end h2').textContent = E.h2 || '';
+  $('#endp').innerHTML = (E.p || []).map((x) => `<p>${x}</p>`).join('');
+  $('#tag').textContent = E.tag || '';
+  TL.segments.forEach((s, si) => (s.titles || []).forEach((t) => {
+    const d = document.createElement('div');
+    d.className = 't ' + t.t + (t.cls ? ' ' + t.cls : '');
+    if (t.lines && t.t === 'stack') d.innerHTML = t.lines.map(([a, b]) => `<div class="row">${a}<small>${b}</small></div>`).join('');
+    else if (t.lines) d.innerHTML = t.lines.map((a) => `<div class="row"><i></i>${a}</div>`).join('');
+    else d.innerHTML = `<div class="m">${t.text}</div>` + (t.sub ? `<div class="s">${t.sub}</div>` : '');
+    $('#titles').appendChild(d);
+    titleEls.push({ el: d, t, seg: s });
+  }));
+};
+
+function frameFor(shot, srcT) {
+  const list = FR[shot] || [];
+  if (!list.length) return null;
+  const want = Math.round(srcT * 24);
+  let best = list[0];
+  for (const f of list) { if (f <= want) best = f; else break; }
+  return `render/${DIRS[shot] || shot}/${String(best).padStart(4, '0')}.png`;
+}
+
+function setImg(layer, src, scale = 1, x = 0, y = 0) {
+  const img = layer.querySelector('img');
+  if (src && img.getAttribute('src') !== src) img.setAttribute('src', src);
+  img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+}
+
+function segVisual(s, t, layer) {
+  // returns true if this segment draws itself on `layer`
+  const k = clamp((t - s.start) / (s.end - s.start));
+  if (s.shot) {
+    const [a, b] = s.src;
+    setImg(layer, frameFor(s.shot, a + (b - a) * k), 1.0 + 0.045 * k);
+    return true;
+  }
+  if (s.photos) {
+    const n = PH.length, per = (s.end - s.start) / n, i = Math.min(n - 1, Math.floor((t - s.start) / per));
+    const kk = clamp((t - s.start - i * per) / per);
+    setImg(layer, PH[i].src, 1.08 + 0.10 * kk, (PH[i].dx || 0) * kk, (PH[i].dy || 0) * kk);
+    if (layer.id === 'A') { $('#credit').textContent = PH[i].credit || ''; }
+    return true;
+  }
+  return false;
+}
+
+window.renderAt = async (t) => {
+  const segs = TL.segments;
+  let si = segs.findIndex((s) => t >= s.start && t < s.end);
+  if (si < 0) si = segs.length - 1;
+  const s = segs[si];
+  const A = $('#A'), B = $('#B');
+  const lineupOn = !!s.still;
+  $('#lineup').style.display = lineupOn ? 'block' : 'none';
+  if (lineupOn) {
+    const el = $('#lineup');
+    const src = `render/${s.still}_still_0000.png`;
+    if (el.getAttribute('src') !== src) el.setAttribute('src', src);
+    const k = ease(clamp((t - s.start) / (s.end - s.start)));
+    const iw = el.naturalWidth || LU.w, ih = el.naturalHeight || LU.h;
+    if (s.mode === 'push') {
+      // portrait still: slow push-in, centred
+      const sc = 1.0 + 0.08 * k, w = 1080, h = w * ih / iw;
+      el.style.width = w + 'px'; el.style.height = h + 'px';
+      el.style.transformOrigin = '50% 50%';
+      el.style.transform = `translate(0px, ${(1920 - h) / 2}px) scale(${sc})`;
+    } else {
+      // pan across a wide still (smallest -> biggest)
+      const h = 2080, w = h * iw / ih, sc = 1.0 + 0.06 * k;
+      const x = -(w * sc - 1080) * (0.04 + 0.92 * k);
+      el.style.width = w + 'px'; el.style.height = h + 'px';
+      el.style.transform = `translate(${x}px, ${-80 - 30 * k}px) scale(${sc})`;
+      el.style.transformOrigin = '0 50%';
+    }
+  }
+  // current segment on A; crossfade from the previous one over 0.35 s at each cut
+  const fadeT = 0.35;
+  segVisual(s, t, A);
+  A.style.opacity = 1;
+  const prev = segs[si - 1];
+  const intoCut = si > 0 && t - s.start < fadeT && !s.endcard;
+  if (intoCut && prev && (prev.shot || prev.photos)) {
+    segVisual(prev, Math.min(t, prev.end - 0.001), B);
+    B.style.opacity = 1 - (t - s.start) / fadeT;
+    B.style.zIndex = 1;
+  } else B.style.opacity = 0;
+  if (lineupOn) A.style.opacity = 0;
+  // light studio / lineup segments use dark text
+  const lightBg = s.shot === 'studio' || !!s.still;
+  document.body.classList.toggle('dark-cap', lightBg);
+  $('#titles').classList.toggle('dark', lightBg);
+  $('#shadeBot').style.opacity = lightBg ? 0 : 1;
+  $('#shadeTop').style.opacity = (s.shot === 'hoist' || s.shot === 'hoistwide' || s.photos || s.shot === 'spline') ? 1 : 0;
+  $('#wm').src = lightBg ? 'assets/logo.png' : 'assets/logo-white.png';
+  // titles
+  for (const o of titleEls) {
+    const from = o.t.from, to = o.t.to ?? o.seg.end - 0.15;
+    const inK = clamp((t - from) / 0.45), outK = clamp((to - t) / 0.3);
+    const v = (t >= o.seg.start && t < o.seg.end) ? Math.min(inK, outK) : 0;
+    o.el.style.opacity = v;
+    o.el.style.transform = `translateY(${(1 - ease(inK)) * 40}px)`;
+    if (o.t.t === 'stack' || o.t.t === 'list') {
+      [...o.el.children].forEach((c, i) => {
+        const ck = clamp((t - from - i * 0.9) / 0.4);
+        c.style.opacity = ck; c.style.transform = `translateX(${(1 - ease(ck)) * -60}px)`;
+      });
+    }
+  }
+  // captions: karaoke, one voice line at a time
+  const v = TL.voice.find((x) => t >= x.start - 0.1 && t < x.start + x.dur + 0.25);
+  const cap = $('#cap');
+  if (v && !s.endcard) {
+    // show the written caption (i.Mak, 29,771 Nm…), highlighted in step with the spoken words
+    const cw = v.caption.split(' ');
+    if (cap.dataset.id !== v.id) {
+      cap.dataset.id = v.id;
+      cap.innerHTML = cw.map((w) => `<span>${w}</span>`).join(' ');
+    }
+    const n = v.words.length;
+    [...cap.children].forEach((sp, j) => {
+      const w0 = v.words[Math.min(n - 1, Math.floor(j * n / cw.length))];
+      const w1 = v.words[Math.min(n - 1, Math.floor((j + 1) * n / cw.length) - 1)] || w0;
+      sp.className = t >= w0[0] && t < w1[1] + 0.05 ? 'on' : t >= w1[1] ? 'past' : '';
+    });
+    cap.style.opacity = 1;
+  } else { cap.style.opacity = 0; cap.dataset.id = ''; }
+  $('#credit').style.opacity = s.photos ? 1 : 0;
+  // end card
+  const endS = segs[segs.length - 1].start;
+  $('#end').style.opacity = clamp((t - endS) / 0.5);
+  $('#wm').style.opacity = t > endS ? 0 : 0.92;
+  $('#tag').style.opacity = t > endS ? 0 : 0.85;
+  $('#flash').style.opacity = Math.max(0, 0.6 - Math.abs(t - segs[1].start) * 3);   // flash on the reveal
+  // wait for images
+  await Promise.all([...document.images].filter((i) => i.offsetParent !== null || i.closest('.layer')).map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })));
+};
+</script>
+</body>
+</html>
