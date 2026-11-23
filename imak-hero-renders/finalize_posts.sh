@@ -1,12 +1,12 @@
 #!/bin/sh
-# Composite the final transparent renders onto the photos and lay out TR + EN versions.
+# Render the two photoreal product posts (HDRI-lit, real floor shadow) and lay out TR + EN versions.
+# Needs the Poly Haven 16K HDRIs in /home/user/zak/downloads/bg/hdri (see README).
 cd "$(dirname "$0")"
-mkdir -p web
-BG=/home/user/zak/downloads/bg
-python3 -I tools/composite.py $BG/bg_hall.jpg   out/irc_post_raw_photo.png  out/irc_comp.png  --focus 0.35,0.5  --blur 8 --dark 0.25
-python3 -I tools/composite.py $BG/bg_quarry.jpg out/irnx_post_raw_photo.png out/irnx_comp.png --focus 0.45,0.55 --blur 6 --dark 0.10
-for l in tr en; do
-  python3 -I tools/post_layout.py out/irc_comp.png  web/imak_post_irc93_hoist_$l.jpg  --lang $l --copy irc
-  python3 -I tools/post_layout.py out/irnx_comp.png web/imak_post_irnx07_quarry_$l.jpg --lang $l --copy irnx
+mkdir -p web out
+for u in irc irnx; do
+  [ -f out/photo_$u.png ] || UNIT=$u python3 tools/scene_photo_product.py --samples ${SAMPLES:-384} > out/log_photo_$u.txt 2>&1
+  for l in tr en; do
+    python3 -I tools/post_layout.py out/photo_$u.png web/imak_post_${u}_$l.jpg --lang $l --copy $u
+  done
 done
-ls -la web/imak_post_*
+echo ALLDONE

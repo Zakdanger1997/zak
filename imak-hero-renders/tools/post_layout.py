@@ -35,19 +35,19 @@ COPY["irc"] = {
 }
 COPY["irnx"] = {
     "tr": {
-        "h1": "Maden ve Çimentoda",
-        "h2": "Doğrudan Montaj",
-        "sub": "IRNX Serisi mil üstü redüktör: içi boş çıkış mili tambur miline\ndoğrudan oturur, tork kolu ile dakikalar içinde devrededir.",
-        "call": "İÇİ BOŞ ÇIKIŞ MİLİ",
-        "call2": "Tambur miline doğrudan montaj, kaplin ve şase yok",
+        "h1": "Maden ve Agregada",
+        "h2": "Temelsiz Güç",
+        "sub": "IRNX Serisi mil üstü redüktör: doğrudan tambur miline takılır,\nmotor kiti ve kayış tahriği üzerinde. Kaplin ve şase gerekmez.",
+        "call": "MİL ÜSTÜ MONTAJ",
+        "call2": "İçi boş çıkış mili, tork kolu ile sabitleme",
         "site": "www.imakreduktor.com",
     },
     "en": {
-        "h1": "Mining and Cement",
-        "h2": "Mounted Directly",
-        "sub": "IRNX shaft-mounted gear unit: the hollow output shaft sits straight on\nthe pulley shaft, held by a torque arm. No coupling, no base frame.",
-        "call": "HOLLOW OUTPUT SHAFT",
-        "call2": "Direct mount on the pulley shaft, no coupling",
+        "h1": "Mining and Aggregates",
+        "h2": "Power Without a Base",
+        "sub": "IRNX shaft-mounted gear unit: slides straight onto the pulley shaft,\nmotor kit and V-belt drive on top. No coupling, no base frame.",
+        "call": "SHAFT-MOUNTED",
+        "call2": "Hollow output shaft, held by a torque arm",
         "site": "www.imakreduktor.com",
     },
 }
@@ -105,22 +105,20 @@ def main(src, dst, lang="tr", spline_xy=None, copy="irc"):
     px, py = spline_xy[0] * W, spline_xy[1] * H
     fc = font("Inter-SemiBold.otf", 24 * u)
     fc2 = font("Inter-Regular.otf", 20 * u)
-    if py / H > 0.66:                               # too close to the band: put the box above the point
-        lx, ly = px - 40 * u, py - 130 * u
-        draw.line([(px, py), (px - 30 * u, ly + 80 * u), (lx, ly + 80 * u)], fill="white", width=int(3 * u))
-    else:
-        lx, ly = px - 40 * u, py + 92 * u
-        draw.line([(px, py), (px - 30 * u, ly - 18 * u), (lx, ly - 18 * u)], fill="white", width=int(3 * u))
-    draw.ellipse([px - 7 * u, py - 7 * u, px + 7 * u, py + 7 * u], fill="white", outline=RED, width=int(3 * u))
-    draw.ellipse([px - 16 * u, py - 16 * u, px + 16 * u, py + 16 * u], outline="white", width=int(2 * u))
     tw = draw.textlength(c["call"], font=fc)
     tw2 = draw.textlength(c["call2"], font=fc2)
     bw2 = max(tw, tw2) + 36 * u
-    box = [lx - bw2, ly - 10 * u, lx, ly + 72 * u]
+    # box to the right of the point and slightly below it (free floor area in these compositions)
+    bx0 = min(px + 60 * u, W - 30 * u - bw2)
+    by0 = min(py + 30 * u, H - 135 * u - 60 * u - 82 * u)
+    box = [bx0, by0, bx0 + bw2, by0 + 82 * u]
+    draw.line([(px, py), (px + 30 * u, by0 + 41 * u), (bx0, by0 + 41 * u)], fill="white", width=int(3 * u))
+    draw.ellipse([px - 7 * u, py - 7 * u, px + 7 * u, py + 7 * u], fill="white", outline=RED, width=int(3 * u))
+    draw.ellipse([px - 16 * u, py - 16 * u, px + 16 * u, py + 16 * u], outline="white", width=int(2 * u))
     draw.rounded_rectangle(box, radius=int(8 * u), fill=(255, 255, 255))
     draw.rectangle([box[0], box[1], box[0] + 8 * u, box[3]], fill=RED)
-    draw.text((box[0] + 22 * u, ly - 4 * u), c["call"], font=fc, fill=RED)
-    draw.text((box[0] + 22 * u, ly + 32 * u), c["call2"], font=fc2, fill=DARK)
+    draw.text((box[0] + 22 * u, by0 + 6 * u), c["call"], font=fc, fill=RED)
+    draw.text((box[0] + 22 * u, by0 + 42 * u), c["call2"], font=fc2, fill=DARK)
 
     # ---- bottom brand band with an angled edge
     band_h = 135 * u
