@@ -27,7 +27,9 @@
   .t.spec2 { left: auto; right: 80px; text-align: right; top: 1390px; }
   .t.spec .m, .t.spec2 .m { font-size: 150px; } .t.spec .s, .t.spec2 .s { font-size: 26px; letter-spacing: .3em; margin-top: 8px; }
   .t.left { text-align: left; left: 70px; right: auto; top: 1180px; } .t.right { text-align: right; right: 70px; left: auto; top: 1180px; }
-  .t.label, .t.label2 { top: 170px; } .t.label .m, .t.label2 .m { font-size: 84px; } .t.label .s, .t.label2 .s { font-size: 28px; }
+  .t.label, .t.label2 { top: 170px; }
+  .t.spec.topA { top: 190px; } .t.spec2.topB { top: 470px; }
+  .t.label.left { top: 470px; } .t.label2.right { top: 1290px; } .t.label .m, .t.label2 .m { font-size: 84px; } .t.label .s, .t.label2 .s { font-size: 28px; }
   .t.stack { top: 760px; left: 70px; right: auto; text-align: left; } .t.stack .row { font-weight: 700; font-size: 128px; line-height: 1.05; } .t.stack .row small { font: 600 42px Barlow; letter-spacing: .16em; margin-left: 16px; color: #ff5a4e; }
   .t.list { top: 210px; text-align: left; left: 90px; } .t.list .row { font: 700 74px 'Barlow Condensed'; margin: 10px 0; display: flex; align-items: center; gap: 26px; } .t.list .row i { width: 22px; height: 22px; background: #ff3b2f; display: inline-block; transform: rotate(45deg); }
   .shade-top { position: absolute; left: 0; right: 0; top: 0; height: 760px; background: linear-gradient(rgba(5,8,12,.78), rgba(5,8,12,.0)); opacity: 0; }
@@ -137,6 +139,7 @@ window.renderAt = async (t) => {
     const el = $('#lineup');
     const src = `render/${s.still}_still_0000.png`;
     if (el.getAttribute('src') !== src) el.setAttribute('src', src);
+    if (!el.complete || !el.naturalWidth) await new Promise((r) => { el.onload = el.onerror = r; });
     const k = ease(clamp((t - s.start) / (s.end - s.start)));
     const iw = el.naturalWidth || LU.w, ih = el.naturalHeight || LU.h;
     if (s.mode === 'push') {

@@ -43,8 +43,8 @@ segments = [
         {"t": "title", "text": "9 SIZES", "sub": "40 – 120", "from": S["sizes"] + 0.2},
         {"t": "top2", "text": "70,000 Nm", "sub": "MAX. OUTPUT TORQUE", "from": S["sizes"] + 3.0}]),
     seg(S["gears"] - 0.2, S["drive"] - 0.2, shot="dark", src=(1.0, 3.96), titles=[
-        {"t": "spec", "text": "57 HRC", "sub": "CASE-HARDENED · GROUND", "from": S["gears"] + 0.2},
-        {"t": "spec2", "text": "512 : 1", "sub": "MAX. RATIO", "from": S["gears"] + 5.6}]),
+        {"t": "spec", "text": "57 HRC", "sub": "CASE-HARDENED · GROUND", "from": S["gears"] + 0.2, "cls": "topA"},
+        {"t": "spec2", "text": "512 : 1", "sub": "MAX. RATIO", "from": S["gears"] + 5.6, "cls": "topB"}]),
     seg(S["drive"] - 0.2, S["backstop"] - 0.2, shot="drive", src=(0.0, 5.96), titles=[
         {"t": "label", "text": "HOLLOW SHAFT", "sub": "SHRINK DISC · NO COUPLING", "from": S["drive"] + 2.4, "to": S["drive"] + 6.0},
         {"t": "label", "text": "TORQUE ARM", "sub": "RUBBER-DAMPED", "from": S["drive"] + 6.2}]),

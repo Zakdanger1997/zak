@@ -74,6 +74,7 @@ salesably-marketplace/
 │   ├── tools/               # irc_scene.py (Blender), render_queue.sh, interp.py, voiceover.py, timeline.py, soundtrack.py, compose.js
 │   ├── compose.html         # frame-by-frame compositor; assets/ (logos, photos + SOURCES.md), audio/, video/
 │   └── render/              # gitignored render frames
+├── imak-mamk-video/         # Stand-alone video project: MA/MK conveyor drives in mines/steel, 9:16 (same pipeline; tools/mamk_scene.py + scenekit.py)
 ├── imak-reduktor-secim/     # Stand-alone web app (not a plugin): i.Mak gearbox selector
 │   ├── index.html           # Single-page app, TR/EN, no dependencies
 │   ├── data/                # Generated: catalog.js (performance tables), applications.js
