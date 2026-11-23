@@ -4,3 +4,4 @@ preview/
 out/
 *.log
 __pycache__/
+web/
