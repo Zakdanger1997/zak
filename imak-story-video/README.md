@@ -21,4 +21,4 @@ All animation lives in `story.html` (`build()` defines every scene; `renderAt(t)
 - Fonts: Fraunces and Barlow (SIL OFL).
 - Music and sound are synthesised in `tools/soundtrack.py`. The voice is Microsoft Edge neural TTS (en-US-AvaNeural).
 - "They trust in us" shows the customer names from the deck as typography, without their logos. Before publishing, confirm i.Mak may name these companies.
-- The "Partners worldwide" map uses Natural Earth land outlines (public domain, `assets/world.svg`). Istanbul is linked to SIPCO (USA), EGASEN (Pontevedra, Spain) and Hudaco (South Africa). The small dots mark the countries where imakreduktor.com lists i.Mak offices and partners.
+- The "Partners worldwide" map uses Natural Earth land outlines (public domain, `assets/world.svg`). Istanbul is linked to SIPCO (USA), EGASEN (Pontevedra, Spain) and Hudaco (South Africa). Next, all 75 dealers from https://www.imakreduktor.com/business-partners/ (46 countries; 25 in Türkiye, shown as black dots) appear on the map. They are geocoded to city level in `assets/dealers.json`.

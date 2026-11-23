@@ -26,7 +26,8 @@ const srv = http.createServer((req, res) => {
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   page.on('pageerror', (e) => console.log('pageerror', e.message));
   await page.goto(`http://localhost:${srv.address().port}/story.html`);
-  await page.evaluate(async (t) => { await window.setup(t); }, tl);
+  const dealers = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets', 'dealers.json')));
+  await page.evaluate(async ([t, d]) => { await window.setup(t, d); }, [tl, dealers]);
   const fps = tl.fps, n = Math.round(tl.total * fps);
   let ff = null;
   if (out) {

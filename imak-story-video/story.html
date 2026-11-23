@@ -213,14 +213,10 @@ function build(TL) {
   txt('Partners', 'serif', 118, 80, 120, a + 0.1, b);
   brush(700, 80, 600, 120, a + 0.5, b);
   txt('worldwide', 'serif w', 710, 80, 120, a + 0.55, b, { from: { o: 0 }, dur: 0.25 });
-  img('assets/world.svg', MX, MY, 1760, a, b, { from: { s: 1.06, o: 0 }, dur: 0.8, ease: easeOut, wob: 0, noShadow: true, op: 1 });
-  // i.Mak network (offices, partners and assembly centres listed on imakreduktor.com)
-  const net = [[-95.1, 29.5], [-71.2, 46.8], [-74.1, 4.7], [-79.9, -2.2], [-46.6, -23.5], [-73.1, -36.8], [-7.6, 33.6], [30.9, 29.9],
-    [28.2, -26.2], [-8.5, 42.4], [-0.8, 47.0], [10.6, 44.7], [6.2, 51.4], [-1.5, 52.5], [37.6, 55.8], [16.1, 51.2], [30.1, 49.8], [73.1, 49.8], [80.3, 13.1]];
-  net.forEach(([lon, lat], i) => { const [x, y] = P(lon, lat); dot(x, y, 9, a + 0.6 + i * 0.05, b, '#cc0605'); });
+  img('assets/world.svg', MX, MY, 1760, a, END('network'), { from: { s: 1.06, o: 0 }, dur: 0.8, ease: easeOut, wob: 0, noShadow: true, op: 1 });
   const [ix, iy] = P(28.98, 41.01);
-  dot(ix, iy, 20, a + 0.4, b, '#cc0605');
-  ring(ix, iy, 46, a + 0.5, b);
+  dot(ix, iy, 20, a + 0.4, END('network'), '#cc0605');
+  ring(ix, iy, 46, a + 0.5, END('network'));
   txt('Istanbul', 'ital', ix + 26, iy - 70, 46, a + 0.6, b);
   const part = [['sipco2019', 'SIPCO · USA · 2019', -95.12, 29.54, 150, 560, -4, W('y2019', 'SIPCO', 3.2)],
                 ['egasen2021', 'EGASEN · Spain · 2021', -8.64, 42.43, 560, 600, 3, W('y2019', 'EGASEN', 4.2)],
@@ -232,6 +228,17 @@ function build(TL) {
     img(C + n + '.png', px, py, 270, t, b, { r, from: { y: -500, r: r * 6, o: 1 }, dur: 0.7 });
     txt(lab, 'ital', px - 10, py + 255, 40, t + 0.2, b);
   }
+
+  // network: every dealer from imakreduktor.com/business-partners
+  a = S.network - 0.1; b = END('network');
+  const D = window.DEALERS;
+  txt('Dealer network', 'sans', 125, 40, 34, a, b);
+  counter(118, 80, 120, 75, a + 0.2, b, { cdur: 1.4, suffix: ' dealers' });
+  counter(820, 80, 120, 46, W('network', 'forty', 3.0) - 0.3, b, { cdur: 1.0, suffix: ' countries', cls: 'r' });
+  const intl = D.international.slice().sort((p, q) => Math.hypot(p[2] - 29, p[3] - 41) - Math.hypot(q[2] - 29, q[3] - 41));
+  intl.forEach(([n, where, lon, lat], i) => { const [x, y] = P(lon, lat); dot(x, y, 10, a + 0.5 + i * 0.045, b, '#cc0605'); });
+  D.turkey_cities.forEach(([n, lon, lat], i) => { const [x, y] = P(lon, lat); dot(x, y, 6, a + 0.3 + i * 0.03, b, '#1d1915'); });
+  txt('25 in Türkiye', 'ital', ix - 262, iy + 72, 38, a + 0.9, b);
 
   // 2022 foundry
   a = S.y2022 - 0.2; b = END('y2022');
@@ -314,7 +321,8 @@ function build(TL) {
 }
 
 // ------------------------------------------------------------------ per-frame
-window.setup = async (TL) => {
+window.setup = async (TL, DEALERS) => {
+  window.DEALERS = DEALERS;
   await Promise.all(['900 100px Fraunces', '700 100px Fraunces', 'italic 600 100px Fraunces', '600 40px Barlow'].map((f) => document.fonts.load(f)));
   await document.fonts.ready;
   build(TL);

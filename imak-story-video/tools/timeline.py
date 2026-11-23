@@ -5,7 +5,7 @@ import os
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 L = json.load(open(os.path.join(ROOT, "audio", "lines.json")))["lines"]
-GAP = {"hook": 0.6, "y1973": 0.5, "y1983": 0.5, "y1998": 0.45, "y2012": 0.45, "y2019": 0.45, "y2022": 0.4,
+GAP = {"hook": 0.6, "y1973": 0.5, "y1983": 0.5, "y1998": 0.45, "y2012": 0.45, "y2019": 0.25, "network": 0.6, "y2022": 0.4,
        "y2023": 0.4, "y2024": 0.6, "today": 0.5, "rank": 0.6, "sectors": 0.6, "trust": 0.7, "end": 0}
 t = 1.4
 voice = []

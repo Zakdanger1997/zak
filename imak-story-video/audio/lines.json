@@ -352,9 +352,68 @@
    "caption": "Assembly centres: Hudaco, SIPCO (2019) and EGASEN (2021)"
   },
   {
+   "id": "network",
+   "text": "Today, seventy-five Eemak dealers carry our gearboxes in forty-six countries.",
+   "file": "line_06.mp3",
+   "dur": 5.616,
+   "words": [
+    [
+     0.1,
+     0.61,
+     "Today"
+    ],
+    [
+     0.712,
+     1.427,
+     "seventy-five"
+    ],
+    [
+     1.465,
+     1.86,
+     "Eemak"
+    ],
+    [
+     1.873,
+     2.345,
+     "dealers"
+    ],
+    [
+     2.358,
+     2.702,
+     "carry"
+    ],
+    [
+     2.715,
+     2.855,
+     "our"
+    ],
+    [
+     2.868,
+     3.633,
+     "gearboxes"
+    ],
+    [
+     3.671,
+     3.888,
+     "in"
+    ],
+    [
+     3.901,
+     4.564,
+     "forty-six"
+    ],
+    [
+     4.577,
+     5.228,
+     "countries"
+    ]
+   ],
+   "caption": "75 dealers \u00b7 46 countries"
+  },
+  {
    "id": "y2022",
    "text": "Twenty twenty-two, our own foundry.",
-   "file": "line_06.mp3",
+   "file": "line_07.mp3",
    "dur": 2.856,
    "words": [
     [
@@ -388,7 +447,7 @@
   {
    "id": "y2023",
    "text": "Twenty twenty-three, a sixty-four thousand square metre new plant.",
-   "file": "line_07.mp3",
+   "file": "line_08.mp3",
    "dur": 5.04,
    "words": [
     [
@@ -442,7 +501,7 @@
   {
    "id": "y2024",
    "text": "Twenty twenty-four, the TURQUALITY programme.",
-   "file": "line_08.mp3",
+   "file": "line_09.mp3",
    "dur": 3.264,
    "words": [
     [
@@ -476,7 +535,7 @@
   {
    "id": "today",
    "text": "Today: two hundred and thirty-three people, sixty-five thousand gearboxes a year, and one million product references.",
-   "file": "line_09.mp3",
+   "file": "line_10.mp3",
    "dur": 7.944,
    "words": [
     [
@@ -565,7 +624,7 @@
   {
    "id": "rank",
    "text": "From twenty seventeen to twenty twenty-one, third of seventy-seven exporters in our sector in Turkey.",
-   "file": "line_10.mp3",
+   "file": "line_11.mp3",
    "dur": 6.72,
    "words": [
     [
@@ -649,7 +708,7 @@
   {
    "id": "sectors",
    "text": "Turning farms, oil fields, water plants, cement, mines, steel mills and food lines.",
-   "file": "line_11.mp3",
+   "file": "line_12.mp3",
    "dur": 7.08,
    "words": [
     [
@@ -723,7 +782,7 @@
   {
    "id": "trust",
    "text": "Trusted by brands all over the world.",
-   "file": "line_12.mp3",
+   "file": "line_13.mp3",
    "dur": 2.88,
    "words": [
     [
@@ -767,7 +826,7 @@
   {
    "id": "end",
    "text": "Eemak. Gearboxes and drives. Since nineteen seventy-three.",
-   "file": "line_13.mp3",
+   "file": "line_14.mp3",
    "dur": 5.16,
    "words": [
     [

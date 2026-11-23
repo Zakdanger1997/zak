@@ -34,6 +34,7 @@ LINES = [
     ("y1998", "Nineteen ninety-eight, a second factory. Two thousand, our first direct exports.", "1998 · a second factory   2000 · direct exports"),
     ("y2012", "Twenty twelve, a barcode on every part.", "2012 · barcode tracking on every part"),
     ("y2019", "Then partners joined us: assembly centres with Hudaco, SIPCO, and EGASEN.", "Assembly centres: Hudaco, SIPCO (2019) and EGASEN (2021)"),
+    ("network", "Today, seventy-five Eemak dealers carry our gearboxes in forty-six countries.", "75 dealers · 46 countries"),
     ("y2022", "Twenty twenty-two, our own foundry.", "2022 · our own foundry: IDÖKSAN"),
     ("y2023", "Twenty twenty-three, a sixty-four thousand square metre new plant.", "2023 · a 64,000 m² new plant"),
     ("y2024", "Twenty twenty-four, the TURQUALITY programme.", "2024 · accepted to TURQUALITY"),
