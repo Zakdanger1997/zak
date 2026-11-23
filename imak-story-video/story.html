@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>i.Mak – company story (collage)</title>
+<style>
+  @font-face { font-family: Fraunces; font-weight: 700; src: url(fonts/fraunces-latin-700-normal.woff2); }
+  @font-face { font-family: Fraunces; font-weight: 900; src: url(fonts/fraunces-latin-900-normal.woff2); }
+  @font-face { font-family: Fraunces; font-weight: 900; src: url(fonts/fraunces-latin-ext-900-normal.woff2); unicode-range: U+0100-024F, U+1E00-1EFF; }
+  @font-face { font-family: Fraunces; font-style: italic; font-weight: 600; src: url(fonts/fraunces-latin-600-italic.woff2); }
+  @font-face { font-family: Barlow; font-weight: 500; src: url(fonts/barlow-latin-500-normal.woff2); }
+  @font-face { font-family: Barlow; font-weight: 600; src: url(fonts/barlow-latin-600-normal.woff2); }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #efe9de; }
+  #paper { position: absolute; left: -140px; top: -110px; width: 2200px; height: 1300px; }
+  #stage { position: absolute; inset: 0; }
+  .el { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; will-change: transform, opacity; }
+  img.el { filter: drop-shadow(0 10px 14px rgba(40, 25, 10, .28)); }
+  .serif { font-family: Fraunces; font-weight: 900; color: #1d1915; line-height: .92; letter-spacing: -.01em; white-space: nowrap; }
+  .serif.w { color: #fff; }
+  .serif.r { color: #cc0605; }
+  .ital { font-family: Fraunces; font-style: italic; font-weight: 600; color: #1d1915; white-space: nowrap; }
+  .sans { font-family: Barlow; font-weight: 600; color: #1d1915; letter-spacing: .3em; text-transform: uppercase; white-space: nowrap; }
+  svg.el { overflow: visible; }
+  #wm { position: absolute; right: 50px; top: 40px; width: 190px; opacity: .9; }
+</style>
+</head>
+<body>
+<img id="paper" src="assets/paper.jpg">
+<div id="stage"></div>
+<img id="wm" src="assets/logo.png">
+<script>
+const RED = '#cc0605', INK = '#1d1915';
+const stage = document.getElementById('stage');
+const items = [];
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const easeOut = (x) => 1 - (1 - x) ** 3;
+const backOut = (x) => 1 + 2.4 * (x - 1) ** 3 + 1.4 * (x - 1) ** 2;
+const lerp = (a, b, k) => a + (b - a) * k;
+let seed = 7;
+let lastBrush = null;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
+// ------------------------------------------------------------------ element factories
+// every element: base position (x, y), enter at t0 from `from` (offsets), leave at t1 (slide left + fade)
+function reg(el, o) {
+  el.classList.add('el');
+  el.style.opacity = 0;
+  stage.appendChild(el);
+  const it = Object.assign({ el, x: 0, y: 0, r: 0, s: 1, from: { y: 40, o: 0 }, dur: 0.6, ease: backOut, wob: 0, exit: 'left' }, o);
+  items.push(it);
+  return it;
+}
+function img(src, x, y, w, t0, t1, o = {}) {
+  const el = document.createElement('img');
+  el.src = src; el.style.width = w + 'px';
+  return reg(el, Object.assign({ x, y, t0, t1, wob: 1 }, o));
+}
+function txt(html, cls, x, y, size, t0, t1, o = {}) {
+  const el = document.createElement('div');
+  el.className = cls; el.innerHTML = html; el.style.fontSize = size + 'px';
+  if (o.ls) el.style.letterSpacing = o.ls;
+  const it = reg(el, Object.assign({ x, y, t0, t1, from: { y: 50, o: 0 }, dur: 0.55 }, o));
+  if (cls.includes(' w') && lastBrush) { it.brushFit = lastBrush; lastBrush.textX = x; lastBrush = null; }
+  return it;
+}
+function svgEl(w, h) {
+  const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  s.setAttribute('width', w); s.setAttribute('height', h); s.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  return s;
+}
+// rough red brush stroke behind text, wiped on left to right
+function brush(x, y, w, h, t0, t1, o = {}) {
+  const s = svgEl(w + 40, h + 30);
+  const pts = [];
+  const n = 26;
+  for (let i = 0; i <= n; i++) pts.push([20 + (w * i) / n + (rnd() - .5) * 6, 12 + (rnd() - .5) * 14 + (i % 5 === 0 ? 6 : 0)]);
+  pts.push([w + 20 + rnd() * 18, 15 + h * 0.3], [w + 26 + rnd() * 10, 15 + h * 0.75]);
+  for (let i = n; i >= 0; i--) pts.push([20 + (w * i) / n + (rnd() - .5) * 6, 15 + h + (rnd() - .5) * 14]);
+  pts.push([4 + rnd() * 10, 15 + h * 0.7], [8 + rnd() * 8, 15 + h * 0.25]);
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  p.setAttribute('points', pts.map((q) => q.join(',')).join(' '));
+  p.setAttribute('fill', o.color || RED);
+  s.appendChild(p);
+  s.setAttribute('preserveAspectRatio', 'none');
+  const it = reg(s, Object.assign({ x: x - 20, y: y - 15, t0, t1, from: { o: 1 }, dur: 0.01, wipe: 0.45 }, o));
+  it.wipeEl = s;
+  it.bh = h;
+  lastBrush = it;
+  return it;
+}
+// hand-drawn line with little loops (stroke draws itself)
+function loopy(x0, y0, x1, y1, loops, amp, t0, t1, o = {}) {
+  const pts = [];
+  const L = Math.hypot(x1 - x0, y1 - y0), ux = (x1 - x0) / L, uy = (y1 - y0) / L;
+  const N = 260;
+  for (let i = 0; i <= N; i++) {
+    const u = i / N, a = Math.PI * 2 * loops * u;
+    const along = u * L + amp * 0.9 * Math.sin(a), side = amp * (1 - Math.cos(a)) * 0.6 + Math.sin(u * 7) * 6;
+    pts.push([x0 + ux * along - uy * side, y0 + uy * along + ux * side]);
+  }
+  return path(pts, t0, t1, o);
+}
+function ellipse(cx, cy, rx, ry, t0, t1, o = {}) {
+  const pts = [];
+  for (let i = 0; i <= 140; i++) {
+    const a = -1.2 + (i / 140) * Math.PI * 2.15;
+    pts.push([cx + Math.cos(a) * rx * (1 + 0.04 * Math.sin(a * 3)), cy + Math.sin(a) * ry * (1 + 0.05 * Math.cos(a * 2))]);
+  }
+  return path(pts, t0, t1, o);
+}
+function path(pts, t0, t1, o = {}) {
+  const s = svgEl(1920, 1080);
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', 'M' + pts.map((q) => q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' L'));
+  p.setAttribute('fill', 'none'); p.setAttribute('stroke', o.color || RED);
+  p.setAttribute('stroke-width', o.width || 5); p.setAttribute('stroke-linecap', 'round'); p.setAttribute('stroke-linejoin', 'round');
+  if (o.dash) p.setAttribute('stroke-dasharray', o.dash);
+  s.appendChild(p);
+  s.style.width = '1920px'; s.style.height = '1080px';
+  const it = reg(s, Object.assign({ x: 0, y: 0, t0, t1, from: { o: 1 }, dur: 0.01, draw: o.draw || 1.2 }, o));
+  it.pathEl = p;
+  it.len = 0;
+  return it;
+}
+function counter(x, y, size, to, t0, t1, o = {}) {
+  const it = txt('0', 'serif' + (o.cls ? ' ' + o.cls : ''), x, y, size, t0, t1, o);
+  it.count = { to, dur: o.cdur || 1.2, suffix: o.suffix || '' };
+  return it;
+}
+
+// ------------------------------------------------------------------ scenes
+function build(TL) {
+  const S = Object.fromEntries(TL.voice.map((v) => [v.id, v.start]));
+  const ids = TL.voice.map((v) => v.id);
+  const END = (id) => { const i = ids.indexOf(id); return i + 1 < ids.length ? S[ids[i + 1]] - 0.6 : TL.total + 1; };
+  const W = (id, word, dflt) => {                         // time a word is spoken in a line
+    const v = TL.voice.find((x) => x.id === id);
+    const w = v.words.find((q) => q[2].toLowerCase().startsWith(word.toLowerCase()));
+    return w ? w[0] : v.start + dflt;
+  };
+  const C = 'assets/cut/';
+
+  // hook
+  let a = 0.3, b = END('hook');
+  txt('What does it take to', 'sans', 160, 300, 34, a + 0.3, b);
+  txt('keep the world', 'serif', 150, 360, 138, a + 0.9, b);
+  brush(150, 520, 650, 160, a + 1.9, b);
+  txt('turning?', 'serif w', 175, 528, 150, a + 2.0, b, { from: { o: 0, y: 0 }, dur: 0.3 });
+  img(C + 'unit_ma.png', 1230, 300, 580, a + 1.4, b, { r: -5, from: { x: 1100, r: 12, o: 1 }, dur: 0.9, ease: easeOut });
+  loopy(1020, 930, 1860, 820, 3, 34, a + 2.2, b, { draw: 1.4 });
+
+  // 1973
+  a = S.y1973 - 0.2; b = END('y1973');
+  txt('1973', 'serif', 120, 170, 330, a, b, { from: { y: 90, o: 0 } });
+  txt('Istanbul', 'sans', 135, 520, 40, a + 0.6, b);
+  brush(120, 610, 640, 118, W('y1973', 'brand', 2.8) - 0.2, b);
+  txt('a brand is born', 'serif w', 145, 618, 92, W('y1973', 'brand', 2.8) - 0.1, b, { from: { o: 0 }, dur: 0.25 });
+  img(C + 'logo1973.png', 1170, 230, 480, a + 0.5, b, { r: 4, from: { y: -800, r: -18, o: 1 }, dur: 0.85 });
+  ellipse(1410, 470, 330, 300, a + 1.6, b, { draw: 1.0, width: 6 });
+
+  // 1983
+  a = S.y1983 - 0.2; b = END('y1983');
+  txt('1983', 'serif', 120, 150, 330, a, b, { from: { y: 90, o: 0 } });
+  txt('the first industrial gearboxes', 'serif', 130, 520, 74, a + 0.7, b);
+  brush(130, 615, 560, 118, W('y1983', 'Turkey', 3.5) - 0.3, b);
+  txt('made in Turkey', 'serif w', 152, 622, 92, W('y1983', 'Turkey', 3.5) - 0.2, b, { from: { o: 0 }, dur: 0.25 });
+  img(C + 'gearbox1983.png', 1120, 470, 680, a + 0.4, b, { from: { x: -1500, o: 1, r: 0 }, dur: 1.6, ease: easeOut, wob: 0.4 });
+  path([[860, 925], [1900, 915]], a + 0.2, b, { draw: 0.8, width: 6 });
+
+  // 1998 then 2000
+  a = S.y1998 - 0.2; const mid = W('y1998', 'Two', 3.0) - 0.25; b = END('y1998');
+  txt('1998', 'serif', 120, 150, 300, a, mid, { from: { y: 90, o: 0 }, exit: 'up' });
+  txt('a second factory', 'serif', 130, 490, 84, a + 0.7, mid, { exit: 'up' });
+  img(C + 'factory1998.png', 1080, 210, 640, a + 0.3, mid, { r: -3, from: { y: 900, o: 1, r: 6 }, dur: 0.9, exit: 'up' });
+  txt('2000', 'serif', 120, 150, 300, mid + 0.15, b, { from: { y: 120, o: 0 } });
+  brush(125, 500, 580, 118, mid + 0.9, b);
+  txt('direct exports', 'serif w', 150, 508, 92, mid + 1.0, b, { from: { o: 0 }, dur: 0.25 });
+  img(C + 'export2000.png', 1130, 230, 600, mid + 0.3, b, { r: 6, from: { x: 1000, y: -320, r: 25, o: 1 }, dur: 1.1, ease: easeOut });
+  loopy(1880, 120, 1250, 360, 2, 26, mid + 0.4, b, { dash: '2 14', width: 6, draw: 1.0 });
+
+  // 2012
+  a = S.y2012 - 0.2; b = END('y2012');
+  txt('2012', 'serif', 120, 170, 320, a, b, { from: { y: 90, o: 0 } });
+  txt('a barcode on every part', 'serif', 130, 520, 80, a + 0.5, b);
+  loopy(130, 640, 900, 640, 4, 14, a + 1.2, b, { draw: 0.9, width: 6 });
+  img(C + 'barcode2012.png', 1190, 220, 470, a + 0.3, b, { r: -6, from: { r: -60, s: 0.2, o: 0 }, dur: 0.8 });
+
+  // 2019 partners
+  a = S.y2019 - 0.2; b = END('y2019');
+  txt('Assembly centres', 'sans', 125, 90, 36, a, b);
+  txt('Partners', 'serif', 118, 135, 150, a + 0.2, b);
+  const pt = [['hudaco2019', 'Hudaco · 2019', 130, 380, -4, W('y2019', 'Hudaco', 2.2)], ['sipco2019', 'SIPCO · 2019', 720, 430, 3, W('y2019', 'SIPCO', 3.2)], ['egasen2021', 'EGASEN · 2021', 1300, 370, -2, W('y2019', 'EGASEN', 4.2)]];
+  for (const [n, lab, x, y, r, t] of pt) {
+    img(C + n + '.png', x, y, 470, t - 0.35, b, { r, from: { y: -700, r: r * 6, o: 1 }, dur: 0.75 });
+    txt(lab, 'ital', x + 80, y + 455, 48, t, b);
+  }
+  loopy(360, 860, 1560, 860, 5, 22, a + 1.2, b, { draw: 2.2, width: 5 });
+
+  // 2022 foundry
+  a = S.y2022 - 0.2; b = END('y2022');
+  img(C + 'foundry2022.png', 950, 140, 800, a, b, { r: 2, from: { s: 1.6, o: 0, r: -4 }, dur: 0.55, ease: easeOut });
+  txt('2022', 'serif', 120, 180, 320, a + 0.1, b, { from: { y: 90, o: 0 } });
+  brush(125, 540, 650, 118, a + 0.8, b);
+  txt('our own foundry', 'serif w', 150, 548, 92, a + 0.9, b, { from: { o: 0 }, dur: 0.25 });
+
+  // 2023 plant
+  a = S.y2023 - 0.2; b = END('y2023');
+  txt('New plant · 2023', 'sans', 130, 250, 38, a, b);
+  counter(120, 320, 190, 64000, a + 0.4, b, { suffix: '<span style="font-size:.45em"> m²</span>', cdur: 2.0 });
+  txt('investment in the new plant', 'ital', 135, 560, 60, a + 1.0, b);
+  img(C + 'plant2023.png', 1110, 240, 700, a + 0.2, b, { r: -3, from: { x: 1000, r: 8, o: 1 }, dur: 0.9, ease: easeOut });
+  ellipse(1460, 520, 400, 310, a + 1.6, b, { draw: 1.1, width: 6 });
+
+  // 2024 TURQUALITY
+  a = S.y2024 - 0.2; b = END('y2024');
+  txt('2024', 'serif', 120, 190, 320, a, b, { from: { y: 90, o: 0 } });
+  brush(125, 545, 690, 118, a + 0.8, b);
+  txt('TURQUALITY', 'serif w', 150, 553, 92, a + 0.9, b, { from: { o: 0 }, dur: 0.25 });
+  txt('accepted to the programme', 'ital', 135, 690, 54, a + 1.2, b);
+  img(C + 'turquality2024.png', 1180, 250, 470, a + 0.3, b, { r: 4, from: { s: 0, o: 0, r: -30 }, dur: 0.8 });
+
+  // today
+  a = S.today - 0.2; b = END('today');
+  txt('Today', 'sans', 125, 95, 38, a, b);
+  const c1 = W('today', 'two', 0.8), c2 = W('today', 'sixty', 3.2), c3 = W('today', 'one', 5.6);
+  counter(120, 140, 170, 233, c1 - 0.2, b, { cdur: 0.9 });
+  txt('people', 'ital', 128, 300, 56, c1 + 0.3, b);
+  counter(120, 390, 170, 65000, c2 - 0.2, b, { cdur: 1.2 });
+  txt('gearboxes a year', 'ital', 128, 550, 56, c2 + 0.3, b);
+  counter(120, 640, 170, 1000000, c3 - 0.2, b, { cdur: 1.3, cls: 'r' });
+  txt('product references', 'ital', 128, 800, 56, c3 + 0.5, b);
+  const units = [['unit_irkm', 1220, 120, 360, -4], ['unit_mk', 1530, 330, 330, 5], ['unit_iram', 1180, 520, 380, 3], ['unit_ma', 1500, 640, 360, -3]];
+  units.forEach(([n, x, y, w, r], i) => img(C + n + '.png', x, y, w, a + 0.4 + i * 0.55, b, { r, from: { y: -900, r: r * 5, o: 1 }, dur: 0.8 }));
+
+  // rank
+  a = S.rank - 0.2; b = END('rank');
+  txt('3<span style="font-size:.42em;vertical-align:.95em">rd</span>', 'serif r', 120, 80, 470, a + 0.2, b, { from: { s: 0.4, o: 0 }, dur: 0.7 });
+  txt('of 77 exporters', 'serif', 140, 560, 110, W('rank', 'seventy', 3.0) - 0.4, b);
+  txt('in our sector in Turkey · 2017–2021', 'sans', 150, 720, 32, W('rank', 'sector', 4.4) - 0.3, b);
+  loopy(140, 800, 1050, 790, 4, 18, W('rank', 'sector', 4.4), b, { draw: 1.2, width: 6 });
+  img(C + 'robot.png', 1220, 140, 300, a + 0.6, b, { r: -6, from: { x: 800, r: -20, o: 1 }, dur: 0.9, ease: easeOut });
+  img(C + 'geartest.png', 1560, 260, 300, a + 1.0, b, { r: 5, from: { x: 800, r: 20, o: 1 }, dur: 0.9, ease: easeOut });
+
+  // sectors
+  a = S.sectors - 0.2; b = END('sectors');
+  const sec = [['s_agriculture', 'Agriculture', 90, 140, -5, 'farms'], ['s_oilgas', 'Oil & Gas', 540, 120, 4, 'oil'], ['s_water', 'Water', 990, 150, -3, 'water'],
+    ['s_cement', 'Cement', 1440, 120, 5, 'cement'], ['s_mining', 'Mining', 300, 560, 3, 'mines'], ['s_steel', 'Steel', 760, 590, -4, 'steel'], ['s_food', 'Food & Beverages', 1220, 560, 3, 'food']];
+  sec.forEach(([n, lab, x, y, r, word], i) => {
+    const t = W('sectors', word, 0.6 + i * 0.85) - 0.3;
+    img(C + n + '.png', x, y, 400, t, b, { r, from: { y: -900, r: r * 7, o: 1 }, dur: 0.7 });
+    txt(lab, 'ital', x + 30, y + 285, 50, t + 0.35, b);
+  });
+
+  // trust
+  a = S.trust - 0.2; b = END('trust');
+  txt('They', 'serif', 120, 110, 130, a, b);
+  brush(410, 110, 400, 130, a + 0.3, b);
+  txt('trust', 'serif w', 455, 112, 130, a + 0.35, b, { from: { o: 0 }, dur: 0.2 });
+  txt('in us', 'serif', 860, 110, 130, a + 0.5, b);
+  const names = ['Nike', 'Amazon', 'Toyota', 'Ford', 'Coca-Cola', 'Nestlé', 'ArcelorMittal', 'Çaykur', 'Shell', 'Obial', 'P&G', 'Eti', 'Petlas', 'Henkel',
+    'Putzmeister', 'JASO Industrial Cranes', 'Viking Pump', 'Metso', 'Veolia', 'OCP', 'Maghreb Steel', 'BASF', 'Etihad Rail', 'Heidelberg Materials'];
+  let nx = 120, ny = 330;
+  names.forEach((n, i) => {
+    const size = [58, 74, 50, 66][i % 4];
+    const w = n.length * size * 0.56 + 40;
+    if (nx + w > 1820) { nx = 120; ny += 120; }
+    txt(n, i % 5 === 2 ? 'serif r' : 'serif', 0, 0, size, a + 0.4 + i * 0.07, b, { from: { y: 40, o: 0 }, dur: 0.35, flow: { size } });
+  });
+
+  // end card
+  a = S.end - 0.3; b = TL.total + 1;
+  img('assets/logo.png', 560, 300, 800, a, b, { from: { s: 0.6, o: 0 }, dur: 0.8, wob: 0, noShadow: true });
+  txt('Gearboxes and drives · since 1973', 'sans', 560, 600, 34, a + 0.8, b, { center: 800 });
+  txt('imakreduktor.com', 'serif r', 560, 680, 64, a + 1.2, b, { center: 800 });
+  ellipse(960, 470, 620, 320, a + 0.5, b, { draw: 1.4, width: 6 });
+  window.WM_HIDE = a;
+}
+
+// ------------------------------------------------------------------ per-frame
+window.setup = async (TL) => {
+  await Promise.all(['900 100px Fraunces', '700 100px Fraunces', 'italic 600 100px Fraunces', '600 40px Barlow'].map((f) => document.fonts.load(f)));
+  await document.fonts.ready;
+  build(TL);
+  for (const it of items) {
+    if (it.center) { it.el.style.width = it.center + 'px'; it.el.style.textAlign = 'center'; }
+    if (it.noShadow) it.el.style.filter = 'none';
+    if (it.brushFit) {
+      const w = it.el.getBoundingClientRect().width / (it.s || 1);
+      const b = it.brushFit;
+      b.el.style.width = (w + 70) + 'px';
+      b.x = it.x - 35;
+    }
+    if (it.pathEl) { it.len = it.pathEl.getTotalLength(); it.pathEl.style.strokeDasharray = it.pathEl.getAttribute('stroke-dasharray') ? null : it.len; }
+  }
+  // flow layout for the name wall, from real text widths
+  let fx = 120, fy = 320;
+  for (const it of items.filter((q) => q.flow)) {
+    const w = it.el.getBoundingClientRect().width;
+    if (fx + w > 1800) { fx = 120; fy += 118; }
+    it.x = fx; it.y = fy + (78 - it.flow.size) * 0.55;
+    fx += w + 46;
+  }
+  await Promise.all([...document.images].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })));
+  await document.fonts.ready;
+};
+
+window.renderAt = (t) => {
+  document.getElementById('wm').style.opacity = t > (window.WM_HIDE || 1e9) ? 0 : 0.9;
+  for (const it of items) {
+    const { el } = it;
+    if (t < it.t0 || t > it.t1 + 0.4) { el.style.opacity = 0; continue; }
+    const k = clamp((t - it.t0) / it.dur), e = it.ease(k);
+    const f = it.from;
+    let x = it.x + (f.x || 0) * (1 - e), y = it.y + (f.y || 0) * (1 - e);
+    let r = it.r + (f.r || 0) * (1 - e);
+    let s = it.s * (f.s !== undefined ? lerp(f.s, 1, e) : 1);
+    let o = f.o !== undefined ? lerp(f.o, 1, clamp(k * 1.6)) : 1;
+    if (it.wob) { r += Math.sin(t * 1.3 + it.x * 0.01) * 0.8 * it.wob; y += Math.sin(t * 1.1 + it.y) * 4 * it.wob; }
+    // exit: slide out quickly
+    const ex = clamp((t - it.t1) / 0.35);
+    if (ex > 0) {
+      const ee = easeOut(ex);
+      if (it.exit === 'up') y -= 200 * ee; else x -= 260 * ee;
+      o *= 1 - ee;
+    }
+    el.style.opacity = o;
+    el.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg) scale(${s})`;
+    if (it.wipeEl) {
+      const w = clamp((t - it.t0) / it.wipe);
+      it.wipeEl.style.clipPath = `inset(0 ${(1 - easeOut(w)) * 100}% 0 0)`;
+    }
+    if (it.pathEl && !it.pathEl.getAttribute('stroke-dasharray')) {
+      const d = clamp((t - it.t0) / it.draw);
+      it.pathEl.style.strokeDashoffset = it.len * (1 - easeOut(d));
+    } else if (it.pathEl) {
+      const d = clamp((t - it.t0) / it.draw);
+      el.style.clipPath = `inset(0 0 0 0)`;
+      el.style.opacity = o * clamp(d * 3);
+    }
+    if (it.count) {
+      const c = clamp((t - it.t0) / it.count.dur);
+      const v = Math.round(it.count.to * easeOut(c));
+      el.innerHTML = v.toLocaleString('en-US') + it.count.suffix;
+    }
+  }
+};
+</script>
+</body>
+</html>

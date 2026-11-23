@@ -75,6 +75,7 @@ salesably-marketplace/
 │   ├── compose.html         # frame-by-frame compositor; assets/ (logos, photos + SOURCES.md), audio/, video/
 │   └── render/              # gitignored render frames
 ├── imak-mamk-video/         # Stand-alone video project: MA/MK conveyor drives in mines/steel, 9:16 (same pipeline; tools/mamk_scene.py + scenekit.py)
+├── imak-story-video/        # Stand-alone video: i.Mak company story in a paper-collage style, 16:9 (story.html recorded by tools/compose.js)
 ├── imak-reduktor-secim/     # Stand-alone web app (not a plugin): i.Mak gearbox selector
 │   ├── index.html           # Single-page app, TR/EN, no dependencies
 │   ├── data/                # Generated: catalog.js (performance tables), applications.js
