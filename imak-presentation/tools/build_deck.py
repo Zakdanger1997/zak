@@ -265,17 +265,16 @@ keep_media = [sh for sh in s.shapes if sh.shape_type == 16 or sh.name in ("Resim
 clear_slide(s, keep=tuple(sh.name for sh in keep_media))
 heading(s, "İ-MAK REDÜKTÖR  ·  AT A GLANCE", "The company in", "numbers")
 STATS = [("275", "employees"), ("65,000", "gearboxes produced per year"), ("16,000 m²", "production plant"),
-         ("1,000,000", "product references"), ("3rd", "of 77 exporters in our sector in Türkiye (2017–2021)"),
-         ("2nd", "of 22 sector exporters in the Istanbul region (2017–2021)")]
+         ("1,000,000", "product references")]
 for i, (num, lab) in enumerate(STATS):
     col, row = i % 2, i // 2
-    x, y = 0.6 + col * 2.75, 1.7 + row * 1.75
-    ln = s.shapes.add_connector(1, Inches(x), Inches(y), Inches(x + 2.35), Inches(y))
-    ln.line.color.rgb = RED if i < 4 else INK
-    ln.line.width = Pt(2)
-    n = tb(s, num, x, y + 0.12, 2.6, 0.7, 34 if len(num) < 8 else 30, SERIF, bold=True, color=RED if i % 3 == 0 else INK)
-    l = tb(s, lab, x + 0.02, y + 0.85, 2.4, 0.7, 12.5, "Cambria", italic=True, color=GREY)
-    t0 = 1.0 + i * 0.3
+    x, y = 0.6 + col * 2.75, 1.85 + row * 2.3
+    ln = s.shapes.add_connector(1, Inches(x), Inches(y), Inches(x + 2.4), Inches(y))
+    ln.line.color.rgb = RED
+    ln.line.width = Pt(2.25)
+    n = tb(s, num, x, y + 0.18, 2.7, 0.9, 40 if len(num) < 8 else 34, SERIF, bold=True, color=RED if i in (0, 3) else INK)
+    l = tb(s, lab, x + 0.02, y + 0.98, 2.4, 0.7, 14, "Cambria", italic=True, color=GREY)
+    t0 = 1.0 + i * 0.35
     anim(s, ln, "wipe", t0, 0.4)
     anim(s, n, "zoom", t0 + 0.15, 0.4)
     anim(s, l, "fade", t0 + 0.35, 0.4)
@@ -344,62 +343,102 @@ layout = slides[5].slide_layout
 ms = prs.slides.add_slide(layout)
 for ph in list(ms.placeholders):
     ph._element.getparent().remove(ph._element)
-paper(ms)
-heading(ms, "İ-MAK REDÜKTÖR · WORLDWIDE", "Service centres", "around the globe", size=36)
+import numpy as np
+from pptx.enum.shapes import MSO_CONNECTOR
+bgm = pic(ms, A + "map_bg.jpg", 0, 0, SW / IN, SH / IN, name="Map background")
+send_to_back(ms, bgm)
+heading(ms, "İ-MAK REDÜKTÖR  ·  WORLDWIDE", "Service centres", "around the globe", size=30)
+M3 = json.load(open(A + "map3d.json"))
+MX, MY, MWI, MHI = M3["box"]
+Hm = np.array(M3["H"])
+mp = pic(ms, A + "map3d.png", MX, MY, MWI, MHI, name="3D world map")
+anim(ms, mp, "rise", 0.6, 0.9)
+
+
+def proj(lon, lat):
+    fx, fy = (lon - M3["lon0"]) * M3["S"], (M3["lat1"] - lat) * M3["S"]
+    u, v, w = Hm @ np.array([fx, fy, 1.0])
+    return MX + u / w / M3["ow"] * MWI, MY + v / w / M3["oh"] * MHI
+
+
 D = json.load(open("/home/user/zak/imak-story-video/assets/dealers.json"))
-partners = [d for d in D["international"] if d[0] != "EGASEN"]
-countries = sorted({d[1].split(", ")[-1] for d in partners})
-MX, MY, MW = 2.15, 2.05, 9.9           # map box on the slide (inches); projection -128..152 lon, -48..72 lat
-MH = MW * 120 / 280
-mp = pic(ms, A + "world.png", MX, MY, MW, MH, name="World map")
-anim(ms, mp, "fade", 0.9, 0.8)
-proj = lambda lon, lat: (MX + (lon + 128) / 280 * MW, MY + (72 - lat) / 120 * MH)
+allp = [d for d in D["international"] if d[0] != "EGASEN"]
+MOUNT_N = ("Sipco", "Bearings International")
+SERV_N = ("Alamitec", "Globalstar", "SCPE", "SERCORPVI")
+mounts = [d for d in allp if d[0].startswith(MOUNT_N)]
+servs = [d for d in allp if d[0].startswith(SERV_N)] + [["Dubai service centre", "Dubai, United Arab Emirates", 55.27, 25.20]]
+partners = [d for d in allp if d not in mounts and d not in servs]
+countries = {d[1].split(", ")[-1] for d in allp} | {"United Arab Emirates", "Türkiye"}
+DARK = RGBColor(0x96, 0x0A, 0x09)
+WHITE = RGBColor(255, 255, 255)
+t = 1.5
 order = sorted(partners, key=lambda d: (d[2] - 29) ** 2 + (d[3] - 41) ** 2)
 for i, (n, where, lon, lat) in enumerate(order):
     x, y = proj(lon, lat)
-    big = n.startswith("Sipco") or n.startswith("Bearings International")
-    d = dot(ms, x, y, 0.19 if big else 0.12, line=big)
-    anim(ms, d, "zoom", 1.9 + i * 0.05, 0.3)
-for n, lon, lat in D["turkey_cities"]:
+    anim(ms, dot(ms, x, y, 0.09, RED), "zoom", t + i * 0.035, 0.25)
+t += len(order) * 0.035 + 0.2
+
+
+def pill(txt, x, y, fill, size=11):
+    w = text_w(txt, size) * 0.93 + 0.32          # Calibri bold is narrower than Cambria bold
+    h = 0.3
+    r = ms.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(x - w / 2), Inches(y - h / 2), Inches(w), Inches(h))
+    r.adjustments[0] = 0.5
+    r.fill.solid(); r.fill.fore_color.rgb = fill
+    r.line.color.rgb = WHITE; r.line.width = Pt(1.25)
+    r.shadow.inherit = False
+    tf = r.text_frame
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+    run = p.add_run(); run.text = txt
+    run.font.size, run.font.bold, run.font.name = Pt(size), True, SANS
+    run.font.color.rgb = WHITE
+    return r
+
+
+LABELS = [  # text, lon, lat, label dx, dy (inches from the pin), fill, dot size
+    ("Istanbul · HQ & factory", 28.98, 41.01, 0.55, -1.15, DARK, 0.22),
+    ("SIPCO · USA", -95.37, 29.76, -0.2, -1.05, INK, 0.2),
+    ("Hudaco · South Africa", 28.26, -26.21, 1.55, 0.25, INK, 0.2),
+    ("Morocco", -7.59, 33.57, -1.05, -0.55, RED, 0.16),
+    ("Tunisia", 10.18, 36.81, -0.55, -1.2, RED, 0.16),
+    ("Egypt", 30.93, 29.94, 0.35, 0.95, RED, 0.16),
+    ("Dubai", 55.27, 25.20, 0.95, 0.45, RED, 0.16),
+    ("Ecuador", -79.89, -2.19, -0.95, 0.35, RED, 0.16),
+]
+for k, (txt, lon, lat, dx, dy, fill, ds) in enumerate(LABELS):
     x, y = proj(lon, lat)
-    d = dot(ms, x, y, 0.07, INK, line=False)
-    anim(ms, d, "zoom", 1.6, 0.3)
-hx, hy = proj(28.98, 41.01)
-hq = dot(ms, hx, hy, 0.26, RED)
-anim(ms, hq, "zoom", 1.4, 0.4)
-lab = []
-for txt, lon, lat, dx, dy in (("Istanbul · headquarters & factory", 28.98, 41.01, 0.7, -1.05),
-                              ("SIPCO · USA", -95.37, 29.76, -0.55, 0.22),
-                              ("Hudaco · South Africa", 28.26, -26.21, 0.22, -0.12)):
-    x, y = proj(lon, lat)
-    t = tb(ms, txt, x + dx, y + dy, 3.2, 0.35, 13, "Cambria", italic=True, bold=True, color=INK)
-    lab.append(t)
-from pptx.enum.shapes import MSO_CONNECTOR
-ld = ms.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(hx + 0.08), Inches(hy - 0.12), Inches(hx + 0.68), Inches(hy - 0.82))
-ld.line.color.rgb = INK
-ld.line.width = Pt(1)
-anim(ms, ld, "fade", 1.6, 0.4)
-for k, t in enumerate(lab):
-    anim(ms, t, "fade", 1.6 + k * 0.4 + (2.2 if k else 0), 0.4)
-# counters / legend
-cnt = tb(ms, f"{len(partners) + D['turkey_count']}", 0.6, 2.6, 1.2, 0.6, 34, SERIF, bold=True)
-cl = tb(ms, "partners &\nservice points", 0.62, 3.2, 1.4, 0.6, 12, "Cambria", italic=True, color=GREY)
-cnt2 = tb(ms, f"{len(countries) + 1}", 0.6, 4.0, 1.2, 0.6, 34, SERIF, bold=True, color=RED)
-cl2 = tb(ms, "countries", 0.62, 4.6, 1.4, 0.4, 12, "Cambria", italic=True, color=GREY)
+    ld = ms.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x), Inches(y), Inches(x + dx), Inches(y + dy))
+    ld.line.color.rgb = fill
+    ld.line.width = Pt(1.25)
+    dd = dot(ms, x, y, ds, fill)
+    pl = pill(txt, x + dx, y + dy, fill)
+    tk = t + k * 0.3
+    anim(ms, dd, "zoom", tk, 0.35)
+    anim(ms, ld, "fade", tk + 0.15, 0.3)
+    anim(ms, pl, "zoom", tk + 0.3, 0.35)
+t += len(LABELS) * 0.3 + 0.4
+# counters, top right
+CNT = [(str(len(mounts)), "mounting\ncentres", DARK), (str(len(servs)), "service\ncentres", RED),
+       (str(len(partners)), "partners", INK), (str(len(countries)), "countries", INK)]
+for k, (num, lab, col) in enumerate(CNT):
+    x = 7.75 + k * 1.35
+    n = tb(ms, num, x, 0.28, 1.3, 0.6, 32, SERIF, bold=True, color=col)
+    l = tb(ms, lab, x + 0.02, 0.86, 1.3, 0.5, 11, "Cambria", italic=True, color=GREY)
+    anim(ms, n, "rise", 0.8 + k * 0.15, 0.4)
+    anim(ms, l, "fade", 0.95 + k * 0.15, 0.4)
+# legend, bottom left
 leg = []
-for k, (col, d_, txt) in enumerate(((RED, 0.19, "Assembly & service centres"), (RED, 0.12, "Partners & service points"), (INK, 0.08, "Türkiye network"))):
-    yy = 6.25 + k * 0.0
-    xx = 7.2 + k * 2.05
-    dd = dot(ms, xx, 6.88, d_, col, line=(k == 0))
-    tt = tb(ms, txt, xx + 0.18, 6.78, 1.9, 0.3, 11, SANS, color=GREY)
-    leg += [dd, tt]
-t_end = 1.9 + len(order) * 0.05
-for k, sh in enumerate((cnt, cl, cnt2, cl2)):
-    anim(ms, sh, "rise", t_end + 0.2 + k * 0.15, 0.4)
+for k, (col, d_, txt) in enumerate(((DARK, 0.16, "Headquarters"), (INK, 0.16, "Mounting centres"), (RED, 0.14, "Service centres"),
+                                    (RED, 0.09, "Partners"))):
+    xx = 0.7 + k * 1.75
+    leg += [dot(ms, xx, 7.08, d_, col), tb(ms, txt, xx + 0.16, 6.97, 1.6, 0.26, 11, SANS, color=GREY)]
 for k, sh in enumerate(leg):
-    anim(ms, sh, "fade", t_end + 0.6 + k * 0.05, 0.3)
-ms.notes_slide.notes_text_frame.text = ("Partner and service locations from imakreduktor.com/business-partners "
-                                        "(EGASEN removed). Assembly centres: SIPCO (USA), Hudaco (South Africa).")
+    anim(ms, sh, "fade", t + k * 0.05, 0.3)
+ms.notes_slide.notes_text_frame.text = ("Mounting centres: SIPCO (USA) and Hudaco / Bearings International (South Africa). "
+                                        "Service centres: Egypt, Ecuador, Morocco, Tunisia, Dubai. Other dots: i.Mak partners "
+                                        "(imakreduktor.com/business-partners). Türkiye: " + str(D["turkey_count"]) + " service points.")
 # move the new slide right after "They trust in us" (slide 6)
 lst = prs.slides._sldIdLst
 el = lst[-1]
