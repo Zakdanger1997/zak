@@ -112,4 +112,67 @@ def dome():
     bpy.ops.render.render(write_still=True)
 
 
-{"bg": bg, "hook": hook, "dome": dome}[PART]()
+def station():
+    """Industrial push-button station: chrome plinth, black steel column with bolts and an i-GUIDE plate,
+    yellow/black hazard band, yellow head housing, chrome collar, LED ring, red mushroom button.
+    Renders assets/station_up.png and assets/station_down.png (button pressed 35 mm), transparent, same camera."""
+    clear(); K.mats(); setup((720, 1100), transparent=True)
+    sc = bpy.context.scene
+    chrome = K.metal_mat("chrome", (225, 228, 232), 0.08)
+    black = K.plain("black steel", (18, 18, 20), 0.35, coat=0.5)
+    yellow = K.paint_mat("signal yellow", (245, 190, 10), rough=0.25, coat=0.7, cast=0.0, peel=0.0)
+    red = K.paint_mat("button red", (215, 14, 18), rough=0.12, coat=1.0, cast=0.0, peel=0.0)
+    alu = K.metal_mat("plate", (190, 194, 198), 0.3, aniso=0.5)
+    led = emit("led ring", (1.0, 0.08, 0.05), 25.0)
+    # hazard stripes material
+    hz = bpy.data.materials.new("hazard"); hz.use_nodes = True
+    nt = hz.node_tree; bsdf = nt.nodes["Principled BSDF"]; bsdf.inputs["Roughness"].default_value = 0.3
+    tc = nt.nodes.new("ShaderNodeTexCoord"); mp = nt.nodes.new("ShaderNodeMapping")
+    mp.inputs["Rotation"].default_value = (0, math.radians(45), 0)
+    wv = nt.nodes.new("ShaderNodeTexWave"); wv.wave_type = "BANDS"; wv.bands_direction = "X"; wv.inputs["Scale"].default_value = 3.0
+    wv.wave_profile = "SAW"
+    rp = nt.nodes.new("ShaderNodeValToRGB"); rp.color_ramp.interpolation = "CONSTANT"
+    rp.color_ramp.elements[0].color = (0.91, 0.52, 0.0, 1); rp.color_ramp.elements[1].position = 0.5; rp.color_ramp.elements[1].color = (0.01, 0.01, 0.01, 1)
+    nt.links.new(tc.outputs["Object"], mp.inputs["Vector"]); nt.links.new(mp.outputs["Vector"], wv.inputs["Vector"])
+    nt.links.new(wv.outputs["Fac"], rp.inputs["Fac"]); nt.links.new(rp.outputs["Color"], bsdf.inputs["Base Color"])
+    K.boxo((0.74, 0.74, 0.06), (0, 0, 0.03), chrome, "plinth", bevel=0.015)
+    K.boxo((0.56, 0.56, 0.84), (0, 0, 0.48), black, "column", bevel=0.03)
+    K.boxo((0.575, 0.575, 0.11), (0, 0, 0.955), hz, "hazard band", bevel=0.01)
+    for x in (-0.21, 0.21):
+        for z in (0.16, 0.8):
+            b = K.cyl(0.022, 0.02, chrome, axis="Y", loc=(x, -0.285, z), verts=6, name="bolt")
+    K.boxo((0.34, 0.012, 0.13), (0, -0.284, 0.62), alu, "plate", bevel=0.004)
+    bpy.ops.object.text_add(location=(0, -0.292, 0.62)); tx = bpy.context.object
+    tx.data.body = "i-GUIDE"; tx.data.align_x = "CENTER"; tx.data.align_y = "CENTER"; tx.data.size = 0.075; tx.data.extrude = 0.003
+    tx.rotation_euler = (math.radians(90), 0, 0); tx.data.materials.append(K.plain("ink", (150, 20, 18), 0.4))
+    K.boxo((0.3, 0.012, 0.035), (0, -0.284, 0.40), K.plain("warn", (200, 20, 20), 0.4), "warn strip", bevel=0.003)
+    K.cyl(0.235, 0.1, yellow, axis="Z", loc=(0, 0, 1.06), verts=64, name="housing")
+    K.cyl(0.17, 0.06, chrome, axis="Z", loc=(0, 0, 1.14), verts=64, name="collar")
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.188, minor_radius=0.011, location=(0, 0, 1.112), major_segments=96)
+    bpy.context.object.data.materials.append(led)
+    for a in range(4):                                         # housing screws
+        ang = math.radians(45 + 90 * a)
+        K.cyl(0.014, 0.01, chrome, axis="Z", loc=(0.212 * math.cos(ang), 0.212 * math.sin(ang), 1.112), verts=6, name="screw")
+    head = []
+    st = K.cyl(0.07, 0.08, K.MAT["black"], axis="Z", loc=(0, 0, 1.19), verts=48, name="stem"); head.append(st)
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.16, location=(0, 0, 1.24), segments=64, ring_count=32)
+    d = bpy.context.object; d.scale = (1, 1, 0.42); bpy.ops.object.shade_smooth(); d.data.materials.append(red); head.append(d)
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.152, minor_radius=0.012, location=(0, 0, 1.235), major_segments=96)
+    rim = bpy.context.object; rim.data.materials.append(red); head.append(rim)
+    bpy.ops.mesh.primitive_plane_add(size=6, location=(0, 0, 0)); bpy.context.object.is_shadow_catcher = True
+    K.area((-1.5, -2.5, 3), (0, 0, 0.8), 500, 2)
+    K.area((2.2, -1.0, 2), (0, 0, 0.8), 260, 1.2, (1.0, 0.5, 0.45))
+    K.area((0, 1.8, 2.5), (0, 0, 1.0), 300, 1.0, (1.0, 0.3, 0.25))
+    cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); sc.collection.objects.link(cam); sc.camera = cam
+    cam.data.lens = 70; cam.location = (0, -4.2, 2.0)
+    tgt = Vector((0, 0, 0.66)); cam.rotation_euler = (tgt - cam.location).to_track_quat("-Z", "Y").to_euler()
+    for name, dz in (("station_up", 0.0), ("station_down", -0.04)):
+        for o in head:
+            o.location.z += dz
+        sc.render.filepath = os.path.join(ROOT, "assets", name + ".png")
+        bpy.ops.render.render(write_still=True)
+        for o in head:
+            o.location.z -= dz
+
+
+{"bg": bg, "hook": hook, "dome": dome, "station": station}[PART]()

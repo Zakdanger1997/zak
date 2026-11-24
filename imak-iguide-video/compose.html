@@ -53,20 +53,29 @@ html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; backgro
 .chip i { position: absolute; left: 13px; top: 13px; width: 32px; height: 32px; border-radius: 50%; background: #fff; }
 .chip i:after { content: ''; position: absolute; left: 10px; top: 8px; width: 8px; height: 10px; border-left: 4px solid #9d1a12; border-bottom: 4px solid #9d1a12; transform: rotate(-45deg); }
 #fly { position: absolute; inset: 0; pointer-events: none; }
-#ped { position: absolute; left: 850px; top: 1440px; width: 180px; height: 190px; border-radius: 14px;
+#ped_old { display:none; left: 850px; top: 1440px; width: 180px; height: 190px; border-radius: 14px;
        background: linear-gradient(90deg, #121214, #3b3b42 30%, #24242a 65%, #0c0c0e); box-shadow: 0 20px 40px rgba(0,0,0,.6), inset 0 3px 0 rgba(255,80,70,.6);
        -webkit-box-reflect: below 30px linear-gradient(transparent 70%, rgba(255,255,255,.18)); }
-#pedtop { position: absolute; left: 875px; top: 1428px; width: 130px; height: 26px; border-radius: 50%; background: linear-gradient(#888, #333); box-shadow: 0 0 24px 6px rgba(255,40,40,.55); }
-#dome { position: absolute; width: 150px; left: 865px; top: 1378px; transform-origin: 50% 100%; }
+#pedtop_old { display:none; left: 875px; top: 1428px; width: 130px; height: 26px; border-radius: 50%; background: linear-gradient(#888, #333); box-shadow: 0 0 24px 6px rgba(255,40,40,.55); }
+.st { position: absolute; left: 740px; top: 1106px; width: 410px; -webkit-box-reflect: below -60px linear-gradient(transparent 82%, rgba(255,255,255,.18)); }
+#led { position: absolute; left: 885px; top: 1222px; width: 120px; height: 46px; border-radius: 50%; mix-blend-mode: screen;
+       background: radial-gradient(ellipse at center, rgba(255,60,40,.9), rgba(255,30,20,0) 70%); filter: blur(6px); }
+.gear { position: absolute; filter: brightness(0) invert(1); opacity: .11; }
+.mbeam { position: absolute; top: -200px; width: 520px; height: 2300px; transform-origin: 50% 0; filter: blur(22px); mix-blend-mode: screen;
+         clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%); background: linear-gradient(rgba(255,120,100,.22), rgba(255,60,50,0) 75%); }
+.bk { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,110,90,.35), rgba(255,80,60,0) 70%); mix-blend-mode: screen; }
 #flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
 #vign { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,.55) 100%); }
 #black { position: absolute; inset: 0; background: #000; }
 </style></head>
 <body><div id="stage">
+  <img class="gear" id="g1" src="assets/gear_wheel.png" style="width:1500px;left:-700px;top:-180px">
+  <img class="gear" id="g2" src="assets/gear_pinion.png" style="width:680px;left:640px;top:880px">
+  <div id="beams"></div><div id="bokeh"></div>
   <div id="beam"></div>
   <div id="floor"></div><div id="floorfade"></div><div id="halo"></div>
   <div id="rig"><div id="phone"><div id="bezel"></div><div id="screen"><div id="island"></div><div id="ui"></div><div id="sheen"></div></div></div></div>
-  <div id="ped"></div><div id="pedtop"></div><img id="dome" src="assets/dome.png">
+  <img class="st" id="stu" src="assets/station_up.png"><img class="st" id="std" src="assets/station_down.png" style="opacity:0"><div id="led"></div>
   <div id="fly"></div>
   <div id="sparks"></div>
   <div id="cap"></div>
@@ -90,6 +99,7 @@ const D0 = 2.0, DT = 0.535, FALL = .42;                // six drops on the beat 
 const TS = 6.6, TW = 9.15, TB = 9.55, TZ = 9.95, TE = 10.35, TOTAL = 14.5;
 // deterministic sparks
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const BK = Array.from({ length: 16 }, () => ({ x: rnd() * 1080, y: rnd() * 2000, v: 15 + rnd() * 35, s: 60 + rnd() * 160, w: rnd() * 6.28 }));
 const SP = Array.from({ length: 70 }, () => ({ x: rnd() * 1080, y: rnd() * 1920, v: 40 + rnd() * 110, s: 2 + rnd() * 5, w: rnd() * 6.28, a: .3 + rnd() * .7 }));
 window.setup = () => {};
 
@@ -204,7 +214,7 @@ window.renderAt = async (t) => {
     fly += unitImg(SER[i][0], cx, y, K * 171, vy);
   }
   // MK hits the button, then zaps into the phone
-  const bx = 940, by = 1395;
+  const bx = 945, by = 1250;
   if (t > TW && t < TB) {
     const k = ic(E(t, TW, TB)), y = -260 + (by - 110 + 260) * k;
     fly += unitImg('mk', bx, y, 260, 4000 * k);
@@ -214,8 +224,10 @@ window.renderAt = async (t) => {
     if (k > 0) for (let j = 0; j < 3; j++) fly += `<div style="position:absolute;left:${x - 4}px;top:${y}px;width:${(bx - x) * .9}px;height:3px;background:linear-gradient(90deg,rgba(255,80,60,.9),rgba(255,80,60,0));transform:rotate(${Math.atan2((by - 110) - y, bx - x) * 57.3 + (j - 1) * 3}deg);transform-origin:0 50%;opacity:${1 - k}"></div>`;
   }
   $('fly').innerHTML = fly;
-  const squash = t > TB && t < TB + .3 ? .55 : 1;
-  $('dome').style.transform = `scaleY(${squash})`;
+  const pressed = t > TB && t < TB + .35;
+  $('stu').style.opacity = pressed ? 0 : 1; $('std').style.opacity = pressed ? 1 : 0;
+  $('led').style.opacity = pressed ? 1 : (.45 + .35 * Math.sin(t * 4)) * (t > TW - .6 ? 1.6 : 1);
+  $('led').style.transform = `scale(${pressed ? 1.6 : 1})`;
   $('flash').style.opacity = t > TB && t < TB + .5 ? .5 * (1 - E(t, TB, TB + .5)) : (t > TZ && t < TZ + .4 ? .4 * (1 - E(t, TZ, TZ + .4)) : 0);
   // sparks (burst at the end)
   const burst = E(t, TE, TE + .2) * (1 - E(t, TE + 2.5, TE + 3.5));
@@ -224,6 +236,13 @@ window.renderAt = async (t) => {
     return `<div class="sp" style="left:${x}px;top:${y}px;width:${p.s}px;height:${p.s}px;opacity:${p.a * (.6 + .4 * Math.sin(t * 3 + p.w))}"></div>`;
   }).join('');
   $('halo').style.opacity = .7 + .3 * Math.sin(t * 2);
+  $('g1').style.transform = `rotate(${t * 7}deg)`;
+  $('g2').style.transform = `rotate(${-t * 7 * 48 / 20 + 4}deg)`;
+  $('floor').style.backgroundPosition = `0 ${t * 140}px, 0 ${t * 140}px, 0 0`;
+  $('beams').innerHTML = [[60, 0, 10], [540, 2.1, -8], [960, 4.2, 12]].map(([x, ph, a]) =>
+    `<div class="mbeam" style="left:${x - 260}px;transform:rotate(${a * Math.sin(t * .6 + ph)}deg);opacity:${.55 + .35 * Math.sin(t * .9 + ph)}"></div>`).join('');
+  $('bokeh').innerHTML = BK.map((b) => { const y = ((b.y - t * b.v) % 2100 + 2100) % 2100 - 100, x = b.x + 40 * Math.sin(t * .4 + b.w);
+    return `<div class="bk" style="left:${x - b.s / 2}px;top:${y - b.s / 2}px;width:${b.s}px;height:${b.s}px;opacity:${.5 + .5 * Math.sin(t * .7 + b.w)}"></div>`; }).join('');
   $('cap').innerHTML = caption(t);
   const imgs = [...document.images];
   await Promise.all(imgs.map((i) => (i.complete && i.naturalWidth) ? null : new Promise((r) => { i.onload = i.onerror = r; })));

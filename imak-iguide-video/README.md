@@ -5,7 +5,9 @@ A 14.5-second vertical teaser (v2) for i.Mak's i-Guide (iguide.imakreduktor.com)
 2. Step captions: ① Choose your series, ② Type the code, ③ Download in one tap.
 3. Gearboxes drop into the "Gearboxes Categories" grid on the beat; the rest of the range fills in.
 4. Quick search returns .STEP / .DWG / .PDF.
-5. An MK unit hits the red button and zaps into the phone.
+5. An MK unit hits the red button on an industrial push-button station (Blender: tools/ig_scene.py station) and zaps into the phone.
+
+Background motion: rotating gear outlines, sweeping light beams, a flowing floor grid, drifting bokeh and sparks.
 6. End card: i-GUIDE · Your gearbox. In seconds. · QR code · Try it now.
 
 `compose_v1.html` keeps the first version (grey showroom, crane hooks).
