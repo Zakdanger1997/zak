@@ -1,0 +1,4 @@
+render/
+assets/footage/*
+!assets/footage/SOURCES.csv
+video/*.mp4
