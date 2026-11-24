@@ -172,7 +172,9 @@ function unitImg(id, x, y, w, vy, extra = '') {
   return `<img src="assets/units/${id}.png" style="position:absolute;left:${x - w / 2}px;top:${y - w / 2}px;width:${w}px;transform:scaleY(${stretch});filter:blur(${blur}px) drop-shadow(0 20px 20px rgba(0,0,0,.5));${extra}">`;
 }
 
-window.renderAt = async (t) => {
+const SLOW = 1.5;                                  // story pace (1.5 = 50% slower); background moves in real time
+window.renderAt = async (T) => {
+  const t = T / SLOW;
   $('black').style.opacity = Math.max(1 - E(t, 0, .5), E(t, TOTAL - .45, TOTAL));
   // camera: push in during the grid, settle for the end
   const push = 1 + .06 * io(E(t, 1.9, 3.2)) - .06 * io(E(t, 5.4, 6.4)) + .04 * io(E(t, 6.5, 7.5)) - .04 * io(E(t, 9.0, 9.6)) + .02 * (t / TOTAL);
@@ -232,17 +234,17 @@ window.renderAt = async (t) => {
   // sparks (burst at the end)
   const burst = E(t, TE, TE + .2) * (1 - E(t, TE + 2.5, TE + 3.5));
   $('sparks').innerHTML = SP.map((p) => {
-    const y = ((p.y - t * p.v * (1 + burst * 2)) % 1920 + 1920) % 1920, x = p.x + 18 * Math.sin(t * .8 + p.w);
-    return `<div class="sp" style="left:${x}px;top:${y}px;width:${p.s}px;height:${p.s}px;opacity:${p.a * (.6 + .4 * Math.sin(t * 3 + p.w))}"></div>`;
+    const y = ((p.y - T * p.v * (1 + burst * 2)) % 1920 + 1920) % 1920, x = p.x + 18 * Math.sin(T * .8 + p.w);
+    return `<div class="sp" style="left:${x}px;top:${y}px;width:${p.s}px;height:${p.s}px;opacity:${p.a * (.6 + .4 * Math.sin(T * 3 + p.w))}"></div>`;
   }).join('');
-  $('halo').style.opacity = .7 + .3 * Math.sin(t * 2);
-  $('g1').style.transform = `rotate(${t * 7}deg)`;
-  $('g2').style.transform = `rotate(${-t * 7 * 48 / 20 + 4}deg)`;
-  $('floor').style.backgroundPosition = `0 ${t * 140}px, 0 ${t * 140}px, 0 0`;
+  $('halo').style.opacity = .7 + .3 * Math.sin(T * 2);
+  $('g1').style.transform = `rotate(${T * 7}deg)`;
+  $('g2').style.transform = `rotate(${-T * 7 * 48 / 20 + 4}deg)`;
+  $('floor').style.backgroundPosition = `0 ${T * 140}px, 0 ${T * 140}px, 0 0`;
   $('beams').innerHTML = [[60, 0, 10], [540, 2.1, -8], [960, 4.2, 12]].map(([x, ph, a]) =>
-    `<div class="mbeam" style="left:${x - 260}px;transform:rotate(${a * Math.sin(t * .6 + ph)}deg);opacity:${.55 + .35 * Math.sin(t * .9 + ph)}"></div>`).join('');
-  $('bokeh').innerHTML = BK.map((b) => { const y = ((b.y - t * b.v) % 2100 + 2100) % 2100 - 100, x = b.x + 40 * Math.sin(t * .4 + b.w);
-    return `<div class="bk" style="left:${x - b.s / 2}px;top:${y - b.s / 2}px;width:${b.s}px;height:${b.s}px;opacity:${.5 + .5 * Math.sin(t * .7 + b.w)}"></div>`; }).join('');
+    `<div class="mbeam" style="left:${x - 260}px;transform:rotate(${a * Math.sin(T * .6 + ph)}deg);opacity:${.55 + .35 * Math.sin(T * .9 + ph)}"></div>`).join('');
+  $('bokeh').innerHTML = BK.map((b) => { const y = ((b.y - T * b.v) % 2100 + 2100) % 2100 - 100, x = b.x + 40 * Math.sin(T * .4 + b.w);
+    return `<div class="bk" style="left:${x - b.s / 2}px;top:${y - b.s / 2}px;width:${b.s}px;height:${b.s}px;opacity:${.5 + .5 * Math.sin(T * .7 + b.w)}"></div>`; }).join('');
   $('cap').innerHTML = caption(t);
   const imgs = [...document.images];
   await Promise.all(imgs.map((i) => (i.complete && i.naturalWidth) ? null : new Promise((r) => { i.onload = i.onerror = r; })));
