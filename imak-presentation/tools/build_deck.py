@@ -1,0 +1,400 @@
+#!/usr/bin/env python3
+"""Apply the requested changes to 'I-MAK Presentation 2025.pptx'.
+
+- simple design: red diagonal master decoration removed (done on the unpacked XML before this script)
+- history slides 2 and 3 rebuilt as animated collage infographics (style of the company story video), EGASEN removed
+- 233 -> 275 employees
+- new slide "Service centres around the globe" (map, partner pins) after "They trust in us"
+- fade transitions on every slide, staged entrance animations on every slide (videos keep their playback)
+Usage: python3 build_deck.py in.pptx out.pptx
+"""
+import copy
+import json
+import re
+import sys
+
+from lxml import etree
+from pptx import Presentation
+from pptx.dml.color import RGBColor
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.util import Emu, Inches, Pt
+
+A = "/tmp/claude-0/pptwork/assets/"
+CUT = "/home/user/zak/imak-story-video/assets/cut/"
+NS = {"p": "http://schemas.openxmlformats.org/presentationml/2006/main",
+      "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+      "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+      "mc": "http://schemas.openxmlformats.org/markup-compatibility/2006"}
+P = "{%s}" % NS["p"]
+RED = RGBColor(0xCC, 0x06, 0x05)
+INK = RGBColor(0x1D, 0x19, 0x15)
+GREY = RGBColor(0x5A, 0x55, 0x50)
+SERIF = "Bookman Old Style"
+SANS = "Calibri"
+IN = 914400
+
+src, dst = sys.argv[1], sys.argv[2]
+prs = Presentation(src)
+SW, SH = prs.slide_width, prs.slide_height
+slides = list(prs.slides)
+
+# ----------------------------------------------------------------- helpers
+ANIM = {}          # slide -> list of steps: [(shape, effect, at_seconds, dur_seconds, extra)]
+
+
+def anim(slide, shape, effect="fade", at=0.0, dur=0.5, **kw):
+    ANIM.setdefault(slide.slide_id, []).append((shape, effect, at, dur, kw))
+
+
+def tb(slide, text, x, y, w, h, size, font=SANS, bold=False, italic=False, color=INK, align=PP_ALIGN.LEFT,
+       spacing=None, anchor=MSO_ANCHOR.TOP, name=None):
+    s = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    tf = s.text_frame
+    tf.word_wrap = True
+    tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+    tf.vertical_anchor = anchor
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        par = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        par.alignment = align
+        r = par.add_run()
+        r.text = line
+        f = r.font
+        f.size, f.name, f.bold, f.italic = Pt(size), font, bold, italic
+        f.color.rgb = color
+        if spacing:
+            r._r.get_or_add_rPr().set("spc", str(spacing))
+    if name:
+        s.name = name
+    return s
+
+
+def pic(slide, path, x, y, w=None, h=None, name=None):
+    s = slide.shapes.add_picture(path, Inches(x), Inches(y), Inches(w) if w else None, Inches(h) if h else None)
+    if name:
+        s.name = name
+    return s
+
+
+def fit(path, maxw, maxh):
+    from PIL import Image
+    iw, ih = Image.open(path).size
+    k = min(maxw / iw, maxh / ih)
+    return iw * k, ih * k
+
+
+def dot(slide, cx, cy, d, color=RED, line=True):
+    s = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(cx - d / 2), Inches(cy - d / 2), Inches(d), Inches(d))
+    s.fill.solid()
+    s.fill.fore_color.rgb = color
+    if line:
+        s.line.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+        s.line.width = Pt(1.5)
+    else:
+        s.line.fill.background()
+    s.shadow.inherit = False
+    return s
+
+
+def send_to_back(slide, shape):
+    tree = slide.shapes._spTree
+    tree.remove(shape._element)
+    tree.insert(2, shape._element)
+
+
+def clear_slide(slide, keep=()):
+    for s in list(slide.shapes):
+        if s.name in keep:
+            continue
+        s._element.getparent().remove(s._element)
+
+
+def paper(slide):
+    s = pic(slide, A + "paper.jpg", 0, 0, SW / IN, SH / IN, name="Paper background")
+    send_to_back(slide, s)
+    return s
+
+
+def heading(slide, kicker, black, red_word, x=0.6, y=0.38, size=32):
+    """Collage heading: spaced sans kicker, serif line, then the key words white on a red brush stroke (own line)."""
+    k = tb(slide, kicker, x + 0.03, y, 8, 0.3, 12, SANS, bold=True, color=INK, spacing=300)
+    lh = size / 72 * 1.18
+    t1 = tb(slide, black, x, y + 0.3, 8, lh, size, SERIF, bold=True)
+    wr = len(red_word) * size / 72 * 0.66 + 0.5
+    by = y + 0.3 + lh
+    br = pic(slide, A + "brush1.png", x - 0.12, by - 0.04, wr, lh * 1.08, name="Brush highlight")
+    t2 = tb(slide, red_word, x + 0.1, by, wr, lh, size, SERIF, bold=True, color=RGBColor(255, 255, 255))
+    anim(slide, k, "fade", 0.0, 0.4)
+    anim(slide, t1, "rise", 0.1, 0.5)
+    anim(slide, br, "wipe", 0.55, 0.45)
+    anim(slide, t2, "fade", 0.75, 0.3)
+    return by + lh
+
+
+# ----------------------------------------------------------- history slides
+HIST = {
+    1: ("İ-MAK REDÜKTÖR · OUR STORY", "How it all", "started", [
+        ("1973", "Creation of the I-MAK brand.", "logo1973.png"),
+        ("1983", "Manufacture of the first industrial gearboxes in Turkey.", "gearbox1983.png"),
+        ("1998", "Construction of I-MAK's second factory in Istanbul.", "factory1998.png"),
+        ("2000", "Beginning of direct exports.", "export2000.png"),
+        ("2012", "Installation of a bar code reading system.", "barcode2012.png")]),
+    2: ("İ-MAK REDÜKTÖR · OUR STORY", "Growing", "together", [
+        ("2019", "Hudaco – I-MAK mounting center agreement.", "hudaco2019.png"),
+        ("2019", "SIPCO – I-MAK mounting center agreement.", "sipco2019.png"),
+        ("2022", "Purchase of the I-DÖKSAN foundry.", "foundry2022.png"),
+        ("2023", "64,000 m² investment in the new plant.", "plant2023.png"),
+        ("2024", "Acceptance to the TURQUALITY programme.", "turquality2024.png")]),
+}
+corner_logo = {}
+for idx, (kick, black, red, items) in HIST.items():
+    s = slides[idx]
+    # keep only the small corner logo (lowest-right picture)
+    pics = [sh for sh in s.shapes if sh.shape_type == 13]
+    logo = max(pics, key=lambda q: (q.left + q.top)) if pics else None
+    clear_slide(s, keep=(logo.name,) if logo else ())
+    paper(s)
+    heading(s, kick, black, red)
+    LY = 4.05
+    line = pic(s, A + "timeline.png", 0.5, LY - 0.6, 12.35, 1.2, name="Timeline line")
+    anim(s, line, "wipe", 1.0, 1.6)
+    for i, (year, text, img) in enumerate(items):
+        cx = 1.55 + i * 2.55
+        t0 = 1.5 + i * 0.75
+        up = i % 2 == 0
+        w, h = fit(CUT + img, 2.0, 1.6)
+        py = LY - 0.3 - h if up else LY + 0.3
+        ph = pic(s, CUT + img, cx - w / 2, py, w, h, name=f"Milestone {year} photo")
+        ph.rotation = (-3, 2.5, -2, 3, -2.5)[i]
+        d = dot(s, cx, LY, 0.24)
+        ty = LY + 0.32 if up else LY - 1.75
+        yr = tb(s, year, cx - 1.2, ty, 2.4, 0.6, 30, SERIF, bold=True, align=PP_ALIGN.CENTER)
+        cap = tb(s, text, cx - 1.18, ty + 0.62, 2.36, 0.9, 13, "Cambria", italic=True, color=GREY, align=PP_ALIGN.CENTER)
+        anim(s, d, "zoom", t0, 0.35)
+        anim(s, ph, "drop", t0 + 0.1, 0.55)
+        anim(s, yr, "rise", t0 + 0.3, 0.4)
+        anim(s, cap, "fade", t0 + 0.45, 0.4)
+    if logo:
+        anim(s, logo, "fade", 0.2, 0.4)
+
+# ------------------------------------------------------------ 233 -> 275
+for sh in slides[3].shapes:
+    if sh.has_text_frame:
+        for par in sh.text_frame.paragraphs:
+            for r in par.runs:
+                if r.text.strip() == "233":
+                    r.text = r.text.replace("233", "275")
+                    print("employees -> 275")
+
+# ------------------------------------------- service centres (new slide)
+layout = slides[5].slide_layout
+ms = prs.slides.add_slide(layout)
+for ph in list(ms.placeholders):
+    ph._element.getparent().remove(ph._element)
+paper(ms)
+heading(ms, "İ-MAK REDÜKTÖR · WORLDWIDE", "Service centres", "around the globe", size=36)
+D = json.load(open("/home/user/zak/imak-story-video/assets/dealers.json"))
+partners = [d for d in D["international"] if d[0] != "EGASEN"]
+countries = sorted({d[1].split(", ")[-1] for d in partners})
+MX, MY, MW = 2.15, 2.05, 9.9           # map box on the slide (inches); projection -128..152 lon, -48..72 lat
+MH = MW * 120 / 280
+mp = pic(ms, A + "world.png", MX, MY, MW, MH, name="World map")
+anim(ms, mp, "fade", 0.9, 0.8)
+proj = lambda lon, lat: (MX + (lon + 128) / 280 * MW, MY + (72 - lat) / 120 * MH)
+order = sorted(partners, key=lambda d: (d[2] - 29) ** 2 + (d[3] - 41) ** 2)
+for i, (n, where, lon, lat) in enumerate(order):
+    x, y = proj(lon, lat)
+    big = n.startswith("Sipco") or n.startswith("Bearings International")
+    d = dot(ms, x, y, 0.19 if big else 0.12, line=big)
+    anim(ms, d, "zoom", 1.9 + i * 0.05, 0.3)
+for n, lon, lat in D["turkey_cities"]:
+    x, y = proj(lon, lat)
+    d = dot(ms, x, y, 0.07, INK, line=False)
+    anim(ms, d, "zoom", 1.6, 0.3)
+hx, hy = proj(28.98, 41.01)
+hq = dot(ms, hx, hy, 0.26, RED)
+anim(ms, hq, "zoom", 1.4, 0.4)
+lab = []
+for txt, lon, lat, dx, dy in (("Istanbul · headquarters & factory", 28.98, 41.01, 0.7, -1.05),
+                              ("SIPCO · USA", -95.37, 29.76, -0.55, 0.22),
+                              ("Hudaco · South Africa", 28.26, -26.21, 0.22, -0.12)):
+    x, y = proj(lon, lat)
+    t = tb(ms, txt, x + dx, y + dy, 3.2, 0.35, 13, "Cambria", italic=True, bold=True, color=INK)
+    lab.append(t)
+from pptx.enum.shapes import MSO_CONNECTOR
+ld = ms.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(hx + 0.08), Inches(hy - 0.12), Inches(hx + 0.68), Inches(hy - 0.82))
+ld.line.color.rgb = INK
+ld.line.width = Pt(1)
+anim(ms, ld, "fade", 1.6, 0.4)
+for k, t in enumerate(lab):
+    anim(ms, t, "fade", 1.6 + k * 0.4 + (2.2 if k else 0), 0.4)
+# counters / legend
+cnt = tb(ms, f"{len(partners) + D['turkey_count']}", 0.6, 2.6, 1.2, 0.6, 34, SERIF, bold=True)
+cl = tb(ms, "partners &\nservice points", 0.62, 3.2, 1.4, 0.6, 12, "Cambria", italic=True, color=GREY)
+cnt2 = tb(ms, f"{len(countries) + 1}", 0.6, 4.0, 1.2, 0.6, 34, SERIF, bold=True, color=RED)
+cl2 = tb(ms, "countries", 0.62, 4.6, 1.4, 0.4, 12, "Cambria", italic=True, color=GREY)
+leg = []
+for k, (col, d_, txt) in enumerate(((RED, 0.19, "Assembly & service centres"), (RED, 0.12, "Partners & service points"), (INK, 0.08, "Türkiye network"))):
+    yy = 6.25 + k * 0.0
+    xx = 7.2 + k * 2.05
+    dd = dot(ms, xx, 6.88, d_, col, line=(k == 0))
+    tt = tb(ms, txt, xx + 0.18, 6.78, 1.9, 0.3, 11, SANS, color=GREY)
+    leg += [dd, tt]
+t_end = 1.9 + len(order) * 0.05
+for k, sh in enumerate((cnt, cl, cnt2, cl2)):
+    anim(ms, sh, "rise", t_end + 0.2 + k * 0.15, 0.4)
+for k, sh in enumerate(leg):
+    anim(ms, sh, "fade", t_end + 0.6 + k * 0.05, 0.3)
+ms.notes_slide.notes_text_frame.text = ("Partner and service locations from imakreduktor.com/business-partners "
+                                        "(EGASEN removed). Assembly centres: SIPCO (USA), Hudaco (South Africa).")
+# move the new slide right after "They trust in us" (slide 6)
+lst = prs.slides._sldIdLst
+el = lst[-1]
+lst.remove(el)
+lst.insert(6, el)
+slides = list(prs.slides)
+
+# ------------------------------------------------ generic staged entrances
+MEDIA_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/video"
+
+
+def XP(expr, el):
+    return etree.XPath(expr, namespaces=NS)(el)
+
+
+def is_media(sh):
+    return bool(XP(".//p:nvPr/a:videoFile|.//p:nvPr/p:extLst//*[local-name()='media']", sh._element))
+
+
+for s in slides:
+    if s.slide_id in ANIM:
+        continue
+    shapes = [sh for sh in s.shapes if not is_media(sh)]
+    if not shapes:
+        continue
+    title = [sh for sh in shapes if sh.has_text_frame and sh.top < Inches(1.0) and sh.text_frame.text.strip()]
+    rest = [sh for sh in shapes if sh not in title]
+    rest.sort(key=lambda q: (round(q.top / Inches(0.35)), q.left))
+    many = len(rest) > 8
+    t = 0.0
+    for sh in title:
+        anim(s, sh, "rise", t, 0.45)
+        t += 0.25
+    for sh in rest:
+        if sh.shape_type == 13:                       # picture
+            eff = "zoom" if (sh.width < Inches(2.6) and many) else "drop"
+        elif sh.has_text_frame and len([p for p in sh.text_frame.paragraphs if p.text.strip()]) >= 3:
+            eff = "paras"
+        else:
+            eff = "rise"
+        anim(s, sh, eff, t, 0.45)
+        t += 0.12 if many else 0.3
+
+# ---------------------------------------------------- timing XML writer
+def tgt(spid, para=None):
+    if para is None:
+        return f'<p:tgtEl><p:spTgt spid="{spid}"/></p:tgtEl>'
+    return f'<p:tgtEl><p:spTgt spid="{spid}"><p:txEl><p:pRg st="{para}" end="{para}"/></p:txEl></p:spTgt></p:tgtEl>'
+
+
+def effect_xml(spid, eff, dur, para=None):
+    d = int(dur * 1000)
+    vis = (f'<p:set><p:cBhvr><p:cTn dur="1" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn>'
+           f'{tgt(spid, para)}<p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr>'
+           f'<p:to><p:strVal val="visible"/></p:to></p:set>')
+    fade = f'<p:animEffect transition="in" filter="fade"><p:cBhvr><p:cTn dur="{d}"/>{tgt(spid, para)}</p:cBhvr></p:animEffect>'
+
+    def move(attr, frm, to):
+        return (f'<p:anim calcmode="lin" valueType="num"><p:cBhvr><p:cTn dur="{d}" fill="hold"/>{tgt(spid, para)}'
+                f'<p:attrNameLst><p:attrName>{attr}</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>'
+                f'<p:tav tm="0"><p:val><p:strVal val="{frm}"/></p:val></p:tav>'
+                f'<p:tav tm="100000"><p:val><p:strVal val="{to}"/></p:val></p:tav></p:tavLst></p:anim>')
+    if eff == "fade":
+        return 10, 0, vis + fade
+    if eff in ("rise", "paras"):
+        return 42, 0, vis + fade + move("ppt_y", "#ppt_y+0.04", "#ppt_y")
+    if eff == "drop":
+        return 42, 0, vis + fade + move("ppt_y", "#ppt_y-0.06", "#ppt_y")
+    if eff == "zoom":
+        return 53, 16, vis + fade + move("ppt_w", "0", "#ppt_w") + move("ppt_h", "0", "#ppt_h")
+    if eff == "wipe":
+        return 22, 8, vis + f'<p:animEffect transition="in" filter="wipe(left)"><p:cBhvr><p:cTn dur="{d}"/>{tgt(spid, para)}</p:cBhvr></p:animEffect>'
+    raise ValueError(eff)
+
+
+def build_steps(slide):
+    """One <p:par> per effect, each delayed from slide start (all auto, no clicks)."""
+    out, bld = [], []
+    for sh, eff, at, dur, kw in ANIM.get(slide.slide_id, []):
+        spid = sh.shape_id
+        targets = [None]
+        if eff == "paras":
+            n = len(sh.text_frame.paragraphs)
+            targets = [i for i in range(n) if sh.text_frame.paragraphs[i].text.strip()]
+            bld.append(f'<p:bldP spid="{spid}" grpId="0" build="p"/>')
+        elif sh.has_text_frame and sh.shape_type != 13:
+            bld.append(f'<p:bldP spid="{spid}" grpId="0"/>')
+        for k, para in enumerate(targets):
+            pid, sub, body = effect_xml(spid, eff, dur, para)
+            delay = int((at + k * 0.18) * 1000)
+            out.append(f'<p:par><p:cTn fill="hold"><p:stCondLst><p:cond delay="{delay}"/></p:stCondLst><p:childTnLst>'
+                       f'<p:par><p:cTn presetID="{pid}" presetClass="entr" presetSubtype="{sub}" fill="hold" grpId="0" nodeType="withEffect">'
+                       f'<p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>{body}</p:childTnLst></p:cTn></p:par>'
+                       f'</p:childTnLst></p:cTn></p:par>')
+    return out, sorted(set(bld))
+
+
+NSDECL = f'xmlns:p="{NS["p"]}" xmlns:a="{NS["a"]}"'
+for s in slides:
+    el = s._element
+    steps, bld = build_steps(s)
+    timing = el.find(P + "timing")
+    if steps:
+        if timing is not None and "mediacall" in etree.tostring(timing).decode():
+            # keep media playback: add our steps into the auto-start (onBegin) group of the main sequence
+            root_par = XP('.//p:cTn[@nodeType="mainSeq"]/p:childTnLst/p:par[p:cTn/p:stCondLst/p:cond[@evt="onBegin"]]/p:cTn/p:childTnLst', timing)
+            if root_par:
+                for x in steps:
+                    root_par[0].append(etree.fromstring(f'<p:wrap {NSDECL}>{x}</p:wrap>')[0])
+                if bld:
+                    bl = timing.find(P + "bldLst")
+                    if bl is None:
+                        bl = etree.SubElement(timing, P + "bldLst")
+                    for b in bld:
+                        bl.append(etree.fromstring(f'<p:wrap {NSDECL}>{b}</p:wrap>')[0])
+        else:
+            if timing is not None:
+                el.remove(timing)
+            xml = (f'<p:timing {NSDECL}><p:tnLst><p:par><p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>'
+                   f'<p:seq concurrent="1" nextAc="seek"><p:cTn id="2" dur="indefinite" nodeType="mainSeq"><p:childTnLst>'
+                   f'<p:par><p:cTn fill="hold"><p:stCondLst><p:cond delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond></p:stCondLst>'
+                   f'<p:childTnLst>{"".join(steps)}</p:childTnLst></p:cTn></p:par>'
+                   f'</p:childTnLst></p:cTn><p:prevCondLst><p:cond evt="onPrev" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst>'
+                   f'<p:nextCondLst><p:cond evt="onNext" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq>'
+                   f'</p:childTnLst></p:cTn></p:par></p:tnLst>'
+                   + (f'<p:bldLst>{"".join(bld)}</p:bldLst>' if bld else '') + '</p:timing>')
+            timing = etree.fromstring(xml)
+            el.append(timing)
+    # renumber every cTn id (unique, starting at 1)
+    if timing is not None:
+        for i, c in enumerate(timing.iter(P + "cTn"), 1):
+            c.set("id", str(i))
+    # transition: one consistent fade (replace whatever was there, incl. mc:AlternateContent wrappers)
+    for alt in el.findall("{%s}AlternateContent" % NS["mc"]):
+        if XP(".//p:transition", alt):
+            el.remove(alt)
+    for tr in el.findall(P + "transition"):
+        el.remove(tr)
+    tr = etree.fromstring(f'<p:transition {NSDECL} spd="med"><p:fade/></p:transition>')
+    # order: cSld, clrMapOvr, transition, timing, extLst
+    anchor = el.find(P + "timing")
+    if anchor is None:
+        anchor = el.find(P + "extLst")
+    if anchor is not None:
+        anchor.addprevious(tr)
+    else:
+        el.append(tr)
+
+prs.save(dst)
+print("saved", dst, "slides", len(slides))
