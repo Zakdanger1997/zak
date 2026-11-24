@@ -379,8 +379,8 @@ for i, (n, where, lon, lat) in enumerate(order):
 t += len(order) * 0.035 + 0.2
 
 
-def pill(txt, x, y, fill, size=11):
-    w = text_w(txt, size) * 0.93 + 0.32          # Calibri bold is narrower than Cambria bold
+def pill(txt, x, y, fill, size=11, flag=None):
+    w = text_w(txt, size) * 0.93 + 0.32 + (0.3 if flag else 0)          # Calibri bold is narrower than Cambria bold
     h = 0.3
     r = ms.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(x - w / 2), Inches(y - h / 2), Inches(w), Inches(h))
     r.adjustments[0] = 0.5
@@ -394,30 +394,36 @@ def pill(txt, x, y, fill, size=11):
     run = p.add_run(); run.text = txt
     run.font.size, run.font.bold, run.font.name = Pt(size), True, SANS
     run.font.color.rgb = WHITE
-    return r
+    if flag:
+        tf.margin_left = Inches(0.34)
+        fd = 0.4
+        f = pic(ms, A + f"flag_{flag}.png", x - w / 2 - 0.08, y - fd / 2, fd, fd, name=f"Flag {flag}")
+        return r, f
+    return r, None
 
 
 LABELS = [  # text, lon, lat, label dx, dy (inches from the pin), fill, dot size
-    ("Istanbul · HQ & factory", 28.98, 41.01, 0.55, -1.15, DARK, 0.22),
-    ("SIPCO · USA", -95.37, 29.76, -0.2, -1.05, INK, 0.2),
-    ("Hudaco · South Africa", 28.26, -26.21, 1.55, 0.25, INK, 0.2),
-    ("Morocco", -7.59, 33.57, -1.05, -0.55, RED, 0.16),
-    ("Tunisia", 10.18, 36.81, -0.55, -1.2, RED, 0.16),
-    ("Egypt", 30.93, 29.94, 0.35, 0.95, RED, 0.16),
-    ("Dubai", 55.27, 25.20, 0.95, 0.45, RED, 0.16),
-    ("Ecuador", -79.89, -2.19, -0.95, 0.35, RED, 0.16),
+    ("Istanbul · HQ & factory", 28.98, 41.01, 0.55, -1.15, DARK, 0.22, "tr"),
+    ("SIPCO · USA", -95.37, 29.76, -0.2, -1.05, INK, 0.2, "us"),
+    ("Hudaco · South Africa", 28.26, -26.21, 1.7, 0.25, INK, 0.2, "za"),
+    ("Morocco", -7.59, 33.57, -1.15, -0.55, RED, 0.16, "ma"),
+    ("Tunisia", 10.18, 36.81, -0.55, -1.2, RED, 0.16, "tn"),
+    ("Egypt", 30.93, 29.94, 0.35, 0.95, RED, 0.16, "eg"),
+    ("Dubai", 55.27, 25.20, 1.05, 0.45, RED, 0.16, "ae"),
+    ("Ecuador", -79.89, -2.19, -1.05, 0.35, RED, 0.16, "ec"),
 ]
-for k, (txt, lon, lat, dx, dy, fill, ds) in enumerate(LABELS):
+for k, (txt, lon, lat, dx, dy, fill, ds, fl) in enumerate(LABELS):
     x, y = proj(lon, lat)
     ld = ms.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x), Inches(y), Inches(x + dx), Inches(y + dy))
     ld.line.color.rgb = fill
     ld.line.width = Pt(1.25)
     dd = dot(ms, x, y, ds, fill)
-    pl = pill(txt, x + dx, y + dy, fill)
+    pl, fg = pill(txt, x + dx, y + dy, fill, flag=fl)
     tk = t + k * 0.3
     anim(ms, dd, "zoom", tk, 0.35)
     anim(ms, ld, "fade", tk + 0.15, 0.3)
     anim(ms, pl, "zoom", tk + 0.3, 0.35)
+    anim(ms, fg, "zoom", tk + 0.4, 0.35)
 t += len(LABELS) * 0.3 + 0.4
 # counters, top right
 CNT = [(str(len(mounts)), "mounting\ncentres", DARK), (str(len(servs)), "service\ncentres", RED),
