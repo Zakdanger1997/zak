@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- i.Mak MK series key visual: the unit in a red spotlight, its wall shadow crowned. 2160x2700 (4:5).
+     Render: node render.js  -> imak-mk-king-of-heavy-duty.jpg -->
+<style>
+@font-face { font-family: Mont; font-weight: 400; src: url(fonts/montserrat-latin-400-normal.woff2); }
+@font-face { font-family: Mont; font-weight: 600; src: url(fonts/montserrat-latin-600-normal.woff2); }
+@font-face { font-family: Mont; font-weight: 800; src: url(fonts/montserrat-latin-800-normal.woff2); }
+@font-face { font-family: Play; font-style: italic; font-weight: 700; src: url(fonts/playfair-latin-700-italic.woff2); }
+html, body { margin: 0; width: 2160px; height: 2700px; overflow: hidden; }
+#p { position: relative; width: 2160px; height: 2700px; overflow: hidden;
+     background: radial-gradient(ellipse 62% 50% at 50% 46%, #d8161c 0%, #b30d12 40%, #7a0508 78%, #4d0204 100%); }
+.beam { position: absolute; left: 50%; top: -200px; width: 1500px; height: 2600px; transform: translateX(-50%);
+        background: radial-gradient(ellipse 50% 60% at 50% 40%, rgba(255,90,80,.28), rgba(255,60,50,0) 70%); }
+.wall { position: absolute; left: 0; right: 0; top: 0; height: 2060px; }
+.floor { position: absolute; left: 0; right: 0; top: 1990px; bottom: 0;
+         background: linear-gradient(rgba(90,3,6,0), rgba(70,2,4,.55) 18%, rgba(50,1,3,.8) 80%); }
+.shadow { position: absolute; filter: brightness(0) blur(7px); opacity: .30; }
+#crown { position: absolute; left: 50%; transform: translateX(-50%); filter: blur(5px); opacity: .32; }
+#mk { position: absolute; filter: drop-shadow(0 40px 40px rgba(40,0,0,.55)) saturate(1.05) contrast(1.05); }
+.contact { position: absolute; left: 50%; transform: translateX(-50%); width: 1500px; height: 120px; top: 2010px;
+           background: radial-gradient(ellipse at center, rgba(25,0,0,.75), rgba(25,0,0,0) 70%); }
+#logo { position: absolute; left: 50%; top: 150px; width: 470px; transform: translateX(-50%); }
+.t1 { position: absolute; left: 0; right: 0; top: 2238px; text-align: center; color: #fff; font: 600 70px Mont; letter-spacing: .5px; }
+.t1 em { font: italic 700 82px Play; letter-spacing: 0; }
+.t2 { position: absolute; left: 0; right: 0; top: 2378px; text-align: center; color: rgba(255,255,255,.78);
+      font: 400 34px Mont; letter-spacing: 9px; }
+.t3 { position: absolute; left: 0; right: 0; bottom: 120px; text-align: center; color: rgba(255,255,255,.6); font: 600 30px Mont; letter-spacing: 4px; }
+.rule { position: absolute; left: 50%; top: 2350px; width: 120px; height: 3px; background: rgba(255,255,255,.6); transform: translateX(-50%); }
+.grain { position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay;
+         background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>"); }
+</style></head>
+<body><div id="p">
+  <div class="beam"></div>
+  <div class="floor"></div>
+  <img class="shadow" id="sh" src="assets/mk.png">
+  <svg id="crown" viewBox="0 0 600 400" width="760">
+    <path fill="#2a0000" fill-rule="evenodd" d="
+      M70 300 L40 110 L150 205 L200 70 L262 185 L300 30 L338 185 L400 70 L450 205 L560 110 L530 300 Z
+      M60 312 H540 Q552 312 552 324 V362 Q552 374 540 374 H60 Q48 374 48 362 V324 Q48 312 60 312 Z
+      M300 255 m-22 0 a22 26 0 1 0 44 0 a22 26 0 1 0 -44 0
+      M180 266 m-14 0 a14 17 0 1 0 28 0 a14 17 0 1 0 -28 0
+      M420 266 m-14 0 a14 17 0 1 0 28 0 a14 17 0 1 0 -28 0
+      M120 343 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0
+      M210 343 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0
+      M300 343 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0
+      M390 343 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0
+      M480 343 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0"/>
+    <circle cx="40" cy="96" r="24" fill="#2a0000"/><circle cx="200" cy="56" r="24" fill="#2a0000"/>
+    <circle cx="300" cy="18" r="28" fill="#2a0000"/><circle cx="400" cy="56" r="24" fill="#2a0000"/>
+    <circle cx="560" cy="96" r="24" fill="#2a0000"/>
+  </svg>
+  <div class="contact"></div>
+  <img id="mk" src="assets/mk.png">
+  <img id="logo" src="assets/imak-logo-white.png">
+  <div class="t1">Not just a gearbox. <em>The King of Heavy Duty.</em></div>
+  <div class="t2">MK SERIES · HEAVY-DUTY GEAR UNITS FOR MINES &amp; STEEL PLANTS</div>
+  <div class="t3">WWW.IMAKREDUKTOR.COM</div>
+  <div class="grain"></div>
+</div>
+<script>
+window.layout = () => {
+  const mk = document.getElementById('mk'), sh = document.getElementById('sh'), cr = document.getElementById('crown');
+  const W = 1420, H = W * mk.naturalHeight / mk.naturalWidth, X = (2160 - W) / 2, Yb = 2050;
+  Object.assign(mk.style, { width: W + 'px', left: X + 'px', top: (Yb - H) + 'px' });
+  const k = 1.06, sw = W * k, shh = H * k * 1.12;               // wall shadow: a little bigger and taller (light from low front)
+  Object.assign(sh.style, { width: sw + 'px', height: shh + 'px', left: (2160 - sw) / 2 + 'px', top: (Yb - H - 300) + 'px' });
+  const crownBottom = Yb - H - 300 + 12;
+  cr.style.top = (crownBottom - 760 * 400 / 600) + 'px';
+};
+</script></body></html>
