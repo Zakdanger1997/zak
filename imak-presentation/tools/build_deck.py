@@ -97,6 +97,10 @@ def dot(slide, cx, cy, d, color=RED, line=True):
     return s
 
 
+def XP(expr, el):
+    return etree.XPath(expr, namespaces=NS)(el)
+
+
 def send_to_back(slide, shape):
     tree = slide.shapes._spTree
     tree.remove(shape._element)
@@ -308,6 +312,33 @@ for idx, (kick, black, red) in {4: ("İ-MAK REDÜKTÖR  ·  INDUSTRIES", "Sector
         if sh.shape_type == 13 and sh.left > Inches(10.9) and sh.top > Inches(6.5):
             anim(s, sh, "fade", 0.2, 0.4)
 
+
+# ------------------- slide 10: full-screen video -> online IRK video (YouTube)
+from pptx.opc.constants import RELATIONSHIP_TYPE as RT
+YT = "https://www.youtube.com/embed/IzF6_iL5BpY?feature=oembed"
+s = slides[8]
+for sh in s.shapes:
+    if sh.shape_type != 16:
+        continue
+    el, part = sh._element, s.part
+    vf = XP(".//a:videoFile", el)[0]
+    old = [vf.get("{%s}link" % NS["r"])]
+    for ext in XP(".//p:nvPr/p:extLst/p:ext[*[local-name()='media']]", el):
+        old.append(ext[0].get("{%s}embed" % NS["r"]))
+        ext.getparent().remove(ext)
+    vf.set("{%s}link" % NS["r"], part.relate_to(YT, RT.VIDEO, is_external=True))
+    blip = XP(".//p:blipFill/a:blip", el)[0]
+    old.append(blip.get("{%s}embed" % NS["r"]))
+    _, rid = part.get_or_add_image_part(A + "irk_poster.jpg")
+    blip.set("{%s}embed" % NS["r"], rid)
+    for ext in XP("./a:extLst", blip):
+        blip.remove(ext)
+    for r in old:
+        if r:
+            part.drop_rel(r)
+    sh.name = "IRK Series - I-MAK Reduktor (YouTube)"
+    XP(".//p:cNvPr", el)[0].set("descr", "IRK Series - I-MAK Reduktor, online video: https://youtu.be/IzF6_iL5BpY")
+    print("slide 10 video -> YouTube IRK")
 # ------------------------------------------- service centres (new slide)
 layout = slides[5].slide_layout
 ms = prs.slides.add_slide(layout)
@@ -378,10 +409,6 @@ slides = list(prs.slides)
 
 # ------------------------------------------------ generic staged entrances
 MEDIA_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/video"
-
-
-def XP(expr, el):
-    return etree.XPath(expr, namespaces=NS)(el)
 
 
 def is_media(sh):
