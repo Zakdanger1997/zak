@@ -11,4 +11,4 @@ The source is the company deck shared from SharePoint ("I-MAK Presentation 2025.
 - **Slide 9 video:** re-encoded from 250 MB to 90 MB (1080p, H.264), visually the same.
 
 ## Rebuild
-`tools/prep_assets.py` creates the collage assets. `tools/build_deck.py in.pptx out.pptx` applies the slide edits to a deck whose master decoration has already been removed (see the script header).
+`tools/prep_assets.py` creates the collage assets. `tools/build_deck.py in.pptx out.pptx` applies the slide edits to a deck whose master decoration has already been removed (see the script header). `tools/gears.py` draws the engineering-drawing gears for the cover (run it before `build_deck.py`); the two gears spin in PowerPoint with an endless spin emphasis, in mesh (pinion period = wheel period × 20/48).
