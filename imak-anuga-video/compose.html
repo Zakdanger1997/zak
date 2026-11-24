@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- i.Mak "final countdown" teaser for Anuga FoodTec 2027, in the style of the Pack Expo / Propak Cape teasers.
+     Driven frame by frame by tools/compose.js: window.setup(scenes), then window.renderAt(t). -->
+<style>
+@font-face { font-family: Bebas; src: url(fonts/bebas-neue-latin-400-normal.woff2); }
+@font-face { font-family: Mont; font-weight: 800; src: url(fonts/montserrat-latin-800-normal.woff2); }
+@font-face { font-family: Mont; font-weight: 600; src: url(fonts/montserrat-latin-600-normal.woff2); }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+#stage { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; left: 0; top: 0; will-change: transform; }
+#bg { width: 1920px; height: 1080px; object-fit: cover; transform-origin: 50% 50%; }
+.giant { font-family: Bebas; color: #fff; white-space: nowrap; line-height: .82; letter-spacing: 2px; }
+.tag { font-family: Bebas; color: #fff; background: #c8102e; padding: 6px 18px 0; line-height: 1.05; white-space: nowrap;
+       box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.unit { filter: drop-shadow(0 30px 30px rgba(0,0,0,.45)); }
+#map { transform-origin: 0 0; }
+#map img { position: absolute; left: 0; top: 0; }
+.ring { position: absolute; border: 4px solid #fff; border-radius: 50%; }
+.end { font-family: Mont; font-weight: 800; color: #1f2836; line-height: .95; }
+#vign { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.35) 100%); }
+#flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+#credit { position: absolute; right: 26px; top: 18px; font: 15px Mont; font-weight: 600; color: rgba(255,255,255,.75); }
+</style></head>
+<body><div id="stage">
+  <img id="bg" class="abs">
+  <div id="mapwrap" class="abs" style="width:1920px;height:1080px;overflow:hidden">
+    <div id="map" class="abs"><img id="mapimg" src="assets/map/europe_s2.jpg"><img id="mapov" src="assets/map/europe_overlay.png"></div>
+    <div id="pin" class="abs"></div>
+  </div>
+  <div id="whiteveil" class="abs" style="width:1920px;height:1080px;background:#fff;opacity:0"></div>
+  <div id="vign"></div>
+  <div id="giant1" class="abs giant"></div>
+  <div id="giant2" class="abs giant"></div>
+  <img id="unit" class="abs unit">
+  <div id="tags"></div>
+  <div id="endcard" class="abs" style="width:1920px;height:1080px"></div>
+  <img id="evlogo" class="abs" src="assets/anugafoodtec_logo_2x.png">
+  <div id="credit"></div>
+  <div id="flash"></div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const E = (t, a, b) => clamp((t - a) / (b - a));
+const oc = (x) => 1 - Math.pow(1 - x, 3);
+const ob = (x) => { const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const io = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+let SC = null, MAP = null;
+
+window.setup = async (scenes, map) => { SC = scenes; MAP = map; };
+
+function frame(id, t0, t) { return `render/fg/${id}/${String(Math.max(0, Math.round((t - t0) * 30))).padStart(4, '0')}.jpg`; }
+function tag(text, x, y, size, t, ta, align = 'left') {
+  const k = oc(E(t, ta, ta + .35));
+  if (k <= 0) return '';
+  const tr = align === 'left' ? `translateX(${(1 - k) * -40}px)` : `translateX(${(1 - k) * 40}px)`;
+  const clip = align === 'left' ? `inset(0 ${(1 - k) * 100}% 0 0)` : `inset(0 0 0 ${(1 - k) * 100}%)`;
+  const pos = align === 'left' ? `left:${x}px` : `right:${1920 - x}px`;
+  return `<div class="tag" style="position:absolute;${pos};top:${y}px;font-size:${size}px;transform:${tr};clip-path:${clip}">${text}</div>`;
+}
+const UNITS = { s3_olives: ['assets/units/bevel_helical_a.png', 1080], s4_bottles: ['assets/units/helical_a.png', 1000],
+                s5_eggs: ['assets/units/bevel_helical_c.png', 720] };
+
+window.renderAt = async (t) => {
+  const s = SC.scenes.find((q) => t >= q.t0 && t < q.t1) || SC.scenes[SC.scenes.length - 1];
+  const lt = t - s.t0, len = s.t1 - s.t0;
+  const bg = $('bg'), unit = $('unit'), g1 = $('giant1'), g2 = $('giant2');
+  let tags = '', end = '';
+  $('credit').textContent = '';
+  g1.textContent = g2.textContent = ''; g1.style.opacity = g2.style.opacity = 1;
+  unit.style.display = 'none'; $('mapwrap').style.display = 'none'; $('evlogo').style.display = 'none';
+  $('whiteveil').style.opacity = 0; $('endcard').innerHTML = '';
+  // cut transition: zoom-blur punch on the incoming shot + short white flash
+  const tin = E(lt, 0, .28), punch = 1 - oc(tin);
+  const blur = punch * 14;
+  $('flash').style.opacity = s.t0 > 0 ? Math.max(0, .35 - lt * 2.2) : 0;
+  let scale = 1.04 + .05 * (lt / len) + punch * .12, bgBlur = blur, bright = 1;
+  if (s.clip) {
+    bg.style.display = 'block';
+    bg.src = frame(s.id, s.t0, t);
+  } else bg.style.display = 'none';
+
+  if (s.id === 's1_logo') {
+    bgBlur += 7; bright = .8;
+    const L = $('evlogo'); L.style.display = 'block';
+    const k = ob(E(lt, .25, .85)), out = io(E(lt, 2.35, 2.7));
+    const w = 400 * (.55 + .45 * k) * (1 + out * .4);
+    L.style.width = w + 'px';
+    L.style.transform = `translate(${960 - w / 2}px, ${540 - w / 2 - 10}px)`;
+    L.style.opacity = E(lt, .25, .5) * (1 - out);
+  }
+  if (s.id === 's2_dates') {
+    tags += tag('23-26 FEBRUARY', 90, 86, 74, lt, .3);
+    g1.textContent = '23-26 FEBRUARY 2027';
+    g1.style.fontSize = '330px'; g1.style.opacity = .93 * E(lt, .45, .8);
+    g1.style.transform = `translate(${260 - 420 * (lt / len) - (1 - oc(E(lt, .45, .9))) * -200}px, ${1080 - 250}px)`;
+  }
+  if (s.id === 's3_olives') {
+    g1.textContent = 'I-MAK REDUKTOR';
+    g1.style.fontSize = '300px'; g1.style.opacity = .9 * E(lt, .1, .4);
+    g1.style.transform = `translate(-40px, ${1500 - 900 * (lt / len)}px) rotate(-90deg)`;
+    g1.style.transformOrigin = '0 0';
+  } else g1.style.transformOrigin = '0 0';
+  if (s.id === 's3_olives' || s.id === 's4_bottles' || s.id === 's5_eggs') {
+    const [src, w] = UNITS[s.id];
+    unit.style.display = 'block'; unit.src = src; unit.style.width = w + 'px';
+    const k = oc(E(lt, .05, .6));
+    if (s.id === 's3_olives') {
+      unit.style.transform = `translate(${120 - (1 - k) * 1300 + lt * 18}px, ${300}px)`;
+      tags += tag('SOLUTIONS FOR', 1830, 735, 54, lt, .7, 'right');
+      tags += tag('FOOD PROCESSING &amp; PACKAGING', 1830, 812, 84, lt, .95, 'right');
+    }
+    if (s.id === 's4_bottles') {
+      g1.textContent = 'I-MAK REDUKTOR';
+      g1.style.fontSize = '300px'; g1.style.opacity = .92 * E(lt, .1, .4);
+      g1.style.transform = `translate(${140 - 380 * (lt / len)}px, -30px)`;
+      const z = .82 + .18 * k + .03 * (lt / len);
+      unit.style.transform = `translate(${820}px, ${380}px) scale(${z})`; unit.style.transformOrigin = '50% 60%';
+      unit.style.opacity = E(lt, .05, .3);
+      tags += tag('HELICAL GEARED MOTORS', 140, 900, 62, lt, .8);
+    } else { unit.style.opacity = 1; unit.style.transformOrigin = '50% 50%'; }
+    if (s.id === 's5_eggs') {
+      g1.textContent = 'I-MAK REDUKTOR';
+      g1.style.fontSize = '300px'; g1.style.opacity = .9 * E(lt, .1, .4);
+      g1.style.transform = `translate(${1960}px, ${-500 + 800 * (lt / len)}px) rotate(90deg)`;
+      unit.style.transform = `translate(${1040 + (1 - k) * 1100 - lt * 15}px, ${250}px)`;
+      tags += tag('DRIVES FOR EVERY LINE', 110, 860, 62, lt, .8);
+    }
+  }
+  if (s.id === 's6_map') {
+    $('mapwrap').style.display = 'block'; bgBlur = 0;
+    const [cx, cy] = MAP.cologne;
+    const z = io(E(lt, 0, len));
+    const view = 3800 - 2350 * z;                 // source px across the screen
+    const sc = 1920 / view;
+    const fx = cx + 120 * (1 - z), fy = cy - 260 * (1 - z);
+    const m = $('map');
+    m.style.transform = `translate(${960 - fx * sc}px, ${560 - fy * sc}px) scale(${sc})`;
+    m.style.filter = `blur(${blur}px)`;
+    $('mapov').style.opacity = E(lt, .5, 1.1);
+    const px = 960 + (cx - fx) * sc, py = 560 + (cy - fy) * sc;
+    const pk = ob(E(lt, .9, 1.25));
+    let pin = `<div style="position:absolute;left:${px - 16 * pk}px;top:${py - 16 * pk}px;width:${32 * pk}px;height:${32 * pk}px;border-radius:50%;background:#e1251b;box-shadow:0 0 0 4px #fff, 0 0 30px rgba(225,37,27,.9)"></div>`;
+    for (let r = 0; r < 2; r++) {
+      const ph = ((lt - 1.0 - r * .5) % 1.0 + 1.0) % 1.0;
+      if (lt > 1.0 + r * .5) { const d = 30 + ph * 110; pin += `<div class="ring" style="left:${px - d / 2}px;top:${py - d / 2}px;width:${d}px;height:${d}px;opacity:${1 - ph}"></div>`; }
+    }
+    const lk = oc(E(lt, 1.15, 1.5));
+    pin += `<div style="position:absolute;left:${px + 34}px;top:${py - 64}px;font-family:Bebas;color:#fff;font-size:76px;text-shadow:0 3px 14px rgba(0,0,0,.7);opacity:${lk};transform:translateX(${(1 - lk) * 30}px)">COLOGNE</div>`;
+    pin += `<div style="position:absolute;left:${px + 37}px;top:${py + 6}px;font-family:Mont;font-weight:600;color:#fff;font-size:22px;letter-spacing:3px;text-shadow:0 2px 10px rgba(0,0,0,.8);opacity:${lk}">GERMANY</div>`;
+    $('pin').innerHTML = pin;
+    tags += tag('COLOGNE, GERMANY', 90, 86, 64, lt, .35);
+    tags += tag('KOELNMESSE', 90, 166, 46, lt, .55);
+    g1.textContent = 'COLOGNE · GERMANY';
+    g1.style.fontSize = '300px'; g1.style.opacity = .9 * E(lt, .4, .8);
+    g1.style.transform = `translate(${200 - 420 * (lt / len)}px, ${1080 - 225}px)`;
+    $('credit').textContent = 'Imagery: Sentinel-2 cloudless – s2maps.eu by EOX IT Services GmbH (contains modified Copernicus Sentinel data 2016)';
+  }
+  if (s.id === 's7_end') {
+    bgBlur += 6; scale = 1.06 + .03 * (lt / len) + punch * .1;
+    $('whiteveil').style.opacity = .5 * E(lt, 0, .4);
+    const L = $('evlogo'); L.style.display = 'block';
+    const k0 = ob(E(lt, .2, .7)), w = 280 * (.7 + .3 * k0);
+    L.style.width = w + 'px'; L.style.opacity = E(lt, .2, .45);
+    L.style.transform = `translate(${960 - w / 2}px, ${150 - w / 2 + 60}px)`;
+    const it = (html, x, y, ta, align) => {
+      const k = oc(E(lt, ta, ta + .45));
+      return `<div style="position:absolute;${align}:${x}px;top:${y}px;opacity:${k};transform:translateY(${(1 - k) * 30}px)">${html}</div>`;
+    };
+    end += it(`<div class="end" style="font-size:150px;text-align:center">23-26</div><div class="end" style="font-size:78px;text-align:center;margin-top:6px">FEBRUARY</div>`, 1920 - 760, 380, .5, 'right');
+    end += it(`<div class="end" style="font-size:96px">COLOGNE</div><div class="end" style="font-size:96px;margin-top:4px">GERMANY</div>`, 1060, 392, .7, 'left');
+    end += `<div style="position:absolute;left:958px;top:${400}px;width:5px;height:${200 * oc(E(lt, .6, 1.0))}px;background:#c8102e"></div>`;
+    end += it(`<div class="end" style="font-size:44px;font-weight:600;letter-spacing:4px;text-align:center;width:1920px">KOELNMESSE</div>`, 0, 655, .9, 'left');
+    end += it(`<img src="assets/imak-logo.png" style="width:470px">`, 725, 790, 1.15, 'left');
+    $('endcard').innerHTML = end;
+  }
+  bg.style.transform = `scale(${scale})`;
+  bg.style.filter = `blur(${bgBlur}px) brightness(${bright})`;
+  $('tags').innerHTML = tags;
+  const imgs = [...document.images].filter((i) => i.offsetParent !== null || i.id === 'bg');
+  await Promise.all(imgs.map((i) => (i.complete && i.naturalWidth) ? null : new Promise((r) => { i.onload = i.onerror = r; })));
+  await Promise.all(imgs.map((i) => i.decode ? i.decode().catch(() => {}) : null));
+};
+</script></body></html>

@@ -1,4 +1,3 @@
 render/
 assets/footage/*
-!assets/footage/SOURCES.csv
-video/*.mp4
+!assets/footage/SOURCES.md
