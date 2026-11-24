@@ -21,7 +21,7 @@ const srv = http.createServer((req, res) => {
   const a = process.argv.slice(2);
   const stills = a.includes('--stills') ? a[a.indexOf('--stills') + 1].split(',').map(Number) : null;
   const out = stills ? null : a.find((x) => x.endsWith('.mp4')) || path.join(ROOT, 'video', 'imak-iguide-9x16.mp4');
-  const sc = { fps: 30, total: 17 };
+  const sc = { fps: 30, total: 14.5 };
   const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets', 'bg.json')));
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });

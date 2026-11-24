@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8">
-<!-- i-Guide teaser, 1080x1920 @30 fps. A giant phone in a dark showroom; crane hooks stock i.Mak gearboxes into the
-     i-Guide selection grid; quick search returns STEP/DWG/PDF; a hook presses the red button; end card with QR.
-     Driven by tools/compose.js: window.setup(cfg), window.renderAt(t). -->
+<!-- i-Guide teaser v2, 1080x1920 @30 fps, 14.5 s. Deep-red stage with spotlight, sparks and a reflective floor grid;
+     the phone swings in, gearboxes drop into the i-Guide grid on the beat, quick search, an MK unit hits the red
+     button and zaps into the phone for the end card. Driven by tools/compose.js: setup(cfg), renderAt(t). -->
 <style>
 @font-face { font-family: Mont; font-weight: 400; src: url(fonts/montserrat-latin-400-normal.woff2); }
 @font-face { font-family: Mont; font-weight: 600; src: url(fonts/montserrat-latin-600-normal.woff2); }
 @font-face { font-family: Mont; font-weight: 800; src: url(fonts/montserrat-latin-800-normal.woff2); }
 html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
-#stage { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 55%; }
-#bg { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-#glow { position: absolute; left: 140px; top: 120px; width: 720px; height: 1420px; border-radius: 120px;
-        background: radial-gradient(ellipse at center, rgba(255,255,255,.22), rgba(255,255,255,0) 70%); filter: blur(30px); }
-#phone { position: absolute; left: 200px; top: 186px; width: 600px; height: 1300px; border-radius: 86px;
-         background: linear-gradient(90deg, #4a4d52, #8d9096 8%, #5a5d62 20%, #3b3e43 50%, #5a5d62 80%, #9a9da3 93%, #44474c);
-         box-shadow: 0 30px 60px rgba(0,0,0,.6);
-         -webkit-box-reflect: below 2px linear-gradient(transparent 72%, rgba(255,255,255,.22)); }
+#stage { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 50%;
+         background: radial-gradient(ellipse 85% 55% at 50% 42%, #6d0a0c 0%, #3a0406 45%, #140102 80%, #070001 100%); }
+#ghost { position: absolute; left: 0; right: 0; top: 560px; text-align: center; font: 800 330px Mont; color: transparent;
+         -webkit-text-stroke: 2px rgba(255,90,80,.16); letter-spacing: -8px; white-space: nowrap; }
+#beam { position: absolute; left: 50%; top: -100px; width: 1300px; height: 1900px; margin-left: -650px;
+        clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); filter: blur(28px);
+        background: linear-gradient(rgba(255,210,190,.30), rgba(255,120,100,.10) 60%, rgba(255,80,60,0)); mix-blend-mode: screen; }
+#floor { position: absolute; left: -400px; right: -400px; top: 1630px; height: 900px; transform-origin: 50% 0; transform: perspective(700px) rotateX(72deg);
+         background: repeating-linear-gradient(90deg, rgba(255,80,70,.22) 0 2px, transparent 2px 120px),
+                     repeating-linear-gradient(0deg, rgba(255,80,70,.22) 0 2px, transparent 2px 120px),
+                     linear-gradient(#1c0203, #050000); }
+#floorfade { position: absolute; left: 0; right: 0; top: 1630px; bottom: 0; background: linear-gradient(rgba(10,0,0,0), rgba(5,0,0,.85)); }
+#halo { position: absolute; left: 140px; top: 1560px; width: 800px; height: 140px; border-radius: 50%;
+        background: radial-gradient(ellipse at center, rgba(255,60,50,.55), rgba(255,60,50,0) 70%); filter: blur(10px); }
+#sparks { position: absolute; inset: 0; mix-blend-mode: screen; }
+.sp { position: absolute; border-radius: 50%; background: #ffcf9a; box-shadow: 0 0 10px 3px rgba(255,140,60,.7); }
+#cap { position: absolute; left: 0; right: 0; top: 96px; text-align: center; font-family: Mont; color: #fff; }
+#rig { position: absolute; inset: 0; perspective: 2200px; perspective-origin: 50% 45%; }
+#phone { position: absolute; left: 200px; top: 300px; width: 600px; height: 1300px; border-radius: 86px; transform-style: preserve-3d;
+         background: linear-gradient(90deg, #3c3f44, #a8abb1 7%, #55585d 18%, #2e3135 50%, #55585d 82%, #b5b8be 94%, #3a3d42);
+         box-shadow: 0 40px 90px rgba(0,0,0,.75), 0 0 0 2px rgba(255,255,255,.06);
+         -webkit-box-reflect: below 30px linear-gradient(transparent 76%, rgba(255,255,255,.20)); }
 #bezel { position: absolute; left: 6px; top: 6px; right: 6px; bottom: 6px; border-radius: 80px; background: #050506; }
 #screen { position: absolute; left: 18px; top: 18px; width: 564px; height: 1264px; border-radius: 64px; overflow: hidden; background: #fff; }
 #island { position: absolute; left: 50%; top: 22px; width: 150px; height: 42px; margin-left: -75px; border-radius: 21px; background: #050506; z-index: 5; }
+#sheen { position: absolute; inset: 0; z-index: 6; pointer-events: none;
+         background: linear-gradient(115deg, rgba(255,255,255,0) 35%, rgba(255,255,255,.55) 48%, rgba(255,255,255,0) 60%); }
 #ui { position: absolute; left: 0; top: 0; width: 430px; height: 964px; transform-origin: 0 0; transform: scale(1.31163); }
 .scr { position: absolute; inset: 0; background: #fff; }
 .hdr { position: absolute; left: 0; right: 0; top: 0; height: 216px; text-align: center; font-family: Mont; }
@@ -27,29 +43,33 @@ html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; backgro
 .hdr .step { position: absolute; top: 86px; left: 0; right: 0; font: 400 17px Mont; color: #333; }
 .hdr .step b { color: #9d1a12; font-weight: 600; }
 .hdr img.logo { position: absolute; top: 132px; left: 50%; width: 120px; margin-left: -20px; }
-.hdr .flag { position: absolute; top: 135px; left: 112px; width: 44px; height: 30px; border-radius: 15px; overflow: hidden;
-             background: linear-gradient(#012169,#012169); }
+.hdr .flag { position: absolute; top: 135px; left: 112px; width: 44px; height: 30px; border-radius: 15px; overflow: hidden; }
 .cell { position: absolute; width: 215px; height: 246px; border-right: 1px solid #f2d9d6; border-bottom: 1px solid #f2d9d6; box-sizing: border-box; }
 .cell .lab { position: absolute; left: 0; right: 0; top: 196px; text-align: center; font: 400 16px Mont; color: #555; }
 .cell .slot { position: absolute; left: 30px; top: 22px; width: 155px; height: 155px; border: 2px dashed #ecc8c4; border-radius: 14px; box-sizing: border-box; }
 .cell img { position: absolute; left: 22px; top: 12px; width: 171px; }
 .ripple { position: absolute; border-radius: 50%; background: rgba(157,26,18,.25); }
-.chip { position: absolute; height: 58px; border-radius: 29px; background: #9d1a12; color: #fff; font: 800 22px Mont; line-height: 58px; padding: 0 22px 0 58px; }
-.chip i { position: absolute; left: 14px; top: 13px; width: 32px; height: 32px; border-radius: 50%; background: #fff; }
+.chip { position: absolute; height: 58px; border-radius: 29px; background: #9d1a12; color: #fff; font: 800 19px Mont; line-height: 58px; padding: 0 14px 0 52px; }
+.chip i { position: absolute; left: 13px; top: 13px; width: 32px; height: 32px; border-radius: 50%; background: #fff; }
 .chip i:after { content: ''; position: absolute; left: 10px; top: 8px; width: 8px; height: 10px; border-left: 4px solid #9d1a12; border-bottom: 4px solid #9d1a12; transform: rotate(-45deg); }
-.hook { position: absolute; left: 0; top: 0; }
-.cable { position: absolute; width: 3px; background: linear-gradient(90deg, #444, #aaa, #444); }
-.sling { position: absolute; height: 2px; background: #2b2b2b; transform-origin: 0 50%; }
+#fly { position: absolute; inset: 0; pointer-events: none; }
+#ped { position: absolute; left: 850px; top: 1440px; width: 180px; height: 190px; border-radius: 14px;
+       background: linear-gradient(90deg, #121214, #3b3b42 30%, #24242a 65%, #0c0c0e); box-shadow: 0 20px 40px rgba(0,0,0,.6), inset 0 3px 0 rgba(255,80,70,.6);
+       -webkit-box-reflect: below 30px linear-gradient(transparent 70%, rgba(255,255,255,.18)); }
+#pedtop { position: absolute; left: 875px; top: 1428px; width: 130px; height: 26px; border-radius: 50%; background: linear-gradient(#888, #333); box-shadow: 0 0 24px 6px rgba(255,40,40,.55); }
+#dome { position: absolute; width: 150px; left: 865px; top: 1378px; transform-origin: 50% 100%; }
 #flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
-#vign { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,.45) 100%); }
+#vign { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,.55) 100%); }
 #black { position: absolute; inset: 0; background: #000; }
 </style></head>
 <body><div id="stage">
-  <img id="bg" src="assets/bg.png">
-  <div id="glow"></div>
-  <div id="phone"><div id="bezel"></div><div id="screen"><div id="island"></div><div id="ui"></div></div></div>
-  <img id="dome" src="assets/dome.png" style="position:absolute;width:150px">
-  <div id="hooks"></div>
+  <div id="beam"></div>
+  <div id="floor"></div><div id="floorfade"></div><div id="halo"></div>
+  <div id="rig"><div id="phone"><div id="bezel"></div><div id="screen"><div id="island"></div><div id="ui"></div><div id="sheen"></div></div></div></div>
+  <div id="ped"></div><div id="pedtop"></div><img id="dome" src="assets/dome.png">
+  <div id="fly"></div>
+  <div id="sparks"></div>
+  <div id="cap"></div>
   <div id="vign"></div>
   <div id="flash"></div>
   <div id="black"></div>
@@ -59,143 +79,152 @@ const $ = (id) => document.getElementById(id);
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const E = (t, a, b) => clamp((t - a) / (b - a));
 const oc = (x) => 1 - Math.pow(1 - x, 3);
+const ic = (x) => x * x * x;
 const io = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const ob = (x) => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
-let CFG = null;
 const SER = [['ir', 'IR Series'], ['irk', 'IRK Series'], ['yp', 'YP Series'], ['irc', 'IRC Series'], ['ma', 'MA Series'], ['mk', 'MK Series'],
              ['iro', 'IRO Series'], ['irn-irnx', 'IRN / IRNX Series'], ['irs', 'IRS Series'], ['s', 'S Series'], ['irsd', 'IRSD Series'],
              ['ad-adk-ads', 'AD / ADK Series'], ['a-ae', 'A / AE Series']];
-const K = 1.31163, SX = 218, SY = 204;                 // ui px -> stage px
-const DROP0 = 1.7, DROPDT = 0.95, DROPLEN = 1.25;       // hook deliveries for the first six slots
-window.setup = (cfg) => { CFG = cfg; };
+const K = 1.31163, SX = 218, SY = 318;                 // ui px -> stage px (phone at 200,300; screen inset 18)
+const D0 = 2.0, DT = 0.535, FALL = .42;                // six drops on the beat (112 bpm)
+const TS = 6.6, TW = 9.15, TB = 9.55, TZ = 9.95, TE = 10.35, TOTAL = 14.5;
+// deterministic sparks
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const SP = Array.from({ length: 70 }, () => ({ x: rnd() * 1080, y: rnd() * 1920, v: 40 + rnd() * 110, s: 2 + rnd() * 5, w: rnd() * 6.28, a: .3 + rnd() * .7 }));
+window.setup = () => {};
 
 function header(step) {
   return `<div class="hdr"><div class="back"><b>&#8592;</b> Back</div><div class="step">${step}</div>
-    <div class="flag"><svg viewBox="0 0 60 30" width="44" height="30"><clipPath id="c"><rect width="60" height="30"/></clipPath><g clip-path="url(#c)">
-    <rect width="60" height="30" fill="#012169"/><path d="M0,0 60,30M60,0 0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 60,30M60,0 0,30" stroke="#C8102E" stroke-width="3"/>
-    <path d="M30,0V30M0,15H60" stroke="#fff" stroke-width="10"/><path d="M30,0V30M0,15H60" stroke="#C8102E" stroke-width="6"/></g></svg></div>
+    <div class="flag"><svg viewBox="0 0 60 30" width="44" height="30"><rect width="60" height="30" fill="#012169"/><path d="M0,0 60,30M60,0 0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 60,30M60,0 0,30" stroke="#C8102E" stroke-width="3"/>
+    <path d="M30,0V30M0,15H60" stroke="#fff" stroke-width="10"/><path d="M30,0V30M0,15H60" stroke="#C8102E" stroke-width="6"/></svg></div>
     <img class="logo" src="assets/imak-logo.png"></div>`;
 }
-function landed(i, t) { return t >= DROP0 + i * DROPDT + DROPLEN * .78; }
-
+const land = (i) => D0 + i * DT + FALL;
 function gridScreen(t, scroll) {
-  let h = `<div class="scr">${header('<b>STEP 1</b>- Gearboxes Categories')}`;
-  h += `<div style="position:absolute;left:0;top:${216 - scroll}px;width:430px">`;
+  let h = `<div class="scr"><div style="position:absolute;left:0;top:${216 - scroll}px;width:430px">`;
   SER.forEach(([id, lab], i) => {
     const c = i % 2, r = Math.floor(i / 2);
-    let img = '';
-    let on = false, k = 1;
-    if (i < 6) { on = landed(i, t); k = oc(E(t, DROP0 + i * DROPDT + DROPLEN * .78, DROP0 + i * DROPDT + DROPLEN * .78 + .25)); }
-    else { const ta = 8.55 + (i - 6) * .09; on = t >= ta; k = ob(E(t, ta, ta + .3)); }
-    if (on) img = `<img src="assets/units/${id}.png" style="transform:scale(${.85 + .15 * k});opacity:${Math.min(1, k * 1.5)}">`;
-    h += `<div class="cell" style="left:${c * 215}px;top:${r * 246}px">${on ? '' : '<div class="slot"></div>'}${img}<div class="lab" style="font-weight:${on ? 600 : 400};color:${on ? '#222' : '#aaa'}">${lab}</div></div>`;
+    let on, k, glow = 0;
+    if (i < 6) { on = t >= land(i); k = 1; glow = 1 - E(t, land(i), land(i) + .45); }
+    else { const ta = 5.75 + (i - 6) * .08; on = t >= ta; k = ob(E(t, ta, ta + .3)); glow = 1 - E(t, ta, ta + .5); }
+    const sq = i < 6 ? 1 + .08 * Math.sin(E(t, land(i), land(i) + .3) * Math.PI) : 1;
+    const img = on ? `<img src="assets/units/${id}.png" style="transform:scale(${(.85 + .15 * k)}, ${(.85 + .15 * k) / sq});transform-origin:50% 90%">` : '';
+    const gl = on && glow > 0 ? `<div style="position:absolute;inset:6px;border-radius:14px;box-shadow:inset 0 0 0 ${3 + 6 * glow}px rgba(200,16,46,${glow})"></div>` : '';
+    h += `<div class="cell" style="left:${c * 215}px;top:${r * 246}px">${on ? '' : '<div class="slot"></div>'}${gl}${img}<div class="lab" style="font-weight:${on ? 600 : 400};color:${on ? '#222' : '#aaa'}">${lab}</div></div>`;
   });
-  return h + '</div></div>';
+  return h + `</div><div style="position:absolute;left:0;right:0;top:0;height:216px;background:#fff;box-shadow:0 ${scroll > 0 ? 6 : 0}px 12px rgba(0,0,0,.06)">${header('<b>STEP 1</b>- Gearboxes Categories')}</div></div>`;
 }
-
 function searchScreen(t) {
-  const lt = t - 9.6;
-  const code = 'IRK 93-160 L';
-  const n = Math.floor(clamp((lt - .3) / 1.0) * code.length);
+  const lt = t - TS, code = 'IRK 93-160 L';
+  const n = Math.floor(clamp((lt - .25) / .8) * code.length);
   let h = `<div class="scr">${header('<b style="font-weight:600">Quick Selection Gearbox</b>')}`;
-  h += `<div style="position:absolute;left:24px;right:24px;top:240px;height:64px;border:2px solid #9d1a12;border-radius:32px;font:600 24px Mont;color:#222;line-height:60px;padding-left:28px">
+  h += `<div style="position:absolute;left:24px;right:24px;top:240px;height:64px;border:2px solid #9d1a12;border-radius:32px;font:600 24px Mont;color:#222;line-height:60px;padding-left:28px;box-shadow:0 0 0 ${lt < 1.1 ? 6 : 0}px rgba(200,16,46,.15)">
          ${code.slice(0, n)}<span style="opacity:${(lt * 2.5 % 1) < .5 ? 1 : 0};color:#9d1a12">|</span></div>`;
-  h += `<div style="position:absolute;left:24px;top:330px;font:400 15px Mont;color:#888">Technical data download</div>`;
-  if (lt > 1.45) {
-    const k = oc(E(lt, 1.45, 1.8));
-    h += `<div style="position:absolute;left:60px;top:${370 + (1 - k) * 30}px;width:310px;opacity:${k}"><img src="assets/units/irk.png" style="width:310px"></div>`;
-    h += `<div style="position:absolute;left:0;right:0;top:${690}px;text-align:center;font:800 22px Mont;color:#222;opacity:${k}">IRK 93-160 L</div>`;
+  if (lt > 1.15) {
+    const k = ob(E(lt, 1.15, 1.5));
+    h += `<div style="position:absolute;left:60px;top:345px;width:310px;transform:scale(${k});opacity:${Math.min(1, k)}"><img src="assets/units/irk.png" style="width:310px"></div>`;
+    h += `<div style="position:absolute;left:0;right:0;top:665px;text-align:center;font:800 24px Mont;color:#222;opacity:${E(lt, 1.3, 1.5)}">IRK 93-160 L</div>`;
   }
   ['.STEP', '.DWG', '.PDF'].forEach((f, i) => {
-    const ta = 1.9 + i * .2, k = ob(E(lt, ta, ta + .3));
-    if (k > 0) h += `<div class="chip" style="left:${22 + i * 133}px;top:745px;transform:scale(${k});padding:0 14px 0 52px;font-size:19px">${f}<i></i></div>`;
+    const ta = 1.6 + i * .18, k = ob(E(lt, ta, ta + .3));
+    if (k > 0) h += `<div class="chip" style="left:${18 + i * 134}px;top:725px;transform:scale(${k})">${f}<i></i></div>`;
   });
   return h + '</div>';
 }
-
 function endScreen(t) {
-  const lt = t - 12.85;
+  const lt = t - TE;
   const it = (html, ta, y) => { const k = oc(E(lt, ta, ta + .45)); return `<div style="position:absolute;left:0;right:0;top:${y + (1 - k) * 24}px;text-align:center;opacity:${k}">${html}</div>`; };
-  let h = `<div class="scr" style="background:#fff">`;
+  let h = `<div class="scr" style="background:radial-gradient(ellipse at 50% 30%, #fff, #f6eeed)">`;
   h += it(`<img src="assets/imak-logo.png" style="width:220px">`, .05, 110);
-  h += it(`<div style="font:800 86px Mont;color:#9d1a12;letter-spacing:-1px">i-GUIDE</div>`, .25, 215);
-  h += it(`<div style="font:800 25px Mont;color:#222;line-height:1.25">FIND YOUR GEARBOX<br>IN SECONDS</div>`, .5, 325);
-  h += it(`<div style="font:600 13px Mont;color:#666;letter-spacing:1px">SELECTION · .STEP · .DWG · .PDF · CATALOGS</div>`, .75, 410);
-  h += it(`<img src="assets/qr.png" style="width:190px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.15)">`, 1.0, 470);
-  h += it(`<div style="font:600 17px Mont;color:#9d1a12">iguide.imakreduktor.com</div>`, 1.2, 680);
-  const pk = oc(E(lt, 1.45, 1.9));
-  h += `<div style="position:absolute;left:105px;width:220px;top:${740 + (1 - pk) * 24}px;height:62px;border-radius:31px;background:#9d1a12;color:#fff;font:800 24px Mont;line-height:62px;text-align:center;opacity:${pk};transform:scale(${1 + .04 * Math.sin(lt * 5) * pk})">TRY IT NOW</div>`;
+  h += it(`<div style="font:800 86px Mont;color:#9d1a12;letter-spacing:-1px">i-GUIDE</div>`, .2, 215);
+  h += it(`<div style="font:800 25px Mont;color:#222;line-height:1.25">FIND YOUR GEARBOX<br>IN SECONDS</div>`, .4, 325);
+  h += it(`<div style="font:600 13px Mont;color:#666;letter-spacing:1px">SELECTION · .STEP · .DWG · .PDF · CATALOGS</div>`, .6, 410);
+  h += it(`<img src="assets/qr.png" style="width:190px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.15)">`, .8, 470);
+  h += it(`<div style="font:600 17px Mont;color:#9d1a12">iguide.imakreduktor.com</div>`, 1.0, 680);
+  const pk = oc(E(lt, 1.2, 1.6));
+  h += `<div style="position:absolute;left:105px;width:220px;top:${740 + (1 - pk) * 24}px;height:62px;border-radius:31px;background:#9d1a12;color:#fff;font:800 24px Mont;line-height:62px;text-align:center;opacity:${pk};transform:scale(${1 + .05 * Math.sin(lt * 6) * pk});box-shadow:0 8px 20px rgba(157,26,18,.35)">TRY IT NOW</div>`;
   return h + '</div>';
 }
-
-function hookAt(x, yBottom, unit, unitW, swing) {
-  // hook image 600x900 shown at 0.3: hook mouth bottom at (90, 222) of the 180x270 box
-  const s = .5, w = 600 * s, hh = 900 * s;
-  const left = x - 150, top = yBottom - 370;
-  let h = `<div class="cable" style="left:${x - 1.5}px;top:-10px;height:${top + 30}px"></div>`;
-  h += `<img class="hook" src="assets/hook.png" style="left:${left}px;top:${top}px;width:${w}px;transform:rotate(${swing}deg);transform-origin:150px 0">`;
-  if (unit) {
-    const uy = yBottom + 60, ux = x - unitW / 2;
-    const a = { x: x, y: yBottom + 4 };
-    for (const ex of [ux + unitW * .22, ux + unitW * .78]) {
-      const dx = ex - a.x, dy = uy + unitW * .18 - a.y, L = Math.hypot(dx, dy), ang = Math.atan2(dy, dx) * 180 / Math.PI;
-      h += `<div class="sling" style="left:${a.x}px;top:${a.y}px;width:${L}px;transform:rotate(${ang}deg)"></div>`;
-    }
-    h += `<img src="assets/units/${unit}.png" style="position:absolute;left:${ux}px;top:${uy}px;width:${unitW}px;filter:drop-shadow(0 18px 18px rgba(0,0,0,.45))">`;
+function caption(t) {
+  const C = [[.5, 1.85, '', 'MEET <span style="color:#ff4d4d">i-GUIDE</span>'], [1.95, 6.45, '1', 'CHOOSE YOUR SERIES'],
+             [6.6, 7.9, '2', 'TYPE THE CODE'], [7.9, 9.3, '3', 'DOWNLOAD IN ONE TAP'], [TE + .1, TOTAL + 1, '', 'YOUR GEARBOX.<br><span style="color:#ff4d4d">IN SECONDS.</span>']];
+  let h = '';
+  for (const [a, b, num, txt] of C) {
+    if (t < a || t > b) continue;
+    const k = oc(E(t, a, a + .4)), o = 1 - E(t, b - .2, b);
+    const badge = num ? `<span style="display:inline-block;width:78px;height:78px;border-radius:50%;background:#c8102e;font:800 46px/78px Mont;vertical-align:middle;margin-right:22px;box-shadow:0 0 30px rgba(255,40,40,.6)">${num}</span>` : '';
+    h += `<div style="opacity:${o};transform:translateY(${(1 - k) * 40}px);clip-path:inset(0 0 ${(1 - k) * 100}% 0);font:800 ${num ? 58 : 72}px/1.05 Mont;letter-spacing:1px;text-shadow:0 6px 30px rgba(0,0,0,.6)">${badge}<span style="vertical-align:middle">${txt}</span></div>`;
   }
   return h;
 }
+function unitImg(id, x, y, w, vy, extra = '') {
+  const stretch = 1 + Math.min(.35, vy * .00018), blur = Math.min(6, vy * .003);
+  return `<img src="assets/units/${id}.png" style="position:absolute;left:${x - w / 2}px;top:${y - w / 2}px;width:${w}px;transform:scaleY(${stretch});filter:blur(${blur}px) drop-shadow(0 20px 20px rgba(0,0,0,.5));${extra}">`;
+}
 
 window.renderAt = async (t) => {
-  $('black').style.opacity = 1 - E(t, 0, .6);
-  $('stage').style.transform = `scale(${1 + .035 * (t / 17)})`;
-  $('black').style.opacity = Math.max(1 - E(t, 0, .6), E(t, 16.5, 17));
-  // screen content
+  $('black').style.opacity = Math.max(1 - E(t, 0, .5), E(t, TOTAL - .45, TOTAL));
+  // camera: push in during the grid, settle for the end
+  const push = 1 + .06 * io(E(t, 1.9, 3.2)) - .06 * io(E(t, 5.4, 6.4)) + .04 * io(E(t, 6.5, 7.5)) - .04 * io(E(t, 9.0, 9.6)) + .02 * (t / TOTAL);
+  $('stage').style.transform = `scale(${push})`;
+  // phone swing: intro from an angle, small turn during search, front for drops and end
+  const ry = -32 * (1 - io(E(t, 0, 1.6))) + 9 * io(E(t, 6.4, 6.9)) * (1 - io(E(t, 8.9, 9.4)));
+  const rx = 6 * (1 - io(E(t, 0, 1.6)));
+  const ty = 60 * (1 - oc(E(t, 0, 1.6)));
+  $('phone').style.transform = `translateY(${ty}px) rotateY(${ry}deg) rotateX(${rx}deg)`;
+  // sheen sweeps
+  const sw = (a) => E(t, a, a + .7);
+  const s = t < 2 ? sw(.6) : t < 9 ? sw(5.5) : sw(TE + .4);
+  $('sheen').style.transform = `translateX(${-120 + 240 * s}%)`;
+  $('sheen').style.opacity = s > 0 && s < 1 ? 1 : 0;
+  // screen
   let ui = '';
-  if (t < 1.35) {
+  if (t < 1.75) {
     ui = `<img src="assets/screen_home.png" style="position:absolute;left:0;top:0;width:430px">`;
-    const rk = E(t, .85, 1.3);
+    const rk = E(t, 1.25, 1.7);
     if (rk > 0 && rk < 1) ui += `<div class="ripple" style="left:${215 - 140 * rk}px;top:${437 - 140 * rk}px;width:${280 * rk}px;height:${280 * rk}px;opacity:${1 - rk}"></div>`;
-  } else if (t < 9.6) {
-    const sk = io(E(t, 1.35, 1.65));
-    const scroll = 540 * io(E(t, 8.35, 9.0));
-    ui = `<div style="position:absolute;inset:0;transform:translateX(${(1 - sk) * 430}px)">${gridScreen(t, scroll)}</div>`;
-    if (sk < 1) ui = `<img src="assets/screen_home.png" style="position:absolute;left:0;top:0;width:430px;transform:translateX(${-sk * 140}px);filter:brightness(${1 - sk * .3})">` + ui;
-  } else if (t < 12.0) {
-    const sk = io(E(t, 9.6, 9.9));
+  } else if (t < TS) {
+    const sk = io(E(t, 1.75, 2.0)), scroll = 540 * io(E(t, 5.45, 6.0));
+    ui = `<img src="assets/screen_home.png" style="position:absolute;left:0;top:0;width:430px;transform:translateX(${-sk * 140}px);filter:brightness(${1 - sk * .3})">`;
+    ui += `<div style="position:absolute;inset:0;transform:translateX(${(1 - sk) * 430}px)">${gridScreen(t, scroll)}</div>`;
+  } else if (t < TW) {
+    const sk = io(E(t, TS, TS + .3));
     ui = `<div style="position:absolute;inset:0;transform:translateX(${(1 - sk) * 430}px)">${searchScreen(t)}</div>`;
-  } else if (t < 12.85) {
-    ui = `<div class="scr" style="background:#fff;opacity:1"></div>`;
-  } else ui = endScreen(t);
+  } else if (t < TE) ui = `<div class="scr"></div>`;
+  else ui = endScreen(t);
   $('ui').innerHTML = ui;
-  // hooks
-  let hk = '';
+  // falling units (stage coords; phone is front-facing then)
+  let fly = '';
   for (let i = 0; i < 6; i++) {
-    const t0 = DROP0 + i * DROPDT, lt = t - t0;
-    if (lt < 0 || lt > DROPLEN + .7) continue;
+    const t0 = D0 + i * DT, lt = t - t0;
+    if (lt < 0 || lt > FALL) continue;
     const c = i % 2, r = Math.floor(i / 2);
-    const cx = SX + K * (c * 215 + 107.5), cy = SY + K * (216 + r * 246 + 12);
-    const unitW = K * 171;
-    const yb = cy - 60 - 4;                                 // hook bottom so that the unit sits in the slot
-    let y, unit = SER[i][0], swing = 0;
-    if (lt < DROPLEN * .78) { const k = oc(E(lt, 0, DROPLEN * .78)); y = -260 + (yb + 260) * k; swing = 4 * Math.sin(lt * 7) * (1 - k); }
-    else { unit = null; const k = io(E(lt, DROPLEN * .78 + .12, DROPLEN + .7)); y = yb - (yb + 420) * k; swing = -2 * Math.sin(lt * 6) * (1 - k); }
-    hk += hookAt(cx, y, unit, unitW, swing);
+    const cx = SX + K * (c * 215 + 107.5), cy = SY + K * (216 + r * 246 + 97);
+    const k = ic(lt / FALL), y = -200 + (cy + 200) * k, vy = (cy + 200) * 3 * Math.pow(lt / FALL, 2) / FALL;
+    fly += unitImg(SER[i][0], cx, y, K * 171, vy);
   }
-  // button press
-  const B = CFG.button;
-  const lift = E(t, 12.65, 13.4);
-  if (t > 11.6 && t < 13.45) {
-    const ytop = B[1] - 30;
-    const y = t < 12.45 ? -400 + (ytop + 400) * io(E(t, 11.6, 12.4)) : ytop - (ytop + 560) * io(lift);
-    hk += hookAt(B[0], y, null, 0, 0);
+  // MK hits the button, then zaps into the phone
+  const bx = 940, by = 1395;
+  if (t > TW && t < TB) {
+    const k = ic(E(t, TW, TB)), y = -260 + (by - 110 + 260) * k;
+    fly += unitImg('mk', bx, y, 260, 4000 * k);
+  } else if (t >= TB && t < TZ + .1) {
+    const k = io(E(t, TB + .12, TZ)), x = bx + (500 - bx) * k, y = (by - 110) + (950 - (by - 110)) * k, w = 260 * (1 - .75 * k);
+    fly += unitImg('mk', x, y, w, 0, `opacity:${1 - E(t, TZ - .1, TZ + .1)}`);
+    if (k > 0) for (let j = 0; j < 3; j++) fly += `<div style="position:absolute;left:${x - 4}px;top:${y}px;width:${(bx - x) * .9}px;height:3px;background:linear-gradient(90deg,rgba(255,80,60,.9),rgba(255,80,60,0));transform:rotate(${Math.atan2((by - 110) - y, bx - x) * 57.3 + (j - 1) * 3}deg);transform-origin:0 50%;opacity:${1 - k}"></div>`;
   }
-  $('hooks').innerHTML = hk;
-  const squash = t > 12.35 && t < 12.7 ? .55 : 1;
-  const d = $('dome'); d.style.left = (B[0] - 75) + 'px'; d.style.top = (B[1] - 62 + (1 - squash) * 38) + 'px';
-  d.style.transform = `scaleY(${squash})`; d.style.transformOrigin = '50% 100%';
-  $('flash').style.opacity = t > 12.4 && t < 13.1 ? .55 * (1 - E(t, 12.42, 13.1)) : 0;
-  $('glow').style.opacity = t > 12.8 ? .6 + .4 * Math.sin(t * 3) : .6;
+  $('fly').innerHTML = fly;
+  const squash = t > TB && t < TB + .3 ? .55 : 1;
+  $('dome').style.transform = `scaleY(${squash})`;
+  $('flash').style.opacity = t > TB && t < TB + .5 ? .5 * (1 - E(t, TB, TB + .5)) : (t > TZ && t < TZ + .4 ? .4 * (1 - E(t, TZ, TZ + .4)) : 0);
+  // sparks (burst at the end)
+  const burst = E(t, TE, TE + .2) * (1 - E(t, TE + 2.5, TE + 3.5));
+  $('sparks').innerHTML = SP.map((p) => {
+    const y = ((p.y - t * p.v * (1 + burst * 2)) % 1920 + 1920) % 1920, x = p.x + 18 * Math.sin(t * .8 + p.w);
+    return `<div class="sp" style="left:${x}px;top:${y}px;width:${p.s}px;height:${p.s}px;opacity:${p.a * (.6 + .4 * Math.sin(t * 3 + p.w))}"></div>`;
+  }).join('');
+  $('halo').style.opacity = .7 + .3 * Math.sin(t * 2);
+  $('cap').innerHTML = caption(t);
   const imgs = [...document.images];
   await Promise.all(imgs.map((i) => (i.complete && i.naturalWidth) ? null : new Promise((r) => { i.onload = i.onerror = r; })));
   await Promise.all(imgs.map((i) => i.decode ? i.decode().catch(() => {}) : null));

@@ -1,11 +1,14 @@
 # i-Guide teaser (9:16)
 
-A 17-second vertical teaser for i.Mak's i-Guide (iguide.imakreduktor.com), after a CGI "giant phone" product ad. It runs:
-1. A dark showroom with a giant phone showing i-Guide.
-2. Crane hooks lower i.Mak gearboxes into the "Gearboxes Categories" grid one by one; the rest of the range fills in.
-3. Quick Selection: a gearbox code is typed and the .STEP / .DWG files appear.
-4. A hook presses the red button.
-5. End card: i-GUIDE · Find your gearbox in seconds · QR code · Try it now.
+A 14.5-second vertical teaser (v2) for i.Mak's i-Guide (iguide.imakreduktor.com), after a CGI "giant phone" product ad. It runs:
+1. A deep-red stage with a spotlight, sparks and a reflective floor grid; the phone swings in.
+2. Step captions: ① Choose your series, ② Type the code, ③ Download in one tap.
+3. Gearboxes drop into the "Gearboxes Categories" grid on the beat; the rest of the range fills in.
+4. Quick search returns .STEP / .DWG / .PDF.
+5. An MK unit hits the red button and zaps into the phone.
+6. End card: i-GUIDE · Your gearbox. In seconds. · QR code · Try it now.
+
+`compose_v1.html` keeps the first version (grey showroom, crane hooks).
 
 **Output:** `video/imak-iguide-9x16.mp4` (1080 × 1920, 30 fps, H.264 + AAC, −14 LUFS)
 
