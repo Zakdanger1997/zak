@@ -1,0 +1,173 @@
+{
+ "hero": {
+  "name": "Lionel Messi",
+  "title": "lionel messi.",
+  "short": "MESSI",
+  "photo": "assets/faces/lionel-messi.jpg",
+  "values": {
+   "gpg": 0.8138613861386138,
+   "gpc": 0.6057692307692307,
+   "goals": 948,
+   "games": 1218,
+   "seasons": 24
+  }
+ },
+ "metrics": [
+  {
+   "key": "gpg",
+   "label": "club goals / game",
+   "long": "CLUB GOALS PER GAME",
+   "fmt": "rate"
+  },
+  {
+   "key": "gpc",
+   "label": "intl goals / cap",
+   "long": "INTERNATIONAL GOALS PER CAP",
+   "fmt": "rate"
+  },
+  {
+   "key": "goals",
+   "label": "career goals",
+   "long": "CAREER GOALS",
+   "fmt": "int"
+  },
+  {
+   "key": "games",
+   "label": "career games",
+   "long": "CAREER GAMES",
+   "fmt": "int"
+  },
+  {
+   "key": "seasons",
+   "label": "seasons",
+   "long": "SEASONS AS A PRO",
+   "fmt": "int"
+  }
+ ],
+ "pool": 35,
+ "twins": [
+  {
+   "rank": 1,
+   "name": "Cristiano Ronaldo",
+   "title": "cristiano ronaldo.",
+   "short": "RONALDO",
+   "years": "2002–present",
+   "photo": "assets/faces/cristiano-ronaldo.jpg",
+   "values": {
+    "gpg": 0.7556154537286612,
+    "gpc": 0.6239316239316239,
+    "goals": 987,
+    "games": 1347,
+    "seasons": 25
+   },
+   "sim": 0.8918667427071592,
+   "match": [
+    "goals",
+    "gpc",
+    "gpg"
+   ],
+   "gap": [
+    "games"
+   ],
+   "line": "closest on career goals · biggest gap: career games"
+  },
+  {
+   "rank": 2,
+   "name": "Robert Lewandowski",
+   "title": "robert lewandowski.",
+   "short": "LEWANDOWSKI",
+   "years": "2005–present",
+   "photo": "assets/faces/robert-lewandowski.jpg",
+   "values": {
+    "gpg": 0.6981327800829875,
+    "gpc": 0.5348837209302325,
+    "goals": 765,
+    "games": 1136,
+    "seasons": 22
+   },
+   "sim": 0.8319751191609377,
+   "match": [
+    "gpc",
+    "games",
+    "goals"
+   ],
+   "gap": [
+    "seasons"
+   ]
+  },
+  {
+   "rank": 3,
+   "name": "Romário",
+   "title": "romário.",
+   "short": "ROMÁRIO",
+   "years": "1985–2009",
+   "photo": "assets/faces/romario.jpg",
+   "values": {
+    "gpg": 0.7726763717805151,
+    "gpc": 0.7857142857142857,
+    "goals": 745,
+    "games": 963,
+    "seasons": 25
+   },
+   "sim": 0.7440563194696679,
+   "match": [
+    "gpg",
+    "seasons",
+    "goals"
+   ],
+   "gap": [
+    "games"
+   ]
+  },
+  {
+   "rank": 4,
+   "name": "Luis Suárez",
+   "title": "luis suárez.",
+   "short": "SUÁREZ",
+   "years": "2005–present",
+   "photo": "assets/faces/luis-suarez.jpg",
+   "values": {
+    "gpg": 0.5956521739130435,
+    "gpc": 0.4825174825174825,
+    "goals": 617,
+    "games": 1063,
+    "seasons": 22
+   },
+   "sim": 0.7229015319327443,
+   "match": [
+    "gpc",
+    "seasons",
+    "games"
+   ],
+   "gap": [
+    "gpg"
+   ]
+  },
+  {
+   "rank": 5,
+   "name": "Zlatan Ibrahimović",
+   "title": "zlatan ibrahimović.",
+   "short": "IBRAHIMOVIĆ",
+   "years": "1999–2023",
+   "photo": "assets/faces/zlatan-ibrahimovic.jpg",
+   "values": {
+    "gpg": 0.5900692840646651,
+    "gpc": 0.5081967213114754,
+    "goals": 573,
+    "games": 988,
+    "seasons": 25
+   },
+   "sim": 0.6958333098446672,
+   "match": [
+    "seasons",
+    "gpc",
+    "goals"
+   ],
+   "gap": [
+    "games"
+   ]
+  }
+ ],
+ "source": "Data: Wikipedia career statistics (club + international, official matches), as of Nov 2026. Similarity: standardized distance on the five metrics. Photos: Wikimedia Commons (see description).",
+ "audio": "music_messi.wav"
+}

@@ -23,17 +23,17 @@ html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
 .num { font-family: Osw; font-weight: 500; }
 .face { position: absolute; border-radius: 50%; overflow: hidden; background: #d9d3c6; box-shadow: 0 0 0 5px #fff, 0 0 0 9px var(--ring, #c8312b), 0 18px 40px rgba(0,0,0,.18); }
 .face img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
-.chip { position: absolute; left: 50%; transform: translateX(-50%); background: #fff; border-radius: 10px; padding: 18px 34px; font-family: Mono; font-size: 30px; letter-spacing: 3px; color: #222; box-shadow: 0 4px 0 rgba(0,0,0,.08); white-space: nowrap; }
+.chip { position: absolute; left: 0; right: 0; margin: 0 auto; background: #fff; border-radius: 10px; padding: 18px 34px; font-family: Mono; font-size: 30px; letter-spacing: 3px; color: #222; box-shadow: 0 4px 0 rgba(0,0,0,.08); white-space: nowrap; width: max-content; }
 .box { position: absolute; width: 420px; height: 190px; background: #fff; border-radius: 14px; box-shadow: 0 4px 0 rgba(0,0,0,.08); text-align: center; }
 .box .v { font-family: Osw; font-weight: 500; font-size: 92px; color: #1f3fb0; line-height: 1; margin-top: 26px; }
 .box .l { font-family: Mono; font-size: 22px; letter-spacing: 3px; color: #6b665c; margin-top: 14px; text-transform: uppercase; }
-.row { position: absolute; left: 0; right: 0; height: 120px; }
-.row .lab { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-family: Mono; font-size: 24px; letter-spacing: 3px; color: #333; text-transform: uppercase; }
-.row .track { position: absolute; left: 330px; width: 420px; top: 40px; height: 26px; background: #ddd6c8; }
-.row .bl { position: absolute; top: 40px; height: 26px; background: #1f3fb0; }
-.row .br { position: absolute; top: 40px; height: 26px; background: #c8312b; }
-.row .vl { position: absolute; right: 770px; top: 18px; font-family: Osw; font-weight: 500; font-size: 58px; color: #1f3fb0; text-align: right; white-space: nowrap; }
-.row .vr { position: absolute; left: 770px; top: 18px; font-family: Osw; font-weight: 500; font-size: 58px; color: #c8312b; white-space: nowrap; }
+.row { position: absolute; left: 0; right: 0; height: 130px; }
+.row .lab { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-family: Mono; font-size: 26px; letter-spacing: 3px; color: #333; text-transform: uppercase; }
+.row .track { position: absolute; left: 250px; width: 580px; top: 44px; height: 34px; background: #ddd6c8; }
+.row .bl { position: absolute; top: 44px; height: 34px; background: #1f3fb0; }
+.row .br { position: absolute; top: 44px; height: 34px; background: #c8312b; }
+.row .vl { position: absolute; right: 850px; top: 16px; font-family: Osw; font-weight: 500; font-size: 66px; color: #1f3fb0; text-align: right; white-space: nowrap; }
+.row .vr { position: absolute; left: 850px; top: 16px; font-family: Osw; font-weight: 500; font-size: 66px; color: #c8312b; white-space: nowrap; }
 .sec { position: absolute; left: 0; right: 0; text-align: center; font-family: Mono; font-size: 22px; letter-spacing: 4px; color: #8a8478; }
 .sec:before, .sec:after { content: ''; display: inline-block; width: 230px; height: 1px; background: #cfc8ba; vertical-align: middle; margin: 0 22px; }
 </style></head>
@@ -83,14 +83,14 @@ function bars(t, a, rows, y0, twin, gapRows) {
   const draw = (keys, y, ta) => keys.forEach((key, i) => {
     const m = M[key], hv = H.values[key], tv = twin.values[key];
     const mx = Math.max(hv, tv) * 1.12 || 1, k = oc(E(t, ta + i * .45, ta + i * .45 + .7));
-    const wl = 210 * (hv / mx) * k, wr = 210 * (tv / mx) * k;
-    h += `<div class="row" style="top:${y + i * 112}px;${up(t, ta + i * .45 - .1, .35, 16)}"><div class="lab">${m.label}</div><div class="track"></div>
+    const wl = 290 * (hv / mx) * k, wr = 290 * (tv / mx) * k;
+    h += `<div class="row" style="top:${y + i * 135}px;${up(t, ta + i * .45 - .1, .35, 16)}"><div class="lab">${m.label}</div><div class="track"></div>
       <div class="bl" style="left:${540 - wl}px;width:${wl}px"></div><div class="br" style="left:540px;width:${wr}px"></div>
       <div class="vl">${fmt(m, hv, k)}</div><div class="vr">${fmt(m, tv, k)}</div></div>`;
   });
   draw(rows, 112, a + .3);
   if (gapRows && gapRows.length) {
-    const yg = 112 + rows.length * 112 + 10;
+    const yg = 112 + rows.length * 135 + 10;
     h += `<div class="sec" style="top:${yg}px;${up(t, a + .3 + rows.length * .45)}">THE GAP</div>`;
     draw(gapRows, yg + 50, a + .5 + rows.length * .45);
   }
@@ -143,7 +143,7 @@ window.renderAt = async (t) => {
     h += `<div style="opacity:${o}">${header(t, a, `NO. ${tw.rank} · CLOSEST CAREERS`, tw.title, tw.years)}`;
     h += face(tw.photo, 540, 640, 230, '#c8312b', up(t, a + .25));
     h += bars(t, a + .5, tw.match, 820, tw, tw.gap);
-    h += `<div class="mono" style="position:absolute;left:0;right:0;top:1640px;text-align:center;font-size:26px;${up(t, a + 3.6)}">SIMILARITY <span style="font-family:Osw;font-size:40px;color:#141414;letter-spacing:1px">${Math.round(tw.sim * 100)}%</span></div></div>`;
+    h += `<div class="mono" style="position:absolute;left:0;right:0;top:1580px;text-align:center;font-size:30px;${up(t, a + 3.6)}">SIMILARITY <span style="font-family:Osw;font-size:56px;color:#141414;letter-spacing:1px">${Math.round(tw.sim * 100)}%</span></div></div>`;
   }
   // big "1"
   else if (t < T.one[1]) {
@@ -158,8 +158,8 @@ window.renderAt = async (t) => {
     h += face(tw.photo, 540, 650, 250, '#c8312b', up(t, a + .25));
     h += bars(t, a + .6, S.metrics.map((m) => m.key), 820, tw, []);
     const sk = ob(E(t, a + 3.8, a + 4.4));
-    h += `<div style="position:absolute;left:50%;top:1500px;transform:translateX(-50%) rotate(-4deg) scale(${sk});opacity:${E(t, a + 3.8, a + 4.0)};border:5px solid #c8312b;color:#c8312b;border-radius:12px;padding:10px 34px;font-family:Osw;font-weight:600;font-size:64px;letter-spacing:2px;white-space:nowrap">${Math.round(tw.sim * 100)}% MATCH</div>`;
-    h += `<div class="mono" style="position:absolute;left:100px;right:100px;top:1660px;text-align:center;font-size:24px;line-height:1.6;letter-spacing:2px;${up(t, a + 5)}">${tw.line || ''}</div></div>`;
+    h += `<div style="position:absolute;left:50%;top:1590px;transform:translateX(-50%) rotate(-4deg) scale(${sk});opacity:${E(t, a + 3.8, a + 4.0)};border:5px solid #c8312b;color:#c8312b;border-radius:12px;padding:10px 34px;font-family:Osw;font-weight:600;font-size:64px;letter-spacing:2px;white-space:nowrap">${Math.round(tw.sim * 100)}% MATCH</div>`;
+    h += `<div class="mono" style="position:absolute;left:100px;right:100px;top:1740px;text-align:center;font-size:24px;line-height:1.6;letter-spacing:2px;${up(t, a + 5)}">${tw.line || ''}</div></div>`;
   }
   // outro
   else {

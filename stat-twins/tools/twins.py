@@ -21,7 +21,7 @@ METRICS = [
     {"key": "gpc", "label": "intl goals / cap", "long": "INTERNATIONAL GOALS PER CAP", "fmt": "rate", "log": False},
     {"key": "goals", "label": "career goals", "long": "CAREER GOALS", "fmt": "int", "log": True},
     {"key": "games", "label": "career games", "long": "CAREER GAMES", "fmt": "int", "log": True},
-    {"key": "seasons", "label": "seasons", "long": "SEASONS AT THE TOP", "fmt": "int", "log": False},
+    {"key": "seasons", "label": "seasons", "long": "SEASONS AS A PRO", "fmt": "int", "log": False},
 ]
 
 
