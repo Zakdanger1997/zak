@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- "Statistical twin" short (1080x1920 @30). Story data from data/story_<hero>.json (tools/twins.py).
+     Driven by tools/compose.js: window.setup(story), window.renderAt(t). -->
+<style>
+@font-face { font-family: Play; font-style: italic; font-weight: 800; src: url(fonts/playfair-display-latin-800-italic.woff2); }
+@font-face { font-family: Play; font-style: italic; font-weight: 800; src: url(fonts/playfair-display-latin-ext-800-italic.woff2); unicode-range: U+0100-024F; }
+@font-face { font-family: Play; font-style: italic; font-weight: 900; src: url(fonts/playfair-display-latin-900-italic.woff2); }
+@font-face { font-family: Osw; font-weight: 500; src: url(fonts/oswald-latin-500-normal.woff2); }
+@font-face { font-family: Osw; font-weight: 600; src: url(fonts/oswald-latin-600-normal.woff2); }
+@font-face { font-family: Mono; font-weight: 400; src: url(fonts/ibm-plex-mono-latin-400-normal.woff2); }
+@font-face { font-family: Mono; font-weight: 400; src: url(fonts/ibm-plex-mono-latin-ext-400-normal.woff2); unicode-range: U+0100-024F; }
+@font-face { font-family: Mono; font-weight: 500; src: url(fonts/ibm-plex-mono-latin-500-normal.woff2); }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
+#p { position: absolute; inset: 0; background-color: #ebe6db;
+     background-image: linear-gradient(rgba(60,50,30,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(60,50,30,.055) 1px, transparent 1px);
+     background-size: 36px 36px; }
+#grain { position: absolute; inset: 0; opacity: .25; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .45  0 0 0 0 .4  0 0 0 .35 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>"); }
+#c { position: absolute; inset: 0; }
+.mono { font-family: Mono; letter-spacing: 4px; color: #6b665c; text-transform: uppercase; }
+.ttl { font-family: Play; font-style: italic; font-weight: 900; color: #141414; letter-spacing: -1px; }
+.num { font-family: Osw; font-weight: 500; }
+.face { position: absolute; border-radius: 50%; overflow: hidden; background: #d9d3c6; box-shadow: 0 0 0 5px #fff, 0 0 0 9px var(--ring, #c8312b), 0 18px 40px rgba(0,0,0,.18); }
+.face img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+.chip { position: absolute; left: 50%; transform: translateX(-50%); background: #fff; border-radius: 10px; padding: 18px 34px; font-family: Mono; font-size: 30px; letter-spacing: 3px; color: #222; box-shadow: 0 4px 0 rgba(0,0,0,.08); white-space: nowrap; }
+.box { position: absolute; width: 420px; height: 190px; background: #fff; border-radius: 14px; box-shadow: 0 4px 0 rgba(0,0,0,.08); text-align: center; }
+.box .v { font-family: Osw; font-weight: 500; font-size: 92px; color: #1f3fb0; line-height: 1; margin-top: 26px; }
+.box .l { font-family: Mono; font-size: 22px; letter-spacing: 3px; color: #6b665c; margin-top: 14px; text-transform: uppercase; }
+.row { position: absolute; left: 0; right: 0; height: 120px; }
+.row .lab { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-family: Mono; font-size: 24px; letter-spacing: 3px; color: #333; text-transform: uppercase; }
+.row .track { position: absolute; left: 330px; width: 420px; top: 40px; height: 26px; background: #ddd6c8; }
+.row .bl { position: absolute; top: 40px; height: 26px; background: #1f3fb0; }
+.row .br { position: absolute; top: 40px; height: 26px; background: #c8312b; }
+.row .vl { position: absolute; right: 770px; top: 18px; font-family: Osw; font-weight: 500; font-size: 58px; color: #1f3fb0; text-align: right; white-space: nowrap; }
+.row .vr { position: absolute; left: 770px; top: 18px; font-family: Osw; font-weight: 500; font-size: 58px; color: #c8312b; white-space: nowrap; }
+.sec { position: absolute; left: 0; right: 0; text-align: center; font-family: Mono; font-size: 22px; letter-spacing: 4px; color: #8a8478; }
+.sec:before, .sec:after { content: ''; display: inline-block; width: 230px; height: 1px; background: #cfc8ba; vertical-align: middle; margin: 0 22px; }
+</style></head>
+<body><div id="p"><div id="c"></div><div id="grain"></div></div>
+<script>
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const E = (t, a, b) => clamp((t - a) / (b - a));
+const oc = (x) => 1 - Math.pow(1 - x, 3);
+const ob = (x) => { const c = 1.5; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+let S = null, T = null;
+const fmt = (m, v, k = 1) => {
+  if (v == null) return '–';
+  const x = v * k;
+  if (m.fmt === 'rate') return x.toFixed(2);
+  if (m.fmt === 'int') return Math.round(x).toLocaleString('en-US');
+  if (m.fmt === 'pct') return Math.round(x * 100) + '%';
+  return String(Math.round(x));
+};
+function timeline(s) {
+  const t = { intro: [0, 4.5], numbers: [4.5, 10], profile: [10, 16.5], top5: [16.5, 20] }; let x = 20;
+  t.twins = [];
+  for (let i = 0; i < 4; i++) { t.twins.push([x, x + 7.2]); x += 7.2; }
+  t.one = [x, x + 2.6]; x += 2.6;
+  t.reveal = [x, x + 10]; x += 10;
+  t.outro = [x, x + 4.5]; x += 4.5;
+  t.total = x; return t;
+}
+window.setup = (story) => { S = story; T = timeline(story); return T.total; };
+
+const fade = (t, a, b, d = .35) => Math.min(E(t, a, a + d), 1 - E(t, b - d, b));
+const up = (t, a, d = .45, dist = 30) => { const k = oc(E(t, a, a + d)); return `opacity:${k};transform:translateY(${(1 - k) * dist}px)`; };
+function face(src, x, y, d, ring, extra = '') {
+  return `<div class="face" style="left:${x - d / 2}px;top:${y - d / 2}px;width:${d}px;height:${d}px;--ring:${ring};${extra}"><img src="${src}"></div>`;
+}
+function header(t, a, kicker, title, years) {
+  let h = `<div class="mono" style="position:absolute;left:0;right:0;top:250px;text-align:center;font-size:26px;${up(t, a)}">${kicker}</div>`;
+  h += `<div class="ttl" style="position:absolute;left:0;right:0;top:290px;text-align:center;font-size:${title.length > 16 ? 92 : 108}px;${up(t, a + .1)}">${title}</div>`;
+  if (years) h += `<div class="mono" style="position:absolute;left:0;right:0;top:${title.length > 16 ? 420 : 440}px;text-align:center;font-size:24px;letter-spacing:3px;${up(t, a + .2)}">${years}</div>`;
+  return h;
+}
+function bars(t, a, rows, y0, twin, gapRows) {
+  const H = S.hero, M = Object.fromEntries(S.metrics.map((m) => [m.key, m]));
+  let h = `<div style="position:absolute;left:0;right:0;top:${y0}px">`;
+  h += `<div class="mono" style="position:absolute;left:250px;top:0;font-size:24px;letter-spacing:3px;${up(t, a)}"><span style="display:inline-block;width:50px;height:5px;background:#1f3fb0;vertical-align:middle;margin-right:14px"></span>${H.short}</div>`;
+  h += `<div class="mono" style="position:absolute;right:250px;top:0;font-size:24px;letter-spacing:3px;${up(t, a)}">${twin.short}<span style="display:inline-block;width:50px;height:5px;background:#c8312b;vertical-align:middle;margin-left:14px"></span></div>`;
+  h += `<div class="sec" style="top:62px;${up(t, a + .1)}">THE MATCH</div>`;
+  const draw = (keys, y, ta) => keys.forEach((key, i) => {
+    const m = M[key], hv = H.values[key], tv = twin.values[key];
+    const mx = Math.max(hv, tv) * 1.12 || 1, k = oc(E(t, ta + i * .45, ta + i * .45 + .7));
+    const wl = 210 * (hv / mx) * k, wr = 210 * (tv / mx) * k;
+    h += `<div class="row" style="top:${y + i * 112}px;${up(t, ta + i * .45 - .1, .35, 16)}"><div class="lab">${m.label}</div><div class="track"></div>
+      <div class="bl" style="left:${540 - wl}px;width:${wl}px"></div><div class="br" style="left:540px;width:${wr}px"></div>
+      <div class="vl">${fmt(m, hv, k)}</div><div class="vr">${fmt(m, tv, k)}</div></div>`;
+  });
+  draw(rows, 112, a + .3);
+  if (gapRows && gapRows.length) {
+    const yg = 112 + rows.length * 112 + 10;
+    h += `<div class="sec" style="top:${yg}px;${up(t, a + .3 + rows.length * .45)}">THE GAP</div>`;
+    draw(gapRows, yg + 50, a + .5 + rows.length * .45);
+  }
+  return h + '</div>';
+}
+
+window.renderAt = async (t) => {
+  const H = S.hero; let h = '';
+  // intro
+  if (t < T.intro[1]) {
+    const [a, b] = T.intro, o = 1 - E(t, b - .35, b);
+    const k = ob(E(t, .1, .8));
+    h += `<div style="opacity:${o}">`;
+    h += face(H.photo, 540, 820, 560 * (.7 + .3 * k), '#1f3fb0', `opacity:${E(t, .1, .4)}`);
+    h += `<div class="mono" style="position:absolute;left:0;right:0;top:300px;text-align:center;font-size:28px;${up(t, .5)}">THE CLOSEST CAREERS IN HISTORY</div>`;
+    h += `<div class="ttl" style="position:absolute;left:0;right:0;top:1170px;text-align:center;font-size:${H.title.length > 16 ? 96 : 118}px;${up(t, .9)}">${H.title}</div>`;
+    h += `<div class="ttl" style="position:absolute;left:0;right:0;top:1330px;text-align:center;font-size:140px;${up(t, 1.6)}">stat <span style="color:#1f3fb0">twin.</span></div>`;
+    h += `</div>`;
+  }
+  // the numbers
+  else if (t < T.numbers[1]) {
+    const [a, b] = T.numbers, o = 1 - E(t, b - .35, b);
+    h += `<div style="opacity:${o}">${header(t, a, '01 · THE METHOD', 'the numbers.')}`;
+    S.metrics.forEach((m, i) => { h += `<div class="chip" style="top:${620 + i * 132}px;${up(t, a + .6 + i * .35)}">${m.long}</div>`; });
+    h += `<div class="mono" style="position:absolute;left:120px;right:120px;top:1360px;text-align:center;font-size:24px;line-height:1.6;letter-spacing:2px;${up(t, a + 2.6)}">${S.pool} legends compared<br>on the same five numbers</div></div>`;
+  }
+  // the profile
+  else if (t < T.profile[1]) {
+    const [a, b] = T.profile, o = 1 - E(t, b - .35, b);
+    h += `<div style="opacity:${o}">${header(t, a, '02 · ' + H.short, 'the profile.')}`;
+    h += face(H.photo, 540, 640, 230, '#1f3fb0', up(t, a + .3));
+    S.metrics.forEach((m, i) => {
+      const c = i % 2, r = Math.floor(i / 2), last = i === S.metrics.length - 1 && S.metrics.length % 2 === 1;
+      const x = last ? 330 : 90 + c * 480, y = 860 + r * 230, k = oc(E(t, a + .8 + i * .55, a + 1.6 + i * .55));
+      h += `<div class="box" style="left:${x}px;top:${y}px;${up(t, a + .7 + i * .55)}"><div class="v">${fmt(m, H.values[m.key], k)}</div><div class="l">${m.label}</div></div>`;
+    });
+    h += `</div>`;
+  }
+  // the top five
+  else if (t < T.top5[1]) {
+    const [a, b] = T.top5, o = 1 - E(t, b - .35, b);
+    h += `<div style="opacity:${o}">${header(t, a, '03 · THE COUNTDOWN', 'the top five.')}`;
+    for (let i = 0; i < 5; i++) h += `<div class="num" style="position:absolute;left:0;right:0;top:${640 + i * 170}px;text-align:center;font-size:120px;color:${i === 4 ? '#1f3fb0' : '#bdb5a5'};${up(t, a + .5 + i * .3)}">${5 - i}</div>`;
+    h += `</div>`;
+  }
+  // No.5 .. No.2
+  else if (t < T.twins[3][1]) {
+    const i = T.twins.findIndex(([a, b]) => t >= a && t < b), [a, b] = T.twins[i], tw = S.twins[4 - i];
+    const o = 1 - E(t, b - .3, b);
+    h += `<div style="opacity:${o}">${header(t, a, `NO. ${tw.rank} · CLOSEST CAREERS`, tw.title, tw.years)}`;
+    h += face(tw.photo, 540, 640, 230, '#c8312b', up(t, a + .25));
+    h += bars(t, a + .5, tw.match, 820, tw, tw.gap);
+    h += `<div class="mono" style="position:absolute;left:0;right:0;top:1640px;text-align:center;font-size:26px;${up(t, a + 3.6)}">SIMILARITY <span style="font-family:Osw;font-size:40px;color:#141414;letter-spacing:1px">${Math.round(tw.sim * 100)}%</span></div></div>`;
+  }
+  // big "1"
+  else if (t < T.one[1]) {
+    const [a, b] = T.one, k = ob(E(t, a + .1, a + .8)), o = 1 - E(t, b - .3, b);
+    h += `<div class="mono" style="position:absolute;left:0;right:0;top:640px;text-align:center;font-size:28px;opacity:${o * E(t, a, a + .4)}">NO. 1 · CLOSEST CAREER</div>`;
+    h += `<div class="num" style="position:absolute;left:0;right:0;top:720px;text-align:center;font-size:${380 * (.6 + .4 * k)}px;line-height:1;color:#1f3fb0;opacity:${o * E(t, a + .1, a + .4)}">1</div>`;
+  }
+  // No.1 reveal
+  else if (t < T.reveal[1]) {
+    const [a, b] = T.reveal, tw = S.twins[0], o = 1 - E(t, b - .35, b);
+    h += `<div style="opacity:${o}">${header(t, a, 'NO. 1 · THE STAT TWIN', tw.title, tw.years)}`;
+    h += face(tw.photo, 540, 650, 250, '#c8312b', up(t, a + .25));
+    h += bars(t, a + .6, S.metrics.map((m) => m.key), 820, tw, []);
+    const sk = ob(E(t, a + 3.8, a + 4.4));
+    h += `<div style="position:absolute;left:50%;top:1500px;transform:translateX(-50%) rotate(-4deg) scale(${sk});opacity:${E(t, a + 3.8, a + 4.0)};border:5px solid #c8312b;color:#c8312b;border-radius:12px;padding:10px 34px;font-family:Osw;font-weight:600;font-size:64px;letter-spacing:2px;white-space:nowrap">${Math.round(tw.sim * 100)}% MATCH</div>`;
+    h += `<div class="mono" style="position:absolute;left:100px;right:100px;top:1660px;text-align:center;font-size:24px;line-height:1.6;letter-spacing:2px;${up(t, a + 5)}">${tw.line || ''}</div></div>`;
+  }
+  // outro
+  else {
+    const [a] = T.outro;
+    h += `<div class="ttl" style="position:absolute;left:0;right:0;top:760px;text-align:center;font-size:150px;${up(t, a + .1)}">who's next?</div>`;
+    h += `<div class="ttl" style="position:absolute;left:0;right:0;top:960px;text-align:center;font-size:64px;color:#c8312b;${up(t, a + .6)}">drop a name ↓</div>`;
+    h += `<div class="mono" style="position:absolute;left:90px;right:90px;top:1640px;text-align:center;font-size:19px;line-height:1.7;letter-spacing:1px;${up(t, a + 1.0)}">${S.source}</div>`;
+  }
+  document.getElementById('c').innerHTML = h;
+  const imgs = [...document.images];
+  await Promise.all(imgs.map((i) => (i.complete && i.naturalWidth) ? null : new Promise((r) => { i.onload = i.onerror = r; })));
+  await Promise.all(imgs.map((i) => i.decode ? i.decode().catch(() => {}) : null));
+};
+</script></body></html>
