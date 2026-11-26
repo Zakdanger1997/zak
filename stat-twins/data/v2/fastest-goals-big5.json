@@ -4,13 +4,13 @@
  "kicker": "TOP 5 LEAGUES",
  "title": "fastest goal records.",
  "question": "Who scored the fastest goal in Europe's top leagues?",
- "metric": "seconds",
+ "metric": "",
  "lower_is_better": true,
  "items": [
   {
    "rank": 5,
    "name": "Robin Fellhauer",
-   "sub": "Augsburg vs Bayern Munich · Bundesliga, 2026–27",
+   "sub": "Augsburg vs Bayern · 2026–27",
    "value": 8,
    "value_label": "8s",
    "flag": "de",
@@ -33,7 +33,7 @@
   {
    "rank": 3,
    "name": "Shane Long",
-   "sub": "Southampton vs Watford · Premier League, 2018–19",
+   "sub": "Southampton vs Watford · 2019",
    "value": 7.69,
    "value_label": "7.69s",
    "flag": "ie",
@@ -44,7 +44,7 @@
   {
    "rank": 2,
    "name": "Joseba Llorente",
-   "sub": "Valladolid vs Espanyol · La Liga, 2008",
+   "sub": "Valladolid vs Espanyol · 2008",
    "value": 7.22,
    "value_label": "7.22s",
    "flag": "es",
@@ -55,7 +55,7 @@
   {
    "rank": 1,
    "name": "Rafael Leão",
-   "sub": "AC Milan vs Sassuolo · Serie A, 2020–21",
+   "sub": "Milan vs Sassuolo · 2020",
    "value": 6.2,
    "value_label": "6.2s",
    "flag": "pt",
