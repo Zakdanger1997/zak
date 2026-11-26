@@ -1,0 +1,107 @@
+{
+ "slug": "caps",
+ "mode": "countdown",
+ "kicker": "INTERNATIONAL",
+ "title": "most international caps.",
+ "question": "Who has played the most games for his country?",
+ "metric": "caps",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Soh Chin Ann",
+   "sub": "Malaysia · 1969–1984",
+   "value": 195,
+   "value_label": "195",
+   "flag": "my",
+   "photo": "assets/v2/soh-chin-ann.jpg",
+   "kind": "person",
+   "fact": "Played 219 times for Malaysia, but FIFA counts only 195."
+  },
+  {
+   "rank": 4,
+   "name": "Bader Al-Mutawa",
+   "sub": "Kuwait · 2003–2022",
+   "value": 202,
+   "value_label": "202",
+   "flag": "kw",
+   "photo": "assets/v2/bader-al-mutawa.jpg",
+   "kind": "person",
+   "fact": "The first footballer to reach 200 international matches."
+  },
+  {
+   "rank": 3,
+   "name": "Luka Modrić",
+   "sub": "Croatia · 2006–2026",
+   "value": 208,
+   "value_label": "208",
+   "flag": "hr",
+   "photo": "assets/faces/luka-modric.jpg",
+   "kind": "person",
+   "tie": true,
+   "fact": "Still playing for Croatia; his latest cap came on 15 November 2026."
+  },
+  {
+   "rank": 2,
+   "name": "Lionel Messi",
+   "sub": "Argentina · 2005–2026",
+   "value": 208,
+   "value_label": "208",
+   "flag": "ar",
+   "photo": "assets/faces/lionel-messi.jpg",
+   "kind": "person",
+   "tie": true,
+   "fact": "Level with Modrić, and the most-capped player in South America."
+  },
+  {
+   "rank": 1,
+   "name": "Cristiano Ronaldo",
+   "sub": "Portugal · 2003–2026",
+   "value": 234,
+   "value_label": "234",
+   "flag": "pt",
+   "photo": "assets/faces/cristiano-ronaldo.jpg",
+   "kind": "person",
+   "fact": "Took the record from Bader Al-Mutawa in March 2023."
+  }
+ ],
+ "ending": "Qatar's Hassan Al-Haydos, still active, is sixth on 194, one behind Soh Chin Ann.",
+ "source": {
+  "title": "Wikipedia: List of men's footballers with 100 or more international caps",
+  "url": "https://en.wikipedia.org/wiki/List_of_men%27s_footballers_with_100_or_more_international_caps",
+  "revid": 1386612878,
+  "as_of": "2026-11-26"
+ },
+ "credits": [
+  {
+   "file": "assets/v2/soh-chin-ann.jpg",
+   "author": "Bandar perda",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Soh_Chin_Ann_2020_(cropped).jpg"
+  },
+  {
+   "file": "assets/v2/bader-al-mutawa.jpg",
+   "author": "Abdullah Al-Qadeeri",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Bader_Al-Mutwa.jpg"
+  },
+  {
+   "file": "assets/faces/luka-modric.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Luka_Modric_Croatia_v_Portugal_2_July_2026-055.jpg"
+  },
+  {
+   "file": "assets/faces/lionel-messi.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg"
+  },
+  {
+   "file": "assets/faces/cristiano-ronaldo.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_(cropped).jpg"
+  }
+ ]
+}

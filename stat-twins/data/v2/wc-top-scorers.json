@@ -1,0 +1,106 @@
+{
+ "slug": "wc-top-scorers",
+ "mode": "countdown",
+ "kicker": "WORLD CUP",
+ "title": "most world cup goals.",
+ "question": "Who has scored the most goals in World Cup history?",
+ "metric": "goals",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Gerd Müller",
+   "sub": "West Germany · 1970, 1974",
+   "value": 14,
+   "value_label": "14",
+   "flag": "de",
+   "photo": "assets/faces/gerd-muller.jpg",
+   "kind": "person",
+   "tie": true,
+   "fact": "Scored his record-breaking 14th goal in West Germany's 1974 final win."
+  },
+  {
+   "rank": 4,
+   "name": "Ronaldo",
+   "sub": "Brazil · 1998, 2002, 2006",
+   "value": 15,
+   "value_label": "15",
+   "flag": "br",
+   "photo": "assets/faces/ronaldo-nazario.jpg",
+   "kind": "person",
+   "fact": "Broke Müller's record with 15 goals between 1998 and 2006."
+  },
+  {
+   "rank": 3,
+   "name": "Miroslav Klose",
+   "sub": "Germany · 2002, 2006, 2010, 2014",
+   "value": 16,
+   "value_label": "16",
+   "flag": "de",
+   "photo": "assets/v2/miroslav-klose.jpg",
+   "kind": "person",
+   "fact": "Held the record from 2014 until Messi passed him in 2026."
+  },
+  {
+   "rank": 2,
+   "name": "Lionel Messi",
+   "sub": "Argentina · 2006–2026",
+   "value": 21,
+   "value_label": "21",
+   "flag": "ar",
+   "photo": "assets/faces/lionel-messi.jpg",
+   "kind": "person",
+   "fact": "Scored five times in 2026 to break Klose's record, but only briefly."
+  },
+  {
+   "rank": 1,
+   "name": "Kylian Mbappé",
+   "sub": "France · 2018, 2022, 2026",
+   "value": 22,
+   "value_label": "22",
+   "flag": "fr",
+   "photo": "assets/faces/kylian-mbappe.jpg",
+   "kind": "person",
+   "fact": "The only player to finish as a World Cup's top scorer twice."
+  }
+ ],
+ "ending": "England's Harry Kane is level with Müller on 14 and still plays internationally.",
+ "source": {
+  "title": "Wikipedia: List of FIFA World Cup top goalscorers",
+  "url": "https://en.wikipedia.org/wiki/List_of_FIFA_World_Cup_top_goalscorers",
+  "revid": 1386707108,
+  "as_of": "2026-11-26"
+ },
+ "credits": [
+  {
+   "file": "assets/faces/gerd-muller.jpg",
+   "author": "Unknown author",
+   "license": "Public domain",
+   "page": "https://commons.wikimedia.org/wiki/File:Gerd_M%C3%BCller_c1973_(cropped).jpg"
+  },
+  {
+   "file": "assets/faces/ronaldo-nazario.jpg",
+   "author": "Lula Oficial",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:12.12.2025_%E2%80%93_Cerim%C3%B4nia_de_lan%C3%A7amento_do_SBT_News_-_54980664160_(cropped2).jpg"
+  },
+  {
+   "file": "assets/v2/miroslav-klose.jpg",
+   "author": "Sven Mandel",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:2016209185719_2016-07-27_Champions_for_Charity_-_Sven_-_1D_X_-_0149_-_DV3P4742_mod.jpg"
+  },
+  {
+   "file": "assets/faces/lionel-messi.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg"
+  },
+  {
+   "file": "assets/faces/kylian-mbappe.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Senegal_16_June_2026-391_(cropped).jpg"
+  }
+ ]
+}

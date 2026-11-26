@@ -1,0 +1,77 @@
+{
+ "slug": "wc-titles",
+ "mode": "countdown",
+ "kicker": "WORLD CUP",
+ "title": "most world cup titles.",
+ "question": "Which country has won the most World Cups?",
+ "metric": "titles",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Spain",
+   "sub": "2010, 2026",
+   "value": 2,
+   "value_label": "2",
+   "flag": "es",
+   "photo": null,
+   "kind": "country",
+   "tie": true,
+   "fact": "Beat Argentina 1–0 after extra time in the 2026 final."
+  },
+  {
+   "rank": 4,
+   "name": "Argentina",
+   "sub": "1978, 1986, 2022",
+   "value": 3,
+   "value_label": "3",
+   "flag": "ar",
+   "photo": null,
+   "kind": "country",
+   "fact": "Lost the 2026 final, their fourth time as runners-up."
+  },
+  {
+   "rank": 3,
+   "name": "Italy",
+   "sub": "1934, 1938, 1982, 2006",
+   "value": 4,
+   "value_label": "4",
+   "flag": "it",
+   "photo": null,
+   "kind": "country",
+   "tie": true,
+   "fact": "Won back-to-back titles in 1934 and 1938."
+  },
+  {
+   "rank": 2,
+   "name": "Germany",
+   "sub": "1954, 1974, 1990, 2014",
+   "value": 4,
+   "value_label": "4",
+   "flag": "de",
+   "photo": null,
+   "kind": "country",
+   "tie": true,
+   "fact": "Has reached a record eight World Cup finals."
+  },
+  {
+   "rank": 1,
+   "name": "Brazil",
+   "sub": "1958, 1962, 1970, 1994, 2002",
+   "value": 5,
+   "value_label": "5",
+   "flag": "br",
+   "photo": null,
+   "kind": "country",
+   "fact": "The only team to have played at every World Cup."
+  }
+ ],
+ "ending": "France and Uruguay also have two titles; only eight nations have ever won it.",
+ "source": {
+  "title": "Wikipedia: List of FIFA World Cup finals",
+  "url": "https://en.wikipedia.org/wiki/List_of_FIFA_World_Cup_finals",
+  "revid": 1378907506,
+  "as_of": "2026-11-26"
+ },
+ "credits": []
+}

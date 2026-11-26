@@ -1,0 +1,108 @@
+{
+ "slug": "ballon-dor",
+ "mode": "countdown",
+ "kicker": "BALLON D'OR",
+ "title": "most ballon d'or wins.",
+ "question": "Who has won the most Ballon d'Or awards?",
+ "metric": "wins",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Marco van Basten",
+   "sub": "1988, 1989, 1992",
+   "value": 3,
+   "value_label": "3",
+   "flag": "nl",
+   "photo": "assets/v2/marco-van-basten.jpg",
+   "kind": "person",
+   "tie": true,
+   "fact": "Led an all-Dutch, all-Milan top three in 1988."
+  },
+  {
+   "rank": 4,
+   "name": "Michel Platini",
+   "sub": "1983, 1984, 1985",
+   "value": 3,
+   "value_label": "3",
+   "flag": "fr",
+   "photo": "assets/v2/michel-platini.jpg",
+   "kind": "person",
+   "tie": true,
+   "fact": "Won it three years running, from 1983 to 1985."
+  },
+  {
+   "rank": 3,
+   "name": "Johan Cruyff",
+   "sub": "1971, 1973, 1974",
+   "value": 3,
+   "value_label": "3",
+   "flag": "nl",
+   "photo": "assets/faces/johan-cruyff.jpg",
+   "kind": "person",
+   "tie": true,
+   "fact": "The first player ever to win the award three times."
+  },
+  {
+   "rank": 2,
+   "name": "Cristiano Ronaldo",
+   "sub": "2008, 2013, 2014, 2016, 2017",
+   "value": 5,
+   "value_label": "5",
+   "flag": "pt",
+   "photo": "assets/faces/cristiano-ronaldo.jpg",
+   "kind": "person",
+   "fact": "Nominated a record eighteen times."
+  },
+  {
+   "rank": 1,
+   "name": "Lionel Messi",
+   "sub": "2009–2012, 2015, 2019, 2021, 2023",
+   "value": 8,
+   "value_label": "8",
+   "flag": "ar",
+   "photo": "assets/faces/lionel-messi.jpg",
+   "kind": "person",
+   "fact": "Won it with three clubs, and once while playing outside Europe."
+  }
+ ],
+ "ending": "Harry Kane won the 2026 award by just 28 points over Mbappé.",
+ "source": {
+  "title": "Wikipedia: Ballon d'Or",
+  "url": "https://en.wikipedia.org/wiki/Ballon_d%27Or",
+  "revid": 1386185378,
+  "as_of": "2026-11-26"
+ },
+ "credits": [
+  {
+   "file": "assets/v2/marco-van-basten.jpg",
+   "author": "Paul Blank",
+   "license": "CC BY 2.5",
+   "page": "https://commons.wikimedia.org/wiki/File:Marco_van_Basten_(2)_(cropped).jpg"
+  },
+  {
+   "file": "assets/v2/michel-platini.jpg",
+   "author": "Anders Vindegg",
+   "license": "CC BY-SA 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Michel_Platini_2008.jpg"
+  },
+  {
+   "file": "assets/faces/johan-cruyff.jpg",
+   "author": "Rob Mieremet / Anefo",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Johan_Cruijff_(1974).jpg"
+  },
+  {
+   "file": "assets/faces/cristiano-ronaldo.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_(cropped).jpg"
+  },
+  {
+   "file": "assets/faces/lionel-messi.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg"
+  }
+ ]
+}

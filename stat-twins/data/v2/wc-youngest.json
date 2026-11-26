@@ -1,0 +1,141 @@
+{
+ "slug": "wc-youngest",
+ "mode": "countdown",
+ "kicker": "WORLD CUP",
+ "title": "youngest world cup scorers.",
+ "question": "Who is the youngest player ever to score at a World Cup?",
+ "metric": "old",
+ "lower_is_better": true,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Dmitri Sychev",
+   "sub": "Russia · 2002 vs Belgium",
+   "value": 6806,
+   "value_label": "18y 231d",
+   "flag": "ru",
+   "photo": "assets/v2/dmitri-sychev.jpg",
+   "kind": "person",
+   "fact": "Scored once and set up three more goals at the 2002 World Cup."
+  },
+  {
+   "rank": 4,
+   "name": "Michael Owen",
+   "sub": "England · 1998 vs Romania",
+   "value": 6765,
+   "value_label": "18y 190d",
+   "flag": "gb-eng",
+   "photo": "assets/v2/michael-owen.jpg",
+   "kind": "person",
+   "fact": "His equaliser against Romania couldn't stop a 2–1 England defeat."
+  },
+  {
+   "rank": 3,
+   "name": "Gavi",
+   "sub": "Spain · 2022 vs Costa Rica",
+   "value": 6684,
+   "value_label": "18y 110d",
+   "flag": "es",
+   "photo": "assets/v2/gavi.jpg",
+   "kind": "person",
+   "fact": "Scored an outside-of-the-foot volley in Spain's 7–0 win over Costa Rica."
+  },
+  {
+   "rank": 2,
+   "name": "Manuel Rosas",
+   "sub": "Mexico · 1930 vs Argentina",
+   "value": 6667,
+   "value_label": "18y 93d",
+   "flag": "mx",
+   "photo": null,
+   "kind": "person",
+   "fact": "His goal was the first penalty kick in World Cup history."
+  },
+  {
+   "rank": 1,
+   "name": "Pelé",
+   "sub": "Brazil · 1958 vs Wales",
+   "value": 6448,
+   "value_label": "17y 239d",
+   "flag": "br",
+   "photo": "assets/faces/pele.jpg",
+   "kind": "person",
+   "fact": "Ten days later, he also became the youngest scorer in a final."
+  }
+ ],
+ "ending": "Mexico's Gilberto Mora played in 2026 aged 17 years, 240 days, but didn't score.",
+ "source": {
+  "title": "Wikipedia: FIFA World Cup records and statistics",
+  "url": "https://en.wikipedia.org/wiki/FIFA_World_Cup_records_and_statistics",
+  "revid": 1386478947,
+  "as_of": "2026-11-26"
+ },
+ "sources_extra": [
+  {
+   "title": "Wikipedia: Manuel Rosas (footballer, born 1912)",
+   "url": "https://en.wikipedia.org/wiki/Manuel_Rosas_(footballer,_born_1912)",
+   "revid": 1382785769
+  },
+  {
+   "title": "Wikipedia: Gavi (footballer)",
+   "url": "https://en.wikipedia.org/wiki/Gavi_(footballer)",
+   "revid": 1387857180
+  },
+  {
+   "title": "Wikipedia: 2022 FIFA World Cup Group E",
+   "url": "https://en.wikipedia.org/wiki/2022_FIFA_World_Cup_Group_E",
+   "revid": 1370477656
+  },
+  {
+   "title": "Wikipedia: Michael Owen",
+   "url": "https://en.wikipedia.org/wiki/Michael_Owen",
+   "revid": 1387925541
+  },
+  {
+   "title": "Wikipedia: Dmitri Sychev",
+   "url": "https://en.wikipedia.org/wiki/Dmitri_Sychev",
+   "revid": 1384786560
+  },
+  {
+   "title": "Wikipedia: 2002 FIFA World Cup Group H",
+   "url": "https://en.wikipedia.org/wiki/2002_FIFA_World_Cup_Group_H",
+   "revid": 1370477346
+  },
+  {
+   "title": "Wikipedia: Gilberto Mora",
+   "url": "https://en.wikipedia.org/wiki/Gilberto_Mora",
+   "revid": 1387111294
+  },
+  {
+   "title": "Wikipedia: Lamine Yamal",
+   "url": "https://en.wikipedia.org/wiki/Lamine_Yamal",
+   "revid": 1387134673
+  }
+ ],
+ "credits": [
+  {
+   "file": "assets/v2/dmitri-sychev.jpg",
+   "author": "Кирилл Венедиктов (Kirill Venediktov)",
+   "license": "CC BY-SA 3.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Dmitry_Sychev_2021.jpg"
+  },
+  {
+   "file": "assets/v2/michael-owen.jpg",
+   "author": "David Seow",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Michael_Owen.jpg"
+  },
+  {
+   "file": "assets/v2/gavi.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Gavi_Argentina_v_Spain_19_July_2026-013.jpg"
+  },
+  {
+   "file": "assets/faces/pele.jpg",
+   "author": "Unknown author",
+   "license": "Public domain",
+   "page": "https://commons.wikimedia.org/wiki/File:Pele_con_brasil_(cropped).jpg"
+  }
+ ]
+}
