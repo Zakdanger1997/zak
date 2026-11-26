@@ -4,7 +4,7 @@
  "kicker": "TOP 5 LEAGUES",
  "title": "fastest goal records.",
  "question": "Who scored the fastest goal in Europe's top leagues?",
- "metric": "seconds",
+ "metric": "",
  "lower_is_better": true,
  "items": [
   {
