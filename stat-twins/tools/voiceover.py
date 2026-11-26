@@ -2,7 +2,7 @@
 """Narration for a stat-twin short (edge-tts), written from the story JSON and placed on the compose.html timeline.
 Mixes it over the music (ducked under the voice) and swaps the audio track of the finished video (video is copied).
 
-Usage: python3 tools/voiceover.py ronaldo [--voice en-US-AndrewNeural] [--rate +6%]
+Usage: python3 tools/voiceover.py ronaldo [--voice en-US-AndrewNeural] [--rate +6%] [--out video/sample.mp4]
 Needs data/story_<slug>.json, audio/music_<slug>.wav, video/<slug>-stat-twin.mp4.
 """
 import asyncio
@@ -66,7 +66,7 @@ lines.append((T_REV + 0.6, f"{t1['name']}."))
 lines.append((T_REV + 3.9, f"{an(round(t1['sim'] * 100))} {round(t1['sim'] * 100)} percent match. {said(k, H['values'][k], t1['values'][k]).capitalize()}."))
 lines.append((T_OUT + 0.2, "Who should I do next? Drop a name."))
 
-OUT = os.path.join(ROOT, "audio", f"vo_{SLUG}")
+OUT = os.path.join(ROOT, "audio", f"vo_{SLUG}_{VOICE}")
 os.makedirs(OUT, exist_ok=True)
 
 
@@ -99,7 +99,7 @@ for i, ((s, text), f) in enumerate(zip(lines, files)):
         os.replace(tmp, f)
 
 music = os.path.join(ROOT, "audio", f"music_{SLUG}.wav")
-mix = os.path.join(ROOT, "audio", f"mix_{SLUG}.wav")
+mix = os.path.join(ROOT, "audio", f"mix_{SLUG}_{VOICE}.wav")
 args = ["ffmpeg", "-y", "-loglevel", "error", "-i", music]
 for f in files:
     args += ["-i", f]
@@ -110,8 +110,9 @@ fc += "[duck][vo]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[out]"
 subprocess.run(args + ["-filter_complex", fc, "-map", "[out]", "-ar", "48000", mix], check=True)
 
 vid = os.path.join(ROOT, "video", f"{SLUG}-stat-twin.mp4")
-tmp = vid + ".tmp.mp4"
+DEST = A[A.index("--out") + 1] if "--out" in A else vid  # --out: write a copy (e.g. a voice sample) instead of replacing
+tmp = DEST + ".tmp.mp4"
 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", vid, "-i", mix, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
                 "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", tmp], check=True)
-os.replace(tmp, vid)
-print("->", vid)
+os.replace(tmp, DEST)
+print("->", DEST)
