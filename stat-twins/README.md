@@ -51,3 +51,11 @@ node tools/compose.js data/story_messi.json video/messi-stat-twin.mp4
 - Kevin De Bruyne: Bryan Berlin, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Kevin_De_Bruyne_USMNT_v_Belgium_Mar_28_2026-64_(cropped).jpg
 - Andrés Iniesta: Bryan Berlin, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Andr%C3%A9s_Iniesta_Argentina_v_Spain_19_July_2026-034_(cropped).jpg
 - Xavi: Meysam Mehabadi, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Xavi,_Persepolis_vs._Al_Sadd,_20190520_02_(cropped).jpg
+
+## Football countdown & versus shorts (v2)
+
+15 more shorts in a new dark-pitch style: countdowns (No.5 → No.1, with a recap) and head-to-heads. They cover World Cup scorers, titles and youngest scorers, the Ballon d'Or, caps, the Champions League (clubs and coaches), transfers, stadiums, attendance, unbeaten runs, fastest goals, managers, El Clásico and the Manchester derby.
+
+- `data/v2/<slug>.json`: the facts for each video, taken from current English Wikipedia articles (revision id in `source`), with photo credits.
+- `v2.html`: the template (countdown and versus modes). `tools/v2_build.py <slug>` does face crops, music, recording, narration and the mix → `video/v2/<slug>.mp4`.
+- `tools/v2_publish.py` → `PUBLISH_V2.md`: captions, titles, descriptions and photo credits. Flags: [flag-icons](https://github.com/lipis/flag-icons) (MIT, `assets/flags/LICENSE`).

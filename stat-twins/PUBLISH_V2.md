@@ -58,7 +58,7 @@ Each video is 1080×1920, H.264 + AAC, for TikTok, YouTube Shorts and Reels. Put
 
 **YouTube description**
 
-> Who is the most expensive footballer of all time? Neymar tops the list with €222m million euros. Both record deals went to PSG in 2017, and Neymar's fee is still unbeaten.
+> Who is the most expensive footballer of all time? Neymar tops the list with €222m . Both record deals went to PSG in 2017, and Neymar's fee is still unbeaten.
 >
 > Data: Wikipedia: List of most expensive association football transfers (https://en.wikipedia.org/wiki/List_of_most_expensive_association_football_transfers), as of 2026-11-26.
 > Photos (Wikimedia Commons): Bryan Berlin, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:Morgan_Rogers_England_v_Panama_27_June_26-144_(cropped).jpg); Mikael Hervestad, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:Alexander_Isak_-_Sweden_-_Greece21_(cropped).jpg); Bryan Berlin, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:Enzo_Fernandez_Argentina_v_Spain_19_July_2026-050_(cropped).jpg); Bryan Berlin, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Senegal_16_June_2026-391_(cropped).jpg); Bryan Berlin, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:Neymar_Junior_Brazil_V_Morocco_13_June_2026-40.jpg).
@@ -304,7 +304,7 @@ Each video is 1080×1920, H.264 + AAC, for TikTok, YouTube Shorts and Reels. Put
 
 **YouTube description**
 
-> Who scored the fastest goal in Europe's top leagues? Rafael Leão tops the list with 6.2s seconds. The fastest goal on the whole list came in Scottish junior football: Gavin Stokes, 2.1 seconds.
+> Who scored the fastest goal in Europe's top leagues? Rafael Leão tops the list with 6.2s . The fastest goal on the whole list came in Scottish junior football: Gavin Stokes, 2.1 seconds.
 >
 > Data: Wikipedia: Fastest goals in association football (https://en.wikipedia.org/wiki/Fastest_goals_in_association_football), as of 2026-11-26.
 > Photos (Wikimedia Commons): Michael Kranewitter, CC BY-SA 3.0 at (https://commons.wikimedia.org/wiki/File:FIFA_WC-qualification_2014_-_Austria_vs_Ireland_2013-09-10_-_Shane_Long_02.jpg); Bryan Berlin, CC BY-SA 4.0 (https://commons.wikimedia.org/wiki/File:Rafael_Leao_Croatia_v_Portugal_2_July_2026-187_(cropped).jpg).
