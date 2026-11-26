@@ -65,9 +65,9 @@ def timeline(s):
     if s["mode"] == "versus":
         t["rows"] = []
         for _ in s["rows"]:
-            t["rows"].append((x, x + 3.6)); x += 3.6
-        t["verdict"] = (x, x + 5.5); x += 5.5
-        t["fact"] = (x, x + 5); x += 5
+            t["rows"].append((x, x + 4.2)); x += 4.2
+        t["verdict"] = (x, x + 7.5); x += 7.5
+        t["fact"] = (x, x + 6.5); x += 6.5
     else:
         t["items"] = []
         for _ in s["items"][:4]:

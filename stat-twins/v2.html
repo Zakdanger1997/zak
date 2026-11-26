@@ -69,8 +69,8 @@ const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<'
 function timeline(s) {
   const t = { intro: [0, 4.5] }; let x = 4.5;
   if (s.mode === 'versus') {
-    t.rows = s.rows.map(() => { const r = [x, x + 3.6]; x += 3.6; return r; });
-    t.verdict = [x, x + 5.5]; x += 5.5; t.fact = [x, x + 5]; x += 5;
+    t.rows = s.rows.map(() => { const r = [x, x + 4.2]; x += 4.2; return r; });
+    t.verdict = [x, x + 7.5]; x += 7.5; t.fact = [x, x + 6.5]; x += 6.5;
   } else {
     t.items = s.items.slice(0, 4).map(() => { const r = [x, x + 6.5]; x += 6.5; return r; });
     t.drum = [x, x + 2.6]; x += 2.6; t.one = [x, x + 8]; x += 8;

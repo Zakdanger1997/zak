@@ -41,7 +41,7 @@ wet = np.stack([fftconvolve(mix[:, c], irs[c])[:N] for c in range(2)], 1); wet *
 y = mix * .8 + wet * .2
 y += lp(rng.standard_normal((N, 2)) * .004, 4000)                       # vinyl hiss
 fade = np.minimum(1, np.minimum(np.arange(N) / (1.0 * SR), (N - np.arange(N)) / (2.5 * SR))); y *= fade[:, None]; y /= np.max(np.abs(y)) / .8
-raw = os.path.join(ROOT, "audio", "raw.wav")
+raw = os.path.join(ROOT, "audio", f"raw_{slug}.wav")
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "2", "-i", "-", raw], input=y.astype(np.float32).tobytes(), check=True)
 subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-af", "loudnorm=I=-15:TP=-1.5:LRA=11", "-ar", "48000", "-c:a", "pcm_s16le", os.path.join(ROOT, "audio", f"music_{slug}.wav")], check=True)
 os.remove(raw); print("audio", slug, T)
