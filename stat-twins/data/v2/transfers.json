@@ -4,7 +4,7 @@
  "kicker": "TRANSFER RECORDS",
  "title": "most expensive transfers.",
  "question": "Who is the most expensive footballer of all time?",
- "metric": "",
+ "metric": "million euros",
  "lower_is_better": false,
  "items": [
   {

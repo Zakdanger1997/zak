@@ -20,8 +20,7 @@
     "#004D98"
    ],
    "fact": "Five titles between 1992 and 2015, plus three lost finals.",
-   "photo": null,
-   "short": "BARÇA"
+   "photo": null
   },
   {
    "rank": 4,
@@ -37,8 +36,7 @@
    ],
    "tie": true,
    "fact": "Six titles, and four more finals that ended in defeat.",
-   "photo": null,
-   "short": "LFC"
+   "photo": null
   },
   {
    "rank": 3,
@@ -54,8 +52,7 @@
    ],
    "tie": true,
    "fact": "Won three in a row: 1974, 1975 and 1976.",
-   "photo": null,
-   "short": "BAYERN"
+   "photo": null
   },
   {
    "rank": 2,
@@ -70,8 +67,7 @@
     "#000000"
    ],
    "fact": "Seven titles, the first in 1963 and the last in 2007.",
-   "photo": null,
-   "short": "MILAN"
+   "photo": null
   },
   {
    "rank": 1,
@@ -86,8 +82,7 @@
     "#FEBE10"
    ],
    "fact": "Won the first five European Cups in a row, 1956 to 1960.",
-   "photo": null,
-   "short": "MADRID"
+   "photo": null
   }
  ],
  "ending": "Holders Paris Saint-Germain have only two titles, but they won both of the last two finals.",
