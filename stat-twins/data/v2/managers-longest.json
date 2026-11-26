@@ -1,0 +1,93 @@
+{
+ "slug": "managers-longest",
+ "mode": "countdown",
+ "kicker": "PREMIER LEAGUE",
+ "title": "longest manager reigns.",
+ "question": "Which Premier League manager stayed longest at one club?",
+ "metric": "years",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Joe Royle",
+   "sub": "Oldham Athletic · 1982–1994",
+   "value": 12.3,
+   "value_label": "12.3",
+   "flag": "gb-eng",
+   "kind": "person",
+   "fact": "Appointed in July 1982, he left Oldham in November 1994.",
+   "photo": null
+  },
+  {
+   "rank": 4,
+   "name": "Alan Curbishley",
+   "sub": "Charlton Athletic · 1991–2006",
+   "value": 14.8,
+   "value_label": "14.8",
+   "flag": "gb-eng",
+   "kind": "person",
+   "fact": "His Charlton played in the Premier League in 1998–99 and from 2000 to 2006.",
+   "photo": null
+  },
+  {
+   "rank": 3,
+   "name": "Brian Clough",
+   "sub": "Nottingham Forest · 1975–1993",
+   "value": 18.3,
+   "value_label": "18.3",
+   "flag": "gb-eng",
+   "kind": "person",
+   "fact": "Only his final season, 1992–93, was in the Premier League.",
+   "photo": "assets/v2/brian-clough.jpg"
+  },
+  {
+   "rank": 2,
+   "name": "Arsène Wenger",
+   "sub": "Arsenal · 1996–2018",
+   "value": 21.6,
+   "value_label": "21.6",
+   "flag": "fr",
+   "kind": "person",
+   "fact": "Managed 828 Premier League games, more than anyone else.",
+   "photo": "assets/v2/arsene-wenger.jpg"
+  },
+  {
+   "rank": 1,
+   "name": "Alex Ferguson",
+   "sub": "Manchester United · 1986–2013",
+   "value": 26.6,
+   "value_label": "26.6",
+   "flag": "gb-sct",
+   "kind": "person",
+   "fact": "9,704 days in charge, including 810 Premier League games.",
+   "photo": "assets/v2/alex-ferguson.jpg"
+  }
+ ],
+ "ending": "Reigns count from appointment day, so most of Clough's 18 years at Forest predate the Premier League.",
+ "source": {
+  "title": "Wikipedia: List of Premier League managers",
+  "url": "https://en.wikipedia.org/wiki/List_of_Premier_League_managers",
+  "revid": 1386085327,
+  "as_of": "2026-11-26"
+ },
+ "credits": [
+  {
+   "file": "assets/v2/brian-clough.jpg",
+   "author": "Hans van Dijk for Anefo",
+   "license": "CC0",
+   "page": "https://commons.wikimedia.org/wiki/File:Aankomst_Nottingham_Forrest_op_Schiphol,_Ajax_1_tegenstanders_voor_de_Europa_Cup,_Bestanddeelnr_930-7831.jpg"
+  },
+  {
+   "file": "assets/v2/arsene-wenger.jpg",
+   "author": "Barcex",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:25th_Laureus_World_Sports_Awards_-_Red_Carpet_-_Ars%C3%A8ne_Wenger_-_240422_192850_(cropped).jpg"
+  },
+  {
+   "file": "assets/v2/alex-ferguson.jpg",
+   "author": "Austin Osuide",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Alex_Ferguson.jpg"
+  }
+ ]
+}

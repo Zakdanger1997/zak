@@ -1,0 +1,96 @@
+{
+ "slug": "ucl-clubs",
+ "mode": "countdown",
+ "kicker": "CHAMPIONS LEAGUE",
+ "title": "most european cups.",
+ "question": "Which club has won the most European Cups?",
+ "metric": "titles",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Barcelona",
+   "sub": "Spain · last title 2015",
+   "value": 5,
+   "value_label": "5",
+   "flag": "es",
+   "kind": "club",
+   "colors": [
+    "#A50044",
+    "#004D98"
+   ],
+   "fact": "Five titles between 1992 and 2015, plus three lost finals.",
+   "photo": null
+  },
+  {
+   "rank": 4,
+   "name": "Liverpool",
+   "sub": "England · last title 2019",
+   "value": 6,
+   "value_label": "6",
+   "flag": "gb-eng",
+   "kind": "club",
+   "colors": [
+    "#C8102E",
+    "#FFFFFF"
+   ],
+   "tie": true,
+   "fact": "Six titles, and four more finals that ended in defeat.",
+   "photo": null
+  },
+  {
+   "rank": 3,
+   "name": "Bayern Munich",
+   "sub": "Germany · last title 2020",
+   "value": 6,
+   "value_label": "6",
+   "flag": "de",
+   "kind": "club",
+   "colors": [
+    "#DC052D",
+    "#FFFFFF"
+   ],
+   "tie": true,
+   "fact": "Won three in a row: 1974, 1975 and 1976.",
+   "photo": null
+  },
+  {
+   "rank": 2,
+   "name": "AC Milan",
+   "sub": "Italy · last title 2007",
+   "value": 7,
+   "value_label": "7",
+   "flag": "it",
+   "kind": "club",
+   "colors": [
+    "#FB090B",
+    "#000000"
+   ],
+   "fact": "Seven titles, the first in 1963 and the last in 2007.",
+   "photo": null
+  },
+  {
+   "rank": 1,
+   "name": "Real Madrid",
+   "sub": "Spain · last title 2024",
+   "value": 15,
+   "value_label": "15",
+   "flag": "es",
+   "kind": "club",
+   "colors": [
+    "#FFFFFF",
+    "#FEBE10"
+   ],
+   "fact": "Won the first five European Cups in a row, 1956 to 1960.",
+   "photo": null
+  }
+ ],
+ "ending": "Holders Paris Saint-Germain have only two titles, but they won both of the last two finals.",
+ "source": {
+  "title": "Wikipedia: List of European Cup and UEFA Champions League finals",
+  "url": "https://en.wikipedia.org/wiki/List_of_European_Cup_and_UEFA_Champions_League_finals",
+  "revid": 1387776343,
+  "as_of": "2026-11-26"
+ },
+ "credits": []
+}

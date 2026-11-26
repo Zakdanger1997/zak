@@ -72,9 +72,9 @@ function timeline(s) {
     t.rows = s.rows.map(() => { const r = [x, x + 4.2]; x += 4.2; return r; });
     t.verdict = [x, x + 7.5]; x += 7.5; t.fact = [x, x + 6.5]; x += 6.5;
   } else {
-    t.items = s.items.slice(0, 4).map(() => { const r = [x, x + 6.5]; x += 6.5; return r; });
-    t.drum = [x, x + 2.6]; x += 2.6; t.one = [x, x + 8]; x += 8;
-    t.recap = [x, x + 6]; x += 6; t.ending = [x, x + 5]; x += 5;
+    t.items = s.items.slice(0, 4).map(() => { const r = [x, x + 9]; x += 9; return r; });
+    t.drum = [x, x + 2.6]; x += 2.6; t.one = [x, x + 10]; x += 10;
+    t.recap = [x, x + 6]; x += 6; t.ending = [x, x + 7]; x += 7;
   }
   t.outro = [x, x + 4.5]; x += 4.5; t.total = x; return t;
 }
@@ -139,7 +139,7 @@ function itemCard(t, a, it, isOne) {
   const kv = oc(E(t, a + .8, a + 2.0));
   h += `<div class="c num gold" style="top:1290px;font-size:${isOne ? 240 : 210}px;line-height:1;${up(t, a + .8)}">${esc(fmtVal(it, kv))}<span style="font-size:60px;color:rgba(255,255,255,.75);margin-left:18px">${esc(S.metric || '')}</span></div>`;
   if (it.tie) h += `<div class="c mono" style="top:1535px;font-size:24px;${up(t, a + 1.2)}">TIED ON THIS NUMBER</div>`;
-  h += `<div class="c" style="top:1580px;padding:0 100px;font-family:Osw;font-weight:500;font-size:44px;line-height:1.3;color:rgba(255,255,255,.9);${up(t, a + 2.6)}">${esc(it.fact || '')}</div>`;
+  h += `<div class="c" style="top:1580px;padding:0 100px;font-family:Osw;font-weight:500;font-size:44px;line-height:1.3;color:rgba(255,255,255,.9);${up(t, a + 4.5)}">${esc(it.fact || '')}</div>`;
   if (isOne) { const sk = ob(E(t, a + 1.6, a + 2.1)); h += `<div class="stamp" style="top:1745px;transform:translateX(-50%) rotate(-4deg) scale(${sk});opacity:${E(t, a + 1.6, a + 1.75)}">NO. 1</div>`; }
   return h;
 }

@@ -1,0 +1,87 @@
+{
+ "slug": "fastest-goals-big5",
+ "mode": "countdown",
+ "kicker": "TOP 5 LEAGUES",
+ "title": "fastest goal records.",
+ "question": "Who scored the fastest goal in Europe's top leagues?",
+ "metric": "seconds",
+ "lower_is_better": true,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Michel Rio",
+   "sub": "Caen vs Cannes · Ligue 1, 1992",
+   "value": 7.9,
+   "value_label": "7.9s",
+   "flag": "fr",
+   "kind": "person",
+   "fact": "Still the Ligue 1 record; Mbappé came closest in 2022 with 8.3 seconds.",
+   "photo": null
+  },
+  {
+   "rank": 4,
+   "name": "Shane Long",
+   "sub": "Southampton vs Watford · Premier League, 2018–19",
+   "value": 7.69,
+   "value_label": "7.69s",
+   "flag": "ie",
+   "kind": "person",
+   "fact": "Broke Ledley King's Premier League record of 9.9 seconds from 2000.",
+   "photo": "assets/v2/shane-long.jpg"
+  },
+  {
+   "rank": 3,
+   "name": "Joseba Llorente",
+   "sub": "Valladolid vs Espanyol · La Liga, 2008",
+   "value": 7.22,
+   "value_label": "7.22s",
+   "flag": "es",
+   "kind": "person",
+   "fact": "The fastest goal ever scored in La Liga.",
+   "photo": null
+  },
+  {
+   "rank": 2,
+   "name": "Robin Fellhauer",
+   "sub": "Augsburg vs Bayern Munich · Bundesliga, 2026–27",
+   "value": 7,
+   "value_label": "7s",
+   "flag": "de",
+   "kind": "person",
+   "fact": "Pounced on a Manuel Neuer error; the game ended 2–2.",
+   "photo": null
+  },
+  {
+   "rank": 1,
+   "name": "Rafael Leão",
+   "sub": "AC Milan vs Sassuolo · Serie A, 2020–21",
+   "value": 6.2,
+   "value_label": "6.2s",
+   "flag": "pt",
+   "kind": "person",
+   "fact": "Scored on 20 December 2020; Milan won the game 2–1.",
+   "photo": "assets/v2/rafael-leao.jpg"
+  }
+ ],
+ "ending": "The fastest goal on the whole list came in Scottish junior football: Gavin Stokes, 2.1 seconds.",
+ "source": {
+  "title": "Wikipedia: Fastest goals in association football",
+  "url": "https://en.wikipedia.org/wiki/Fastest_goals_in_association_football",
+  "revid": 1385394234,
+  "as_of": "2026-11-26"
+ },
+ "credits": [
+  {
+   "file": "assets/v2/shane-long.jpg",
+   "author": "Michael Kranewitter",
+   "license": "CC BY-SA 3.0 at",
+   "page": "https://commons.wikimedia.org/wiki/File:FIFA_WC-qualification_2014_-_Austria_vs_Ireland_2013-09-10_-_Shane_Long_02.jpg"
+  },
+  {
+   "file": "assets/v2/rafael-leao.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Rafael_Leao_Croatia_v_Portugal_2_July_2026-187_(cropped).jpg"
+  }
+ ]
+}

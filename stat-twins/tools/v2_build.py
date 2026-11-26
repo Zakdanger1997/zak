@@ -71,11 +71,11 @@ def timeline(s):
     else:
         t["items"] = []
         for _ in s["items"][:4]:
-            t["items"].append((x, x + 6.5)); x += 6.5
+            t["items"].append((x, x + 9)); x += 9
         t["drum"] = (x, x + 2.6); x += 2.6
-        t["one"] = (x, x + 8); x += 8
+        t["one"] = (x, x + 10); x += 10
         t["recap"] = (x, x + 6); x += 6
-        t["ending"] = (x, x + 5); x += 5
+        t["ending"] = (x, x + 7); x += 7
     t["outro"] = (x, x + 4.5); x += 4.5
     t["total"] = x
     return t
@@ -110,12 +110,12 @@ else:
     for (a, _), it in zip(T["items"], S["items"][:4]):
         lines.append((a + 0.35, f"Number {it['rank']}: {it['name']}. {spoken(it)}."))
         if it.get("fact"):
-            lines.append((a + 2.6, it["fact"]))
+            lines.append((a + 4.5, it["fact"]))
     one = S["items"][4]
     lines.append((T["drum"][0] + 0.1, "And number one..."))
     lines.append((T["one"][0] + 0.4, f"{one['name']}, with {spoken(one)}."))
     if one.get("fact"):
-        lines.append((T["one"][0] + 3.2, one["fact"]))
+        lines.append((T["one"][0] + 4.5, one["fact"]))
     lines.append((T["recap"][0] + 0.4, "Here's the full top five."))
     if S.get("ending"):
         lines.append((T["ending"][0] + 0.3, S["ending"]))

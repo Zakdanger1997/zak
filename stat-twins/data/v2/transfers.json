@@ -1,0 +1,105 @@
+{
+ "slug": "transfers",
+ "mode": "countdown",
+ "kicker": "TRANSFER RECORDS",
+ "title": "most expensive transfers.",
+ "question": "Who is the most expensive footballer of all time?",
+ "metric": "million euros",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Morgan Rogers",
+   "sub": "Aston Villa → Chelsea · 2026",
+   "value": 137.3,
+   "value_label": "€137.3m",
+   "flag": "gb-eng",
+   "kind": "person",
+   "fact": "Chelsea paid Aston Villa £117 million for the English midfielder.",
+   "photo": "assets/v2/morgan-rogers.jpg"
+  },
+  {
+   "rank": 4,
+   "name": "Alexander Isak",
+   "sub": "Newcastle United → Liverpool · 2025",
+   "value": 144.5,
+   "value_label": "€144.5m",
+   "flag": "se",
+   "kind": "person",
+   "fact": "£125 million up front, plus £5 million in possible add-ons.",
+   "photo": "assets/v2/alexander-isak.jpg"
+  },
+  {
+   "rank": 3,
+   "name": "Enzo Fernández",
+   "sub": "Chelsea → Manchester City · 2026",
+   "value": 145.8,
+   "value_label": "€145.8m",
+   "flag": "ar",
+   "kind": "person",
+   "fact": "He is on the list twice: Chelsea paid Benfica €121 million in 2023.",
+   "photo": "assets/v2/enzo-fernandez.jpg"
+  },
+  {
+   "rank": 2,
+   "name": "Kylian Mbappé",
+   "sub": "Monaco → Paris Saint-Germain · 2017",
+   "value": 180,
+   "value_label": "€180m",
+   "flag": "fr",
+   "kind": "person",
+   "fact": "At the time, a record fee for a teenager.",
+   "photo": "assets/faces/kylian-mbappe.jpg"
+  },
+  {
+   "rank": 1,
+   "name": "Neymar",
+   "sub": "Barcelona → Paris Saint-Germain · 2017",
+   "value": 222,
+   "value_label": "€222m",
+   "flag": "br",
+   "kind": "person",
+   "fact": "PSG activated his buyout clause, worth £200 million.",
+   "photo": "assets/faces/neymar.jpg"
+  }
+ ],
+ "ending": "Both record deals went to PSG in 2017, and Neymar's fee is still unbeaten.",
+ "source": {
+  "title": "Wikipedia: List of most expensive association football transfers",
+  "url": "https://en.wikipedia.org/wiki/List_of_most_expensive_association_football_transfers",
+  "revid": 1382464368,
+  "as_of": "2026-11-26"
+ },
+ "credits": [
+  {
+   "file": "assets/v2/morgan-rogers.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Morgan_Rogers_England_v_Panama_27_June_26-144_(cropped).jpg"
+  },
+  {
+   "file": "assets/v2/alexander-isak.jpg",
+   "author": "Mikael Hervestad",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Alexander_Isak_-_Sweden_-_Greece21_(cropped).jpg"
+  },
+  {
+   "file": "assets/v2/enzo-fernandez.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Enzo_Fernandez_Argentina_v_Spain_19_July_2026-050_(cropped).jpg"
+  },
+  {
+   "file": "assets/faces/kylian-mbappe.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Senegal_16_June_2026-391_(cropped).jpg"
+  },
+  {
+   "file": "assets/faces/neymar.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Neymar_Junior_Brazil_V_Morocco_13_June_2026-40.jpg"
+  }
+ ]
+}

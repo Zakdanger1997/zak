@@ -1,0 +1,103 @@
+{
+ "slug": "ucl-coaches",
+ "mode": "countdown",
+ "kicker": "CHAMPIONS LEAGUE",
+ "title": "most titles as coach.",
+ "question": "Which coach has won the most Champions League titles?",
+ "metric": "titles",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Luis Enrique",
+   "sub": "Barcelona · Paris Saint-Germain",
+   "value": 3,
+   "value_label": "3",
+   "flag": "es",
+   "kind": "person",
+   "tie": true,
+   "fact": "Won with Barcelona in 2015, then PSG in 2025 and 2026.",
+   "photo": "assets/v2/luis-enrique.jpg"
+  },
+  {
+   "rank": 4,
+   "name": "Pep Guardiola",
+   "sub": "Barcelona · Manchester City",
+   "value": 3,
+   "value_label": "3",
+   "flag": "es",
+   "kind": "person",
+   "tie": true,
+   "fact": "Won in 2009 and 2011 with Barcelona, then 2023 with City.",
+   "photo": "assets/v2/pep-guardiola.jpg"
+  },
+  {
+   "rank": 3,
+   "name": "Zinedine Zidane",
+   "sub": "Real Madrid",
+   "value": 3,
+   "value_label": "3",
+   "flag": "fr",
+   "kind": "person",
+   "tie": true,
+   "fact": "The only manager to win it three years in a row.",
+   "photo": "assets/faces/zinedine-zidane.jpg"
+  },
+  {
+   "rank": 2,
+   "name": "Bob Paisley",
+   "sub": "Liverpool",
+   "value": 3,
+   "value_label": "3",
+   "flag": "gb-eng",
+   "kind": "person",
+   "tie": true,
+   "fact": "First manager to win it three times, all with Liverpool.",
+   "photo": null
+  },
+  {
+   "rank": 1,
+   "name": "Carlo Ancelotti",
+   "sub": "AC Milan · Real Madrid",
+   "value": 5,
+   "value_label": "5",
+   "flag": "it",
+   "kind": "person",
+   "fact": "Two titles with Milan, three with Real Madrid, from six finals.",
+   "photo": "assets/v2/carlo-ancelotti.jpg"
+  }
+ ],
+ "ending": "Sixteen other managers have won it twice, but nobody else has more than three.",
+ "source": {
+  "title": "Wikipedia: List of European Cup and UEFA Champions League winning managers",
+  "url": "https://en.wikipedia.org/wiki/List_of_European_Cup_and_UEFA_Champions_League_winning_managers",
+  "revid": 1384092843,
+  "as_of": "2026-11-26"
+ },
+ "credits": [
+  {
+   "file": "assets/v2/luis-enrique.jpg",
+   "author": "Lluís from Sabadell (Barcelona), España",
+   "license": "CC BY 2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Luis_Enrique_2014.jpg"
+  },
+  {
+   "file": "assets/v2/pep-guardiola.jpg",
+   "author": "Steffen Prößdorf",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Josep_Guardiola_2023-10-04_Fu%C3%9Fball,_M%C3%A4nner,_UEFA_Champions_League,_RB_Leipzig_-_Manchester_City_FC_1DX_2797_(cropped).jpg"
+  },
+  {
+   "file": "assets/faces/zinedine-zidane.jpg",
+   "author": "Hadi Abyar",
+   "license": "CC BY 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Zinedine_Zidane_by_Tasnim_03.jpg"
+  },
+  {
+   "file": "assets/v2/carlo-ancelotti.jpg",
+   "author": "Bryan Berlin",
+   "license": "CC BY-SA 4.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Carlo_Ancelotti_Brazil_V_Morocco_13_June_2026-47.jpg"
+  }
+ ]
+}
