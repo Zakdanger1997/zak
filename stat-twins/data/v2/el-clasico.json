@@ -1,0 +1,72 @@
+{
+  "slug": "el-clasico",
+  "mode": "versus",
+  "kicker": "RIVALRY",
+  "title": "el clásico.",
+  "question": "Who really leads El Clásico?",
+  "left": {
+    "name": "Real Madrid",
+    "short": "MADRID",
+    "flag": "es",
+    "colors": [
+      "#FEBE10",
+      "#00529F"
+    ]
+  },
+  "right": {
+    "name": "Barcelona",
+    "short": "BARÇA",
+    "flag": "es",
+    "colors": [
+      "#A50044",
+      "#004D98"
+    ]
+  },
+  "rows": [
+    {
+      "label": "wins (all competitions)",
+      "left": 107,
+      "right": 106,
+      "fmt": "int"
+    },
+    {
+      "label": "draws",
+      "left": 52,
+      "right": 52,
+      "fmt": "int"
+    },
+    {
+      "label": "goals head-to-head",
+      "left": 446,
+      "right": 442,
+      "fmt": "int"
+    },
+    {
+      "label": "La Liga wins head-to-head",
+      "left": 81,
+      "right": 77,
+      "fmt": "int"
+    },
+    {
+      "label": "La Liga titles",
+      "left": 36,
+      "right": 29,
+      "fmt": "int"
+    },
+    {
+      "label": "European Cups",
+      "left": 15,
+      "right": 5,
+      "fmt": "int"
+    }
+  ],
+  "verdict": "Real Madrid lead by a single win, 107 to 106, after 265 official meetings.",
+  "fact": "The biggest Clásico win ever: Real Madrid 11–1 Barcelona, in 1943.",
+  "source": {
+    "title": "Wikipedia: El Clásico",
+    "url": "https://en.wikipedia.org/wiki/El_Clásico",
+    "revid": 1386700170,
+    "as_of": "2026-11-26"
+  },
+  "credits": []
+}

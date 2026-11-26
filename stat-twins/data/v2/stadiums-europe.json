@@ -1,0 +1,105 @@
+{
+  "slug": "stadiums-europe",
+  "mode": "countdown",
+  "kicker": "STADIUMS",
+  "title": "biggest stadiums in europe.",
+  "question": "Where are Europe's biggest football stadiums?",
+  "metric": "seats",
+  "lower_is_better": false,
+  "items": [
+    {
+      "rank": 5,
+      "name": "Luzhniki Stadium",
+      "sub": "Moscow · Russia national team",
+      "value": 81000,
+      "value_label": "81,000",
+      "flag": "ru",
+      "photo": "assets/v2/luzhniki-stadium.jpg",
+      "kind": "stadium",
+      "fact": "Hosted the 2018 World Cup final and the 1980 Olympics."
+    },
+    {
+      "rank": 4,
+      "name": "Stade de France",
+      "sub": "Saint-Denis · France national team",
+      "value": 81338,
+      "value_label": "81,338",
+      "flag": "fr",
+      "photo": "assets/v2/stade-de-france.jpg",
+      "kind": "stadium",
+      "fact": "Hosted the 1998 World Cup final and the Euro 2016 final."
+    },
+    {
+      "rank": 3,
+      "name": "Santiago Bernabéu",
+      "sub": "Madrid · Real Madrid",
+      "value": 83186,
+      "value_label": "83,186",
+      "flag": "es",
+      "photo": "assets/v2/santiago-bernabeu.jpg",
+      "kind": "stadium",
+      "fact": "Already picked to host the 2030 World Cup final."
+    },
+    {
+      "rank": 2,
+      "name": "Wembley Stadium",
+      "sub": "London · England national team",
+      "value": 90000,
+      "value_label": "90,000",
+      "flag": "gb-eng",
+      "photo": "assets/v2/wembley-stadium.jpg",
+      "kind": "stadium",
+      "fact": "Hosted Champions League finals in 2011, 2013 and 2024."
+    },
+    {
+      "rank": 1,
+      "name": "Camp Nou",
+      "sub": "Barcelona · FC Barcelona",
+      "value": 99354,
+      "value_label": "99,354",
+      "flag": "es",
+      "photo": "assets/v2/camp-nou.jpg",
+      "kind": "stadium",
+      "fact": "Opened in 1957 and hosted the 1989 and 1999 European Cup finals."
+    }
+  ],
+  "ending": "Camp Nou seats 9,354 more fans than Wembley, Europe's next-biggest football ground.",
+  "source": {
+    "title": "Wikipedia: List of European stadiums by capacity",
+    "url": "https://en.wikipedia.org/wiki/List_of_European_stadiums_by_capacity",
+    "revid": 1387308661,
+    "as_of": "2026-11-26"
+  },
+  "credits": [
+    {
+      "file": "assets/v2/luzhniki-stadium.jpg",
+      "author": "Government of Moscow Press centre",
+      "license": "CC BY 4.0",
+      "page": "https://commons.wikimedia.org/wiki/File:LuzhnikiStadium.jpg"
+    },
+    {
+      "file": "assets/v2/stade-de-france.jpg",
+      "author": "Zakarie Faibis",
+      "license": "CC BY-SA 4.0",
+      "page": "https://commons.wikimedia.org/wiki/File:France-Islande_Stade_de_France_03.jpg"
+    },
+    {
+      "file": "assets/v2/santiago-bernabeu.jpg",
+      "author": "Badefa",
+      "license": "CC0",
+      "page": "https://commons.wikimedia.org/wiki/File:Estadio_Santiago_Bernab%C3%A9u_%E2%80%94_Real_Madrid_Juvenil_A_-_Santiago_Wanderers_Sub-20_(Intercontinental_Sub-20_2026)_%E2%80%94_R%C3%A9cord_de_asistencia_en_un_partido_de_juveniles.jpg"
+    },
+    {
+      "file": "assets/v2/wembley-stadium.jpg",
+      "author": "Arne Müseler",
+      "license": "CC BY-SA 3.0 de",
+      "page": "https://commons.wikimedia.org/wiki/File:London_Wembley.jpg"
+    },
+    {
+      "file": "assets/v2/camp-nou.jpg",
+      "author": "Oh-Barcelona.com (Flickr)",
+      "license": "CC BY 2.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Camp_Nou_aerial.jpg"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+ "slug": "unbeaten-runs",
+ "mode": "countdown",
+ "kicker": "RECORDS",
+ "title": "longest unbeaten runs.",
+ "question": "Which European club went the longest without losing a league game?",
+ "metric": "matches",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Celtic",
+   "sub": "Scotland · 1915–1917",
+   "value": 62,
+   "value_label": "62",
+   "flag": "gb-sct",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#018749",
+    "#FFFFFF"
+   ],
+   "fact": "A century later Celtic went 56 unbeaten again, in 2016–17.",
+   "short": "CELTIC"
+  },
+  {
+   "rank": 4,
+   "name": "Sheriff Tiraspol",
+   "sub": "Moldova · 2006–2008",
+   "value": 63,
+   "value_label": "63",
+   "flag": "md",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#FFD200",
+    "#000000"
+   ],
+   "fact": "Moldova's Sheriff went 63 league games without a defeat.",
+   "short": "SHERIFF"
+  },
+  {
+   "rank": 3,
+   "name": "Red Star Belgrade",
+   "sub": "Serbia · 2021–2023",
+   "value": 65,
+   "value_label": "65",
+   "flag": "rs",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#D2001F",
+    "#FFFFFF"
+   ],
+   "fact": "Red Star appear three times on this list: 65, 57 and 55 games.",
+   "short": "RED STAR"
+  },
+  {
+   "rank": 2,
+   "name": "Lincoln Red Imps",
+   "sub": "Gibraltar · 2009–2014",
+   "value": 88,
+   "value_label": "88",
+   "flag": "gi",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#E30613",
+    "#FFFFFF"
+   ],
+   "fact": "Gibraltar's Lincoln Red Imps went unbeaten in the league from 2009 to 2014.",
+   "short": "LINCOLN"
+  },
+  {
+   "rank": 1,
+   "name": "Steaua București",
+   "sub": "Romania · 1986–1989",
+   "value": 104,
+   "value_label": "104",
+   "flag": "ro",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#E2001A",
+    "#003DA5"
+   ],
+   "fact": "No league defeat for 104 games, from 1986 to 1989.",
+   "short": "STEAUA"
+  }
+ ],
+ "ending": "AC Milan's 58 from 1991 to 1993 is the best run from Europe's big five leagues.",
+ "source": {
+  "title": "Wikipedia: European association football club records and statistics",
+  "url": "https://en.wikipedia.org/wiki/European_association_football_club_records_and_statistics",
+  "revid": 1385029160,
+  "as_of": "2026-11-26"
+ },
+ "credits": []
+}

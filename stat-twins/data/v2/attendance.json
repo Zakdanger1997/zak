@@ -1,0 +1,99 @@
+{
+ "slug": "attendance",
+ "mode": "countdown",
+ "kicker": "PREMIER LEAGUE 25/26",
+ "title": "biggest crowds 2025–26.",
+ "question": "Which Premier League club drew the biggest home crowds last season?",
+ "metric": "fans",
+ "lower_is_better": false,
+ "items": [
+  {
+   "rank": 5,
+   "name": "Tottenham Hotspur",
+   "sub": "London · 2025–26",
+   "value": 59702,
+   "value_label": "59,702",
+   "flag": "gb-eng",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#FFFFFF",
+    "#132257"
+   ],
+   "fact": "Won only 10 of their 38 league games all season.",
+   "short": "SPURS"
+  },
+  {
+   "rank": 4,
+   "name": "Arsenal",
+   "sub": "London · 2025–26",
+   "value": 60217,
+   "value_label": "60,217",
+   "flag": "gb-eng",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#EF0107",
+    "#FFFFFF"
+   ],
+   "fact": "Crowned champions, ending a 22-year wait for the title.",
+   "short": "ARSENAL"
+  },
+  {
+   "rank": 3,
+   "name": "Liverpool",
+   "sub": "Liverpool · 2025–26",
+   "value": 60389,
+   "value_label": "60,389",
+   "flag": "gb-eng",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#C8102E",
+    "#F6EB61"
+   ],
+   "fact": "The defending champions grabbed the last Champions League spot on the final day.",
+   "short": "LFC"
+  },
+  {
+   "rank": 2,
+   "name": "West Ham United",
+   "sub": "London · 2025–26",
+   "value": 62347,
+   "value_label": "62,347",
+   "flag": "gb-eng",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#7A263A",
+    "#1BB1E7"
+   ],
+   "fact": "Relegated to the Championship despite these huge crowds.",
+   "short": "WEST HAM"
+  },
+  {
+   "rank": 1,
+   "name": "Manchester United",
+   "sub": "Manchester · 2025–26",
+   "value": 73975,
+   "value_label": "73,975",
+   "flag": "gb-eng",
+   "photo": null,
+   "kind": "club",
+   "colors": [
+    "#DA291C",
+    "#FFFFFF"
+   ],
+   "fact": "Finished third, and Bruno Fernandes was named the season's best player.",
+   "short": "MAN UTD"
+  }
+ ],
+ "ending": "West Ham drew the league's second-biggest crowds and still went down.",
+ "source": {
+  "title": "Wikipedia: 2025–26 Premier League",
+  "url": "https://en.wikipedia.org/wiki/2025–26_Premier_League",
+  "revid": 1387837949,
+  "as_of": "2026-11-26"
+ },
+ "credits": []
+}

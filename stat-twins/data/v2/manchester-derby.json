@@ -1,0 +1,72 @@
+{
+  "slug": "manchester-derby",
+  "mode": "versus",
+  "kicker": "DERBY",
+  "title": "the manchester derby.",
+  "question": "Who really owns Manchester?",
+  "left": {
+    "name": "Manchester United",
+    "short": "UNITED",
+    "flag": "gb-eng",
+    "colors": [
+      "#DA291C",
+      "#FFFFFF"
+    ]
+  },
+  "right": {
+    "name": "Manchester City",
+    "short": "CITY",
+    "flag": "gb-eng",
+    "colors": [
+      "#6CABDD",
+      "#1C2C5B"
+    ]
+  },
+  "rows": [
+    {
+      "label": "wins (all competitions)",
+      "left": 81,
+      "right": 63,
+      "fmt": "int"
+    },
+    {
+      "label": "draws",
+      "left": 55,
+      "right": 55,
+      "fmt": "int"
+    },
+    {
+      "label": "goals head-to-head",
+      "left": 280,
+      "right": 279,
+      "fmt": "int"
+    },
+    {
+      "label": "Premier League derby wins",
+      "left": 27,
+      "right": 22,
+      "fmt": "int"
+    },
+    {
+      "label": "league titles",
+      "left": 20,
+      "right": 10,
+      "fmt": "int"
+    },
+    {
+      "label": "European Cups",
+      "left": 3,
+      "right": 1,
+      "fmt": "int"
+    }
+  ],
+  "verdict": "United lead by 18 wins, 81 to 63, after 199 competitive derbies.",
+  "fact": "After 199 derbies, United lead on goals by just one: 280 to 279.",
+  "source": {
+    "title": "Wikipedia: Manchester derby",
+    "url": "https://en.wikipedia.org/wiki/Manchester_derby",
+    "revid": 1385001799,
+    "as_of": "2026-11-26"
+  },
+  "credits": []
+}
