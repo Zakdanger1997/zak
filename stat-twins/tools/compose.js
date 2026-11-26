@@ -25,7 +25,7 @@ const srv = http.createServer((req, res) => {
   if (out) {
     fs.mkdirSync(path.dirname(out), { recursive: true });
     const args = ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-'];
-    if (fs.existsSync(audio)) args.push('-i', audio, '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '192k', '-shortest');
+    if (fs.existsSync(audio)) args.push('-i', audio, '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '192k', '-t', total.toFixed(3)); // not -shortest: it can cut the last ~2 s while x264 still buffers frames
     args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '19', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out);
     ff = spawn('ffmpeg', args, { stdio: ['pipe', 'inherit', 'inherit'] });
   }

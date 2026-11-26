@@ -113,6 +113,6 @@ vid = os.path.join(ROOT, "video", f"{SLUG}-stat-twin.mp4")
 DEST = A[A.index("--out") + 1] if "--out" in A else vid  # --out: write a copy (e.g. a voice sample) instead of replacing
 tmp = DEST + ".tmp.mp4"
 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", vid, "-i", mix, "-map", "0:v", "-map", "1:a", "-c:v", "copy",
-                "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", tmp], check=True)
+                "-c:a", "aac", "-b:a", "192k", "-t", f"{dur(vid):.3f}", "-movflags", "+faststart", tmp], check=True)
 os.replace(tmp, DEST)
 print("->", DEST)
