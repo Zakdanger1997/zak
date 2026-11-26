@@ -1,0 +1,173 @@
+{
+ "hero": {
+  "name": "Ronaldinho",
+  "title": "ronaldinho.",
+  "short": "RONALDINHO",
+  "photo": "assets/faces_c/ronaldinho.jpg",
+  "values": {
+   "gpg": 0.38,
+   "gpc": 0.3402061855670103,
+   "goals": 299,
+   "games": 797,
+   "seasons": 29
+  }
+ },
+ "metrics": [
+  {
+   "key": "gpg",
+   "label": "club goals / game",
+   "long": "CLUB GOALS PER GAME",
+   "fmt": "rate"
+  },
+  {
+   "key": "gpc",
+   "label": "intl goals / cap",
+   "long": "INTERNATIONAL GOALS PER CAP",
+   "fmt": "rate"
+  },
+  {
+   "key": "goals",
+   "label": "career goals",
+   "long": "CAREER GOALS",
+   "fmt": "int"
+  },
+  {
+   "key": "games",
+   "label": "career games",
+   "long": "CAREER GAMES",
+   "fmt": "int"
+  },
+  {
+   "key": "seasons",
+   "label": "seasons",
+   "long": "SEASONS AS A PRO",
+   "fmt": "int"
+  }
+ ],
+ "pool": 35,
+ "twins": [
+  {
+   "rank": 1,
+   "name": "Samuel Eto'o",
+   "title": "samuel eto'o.",
+   "short": "ETO'O",
+   "years": "1997–2019",
+   "photo": "assets/faces_c/samuel-etoo.jpg",
+   "values": {
+    "gpg": 0.4856020942408377,
+    "gpc": 0.4745762711864407,
+    "goals": 427,
+    "games": 882,
+    "seasons": 23
+   },
+   "sim": 0.6456370240807597,
+   "match": [
+    "gpg",
+    "games",
+    "gpc"
+   ],
+   "gap": [
+    "seasons"
+   ],
+   "line": "closest on club goals / game · biggest gap: seasons"
+  },
+  {
+   "rank": 2,
+   "name": "Diego Maradona",
+   "title": "diego maradona.",
+   "short": "MARADONA",
+   "years": "1976–1997",
+   "photo": "assets/faces_c/diego-maradona.jpg",
+   "values": {
+    "gpg": 0.5280135823429541,
+    "gpc": 0.37362637362637363,
+    "goals": 345,
+    "games": 680,
+    "seasons": 22
+   },
+   "sim": 0.6085592532969253,
+   "match": [
+    "gpc",
+    "goals",
+    "gpg"
+   ],
+   "gap": [
+    "seasons"
+   ]
+  },
+  {
+   "rank": 3,
+   "name": "Zlatan Ibrahimović",
+   "title": "zlatan ibrahimović.",
+   "short": "IBRAHIMOVIĆ",
+   "years": "1999–2023",
+   "photo": "assets/faces_c/zlatan-ibrahimovic.jpg",
+   "values": {
+    "gpg": 0.5900692840646651,
+    "gpc": 0.5081967213114754,
+    "goals": 573,
+    "games": 988,
+    "seasons": 25
+   },
+   "sim": 0.60462037451778,
+   "match": [
+    "gpc",
+    "gpg",
+    "games"
+   ],
+   "gap": [
+    "goals"
+   ]
+  },
+  {
+   "rank": 4,
+   "name": "Edinson Cavani",
+   "title": "edinson cavani.",
+   "short": "CAVANI",
+   "years": "2005–present",
+   "photo": "assets/faces_c/edinson-cavani.jpg",
+   "values": {
+    "gpg": 0.5412719891745602,
+    "gpc": 0.4264705882352941,
+    "goals": 458,
+    "games": 875,
+    "seasons": 22
+   },
+   "sim": 0.5940434613528265,
+   "match": [
+    "gpc",
+    "games",
+    "gpg"
+   ],
+   "gap": [
+    "seasons"
+   ]
+  },
+  {
+   "rank": 5,
+   "name": "Karim Benzema",
+   "title": "karim benzema.",
+   "short": "BENZEMA",
+   "years": "2004–present",
+   "photo": "assets/faces_c/karim-benzema.jpg",
+   "values": {
+    "gpg": 0.5462459194776932,
+    "gpc": 0.38144329896907214,
+    "goals": 539,
+    "games": 1016,
+    "seasons": 23
+   },
+   "sim": 0.5722812163918829,
+   "match": [
+    "gpc",
+    "gpg",
+    "goals"
+   ],
+   "gap": [
+    "seasons"
+   ]
+  }
+ ],
+ "source": "Data: Wikipedia career statistics (club + international, official matches), as of Nov 2026. Similarity: standardized distance on the five metrics. Photos: Wikimedia Commons (see description).",
+ "audio": "music_ronaldinho.wav"
+}

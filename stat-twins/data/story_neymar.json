@@ -1,0 +1,173 @@
+{
+ "hero": {
+  "name": "Neymar",
+  "title": "neymar.",
+  "short": "NEYMAR",
+  "photo": "assets/faces_c/neymar.jpg",
+  "values": {
+   "gpg": 0.5879629629629629,
+   "gpc": 0.6153846153846154,
+   "goals": 461,
+   "games": 778,
+   "seasons": 18
+  }
+ },
+ "metrics": [
+  {
+   "key": "gpg",
+   "label": "club goals / game",
+   "long": "CLUB GOALS PER GAME",
+   "fmt": "rate"
+  },
+  {
+   "key": "gpc",
+   "label": "intl goals / cap",
+   "long": "INTERNATIONAL GOALS PER CAP",
+   "fmt": "rate"
+  },
+  {
+   "key": "goals",
+   "label": "career goals",
+   "long": "CAREER GOALS",
+   "fmt": "int"
+  },
+  {
+   "key": "games",
+   "label": "career games",
+   "long": "CAREER GAMES",
+   "fmt": "int"
+  },
+  {
+   "key": "seasons",
+   "label": "seasons",
+   "long": "SEASONS AS A PRO",
+   "fmt": "int"
+  }
+ ],
+ "pool": 35,
+ "twins": [
+  {
+   "rank": 1,
+   "name": "Mohamed Salah",
+   "title": "mohamed salah.",
+   "short": "SALAH",
+   "years": "2010–present",
+   "photo": "assets/faces_c/mohamed-salah.jpg",
+   "values": {
+    "gpg": 0.48523206751054854,
+    "gpc": 0.5645161290322581,
+    "goals": 415,
+    "games": 835,
+    "seasons": 17
+   },
+   "sim": 0.8804438375292479,
+   "match": [
+    "goals",
+    "gpc",
+    "seasons"
+   ],
+   "gap": [
+    "gpg"
+   ],
+   "line": "closest on career goals · biggest gap: club goals / game"
+  },
+  {
+   "rank": 2,
+   "name": "Harry Kane",
+   "title": "harry kane.",
+   "short": "KANE",
+   "years": "2009–present",
+   "photo": "assets/faces_c/harry-kane.jpg",
+   "values": {
+    "gpg": 0.6817496229260935,
+    "gpc": 0.7322834645669292,
+    "goals": 545,
+    "games": 790,
+    "seasons": 18
+   },
+   "sim": 0.8757620043421853,
+   "match": [
+    "seasons",
+    "games",
+    "goals"
+   ],
+   "gap": [
+    "gpc"
+   ]
+  },
+  {
+   "rank": 3,
+   "name": "Johan Cruyff",
+   "title": "johan cruyff.",
+   "short": "CRUYFF",
+   "years": "1964–1984",
+   "photo": "assets/faces_c/johan-cruyff.jpg",
+   "values": {
+    "gpg": 0.5610098176718092,
+    "gpc": 0.6875,
+    "goals": 433,
+    "games": 761,
+    "seasons": 21
+   },
+   "sim": 0.8380692698566956,
+   "match": [
+    "games",
+    "gpg",
+    "goals"
+   ],
+   "gap": [
+    "seasons"
+   ]
+  },
+  {
+   "rank": 4,
+   "name": "Sergio Agüero",
+   "title": "sergio agüero.",
+   "short": "AGÜERO",
+   "years": "2003–2021",
+   "photo": "assets/faces_c/sergio-aguero.jpg",
+   "values": {
+    "gpg": 0.5620437956204379,
+    "gpc": 0.40594059405940597,
+    "goals": 426,
+    "games": 786,
+    "seasons": 19
+   },
+   "sim": 0.8340511847368122,
+   "match": [
+    "games",
+    "gpg",
+    "goals"
+   ],
+   "gap": [
+    "gpc"
+   ]
+  },
+  {
+   "rank": 5,
+   "name": "Andriy Shevchenko",
+   "title": "andriy shevchenko.",
+   "short": "SHEVCHENKO",
+   "years": "1993–2012",
+   "photo": "assets/faces_c/andriy-shevchenko.jpg",
+   "values": {
+    "gpg": 0.48652482269503544,
+    "gpc": 0.43243243243243246,
+    "goals": 391,
+    "games": 816,
+    "seasons": 20
+   },
+   "sim": 0.804387946164377,
+   "match": [
+    "games",
+    "goals",
+    "gpg"
+   ],
+   "gap": [
+    "gpc"
+   ]
+  }
+ ],
+ "source": "Data: Wikipedia career statistics (club + international, official matches), as of Nov 2026. Similarity: standardized distance on the five metrics. Photos: Wikimedia Commons (see description).",
+ "audio": "music_neymar.wav"
+}

@@ -1,0 +1,173 @@
+{
+ "hero": {
+  "name": "Thierry Henry",
+  "title": "thierry henry.",
+  "short": "HENRY",
+  "photo": "assets/faces_c/thierry-henry.jpg",
+  "values": {
+   "gpg": 0.45018450184501846,
+   "gpc": 0.4146341463414634,
+   "goals": 417,
+   "games": 936,
+   "seasons": 19
+  }
+ },
+ "metrics": [
+  {
+   "key": "gpg",
+   "label": "club goals / game",
+   "long": "CLUB GOALS PER GAME",
+   "fmt": "rate"
+  },
+  {
+   "key": "gpc",
+   "label": "intl goals / cap",
+   "long": "INTERNATIONAL GOALS PER CAP",
+   "fmt": "rate"
+  },
+  {
+   "key": "goals",
+   "label": "career goals",
+   "long": "CAREER GOALS",
+   "fmt": "int"
+  },
+  {
+   "key": "games",
+   "label": "career games",
+   "long": "CAREER GAMES",
+   "fmt": "int"
+  },
+  {
+   "key": "seasons",
+   "label": "seasons",
+   "long": "SEASONS AS A PRO",
+   "fmt": "int"
+  }
+ ],
+ "pool": 35,
+ "twins": [
+  {
+   "rank": 1,
+   "name": "Wayne Rooney",
+   "title": "wayne rooney.",
+   "short": "ROONEY",
+   "years": "2002–2021",
+   "photo": "assets/faces_c/wayne-rooney.jpg",
+   "values": {
+    "gpg": 0.41022280471821754,
+    "gpc": 0.44166666666666665,
+    "goals": 366,
+    "games": 883,
+    "seasons": 20
+   },
+   "sim": 0.911022505358233,
+   "match": [
+    "gpc",
+    "gpg",
+    "goals"
+   ],
+   "gap": [
+    "seasons"
+   ],
+   "line": "closest on intl goals / cap · biggest gap: seasons"
+  },
+  {
+   "rank": 2,
+   "name": "Antoine Griezmann",
+   "title": "antoine griezmann.",
+   "short": "GRIEZMANN",
+   "years": "2009–present",
+   "photo": "assets/faces_c/antoine-griezmann.jpg",
+   "values": {
+    "gpg": 0.37922705314009664,
+    "gpc": 0.32116788321167883,
+    "goals": 358,
+    "games": 965,
+    "seasons": 18
+   },
+   "sim": 0.8854102917363059,
+   "match": [
+    "games",
+    "seasons",
+    "goals"
+   ],
+   "gap": [
+    "gpc"
+   ]
+  },
+  {
+   "rank": 3,
+   "name": "Andriy Shevchenko",
+   "title": "andriy shevchenko.",
+   "short": "SHEVCHENKO",
+   "years": "1993–2012",
+   "photo": "assets/faces_c/andriy-shevchenko.jpg",
+   "values": {
+    "gpg": 0.48652482269503544,
+    "gpc": 0.43243243243243246,
+    "goals": 391,
+    "games": 816,
+    "seasons": 20
+   },
+   "sim": 0.8702345478975083,
+   "match": [
+    "gpc",
+    "goals",
+    "gpg"
+   ],
+   "gap": [
+    "games"
+   ]
+  },
+  {
+   "rank": 4,
+   "name": "Sergio Agüero",
+   "title": "sergio agüero.",
+   "short": "AGÜERO",
+   "years": "2003–2021",
+   "photo": "assets/faces_c/sergio-aguero.jpg",
+   "values": {
+    "gpg": 0.5620437956204379,
+    "gpc": 0.40594059405940597,
+    "goals": 426,
+    "games": 786,
+    "seasons": 19
+   },
+   "sim": 0.8325380452415881,
+   "match": [
+    "seasons",
+    "gpc",
+    "goals"
+   ],
+   "gap": [
+    "games"
+   ]
+  },
+  {
+   "rank": 5,
+   "name": "Edinson Cavani",
+   "title": "edinson cavani.",
+   "short": "CAVANI",
+   "years": "2005–present",
+   "photo": "assets/faces_c/edinson-cavani.jpg",
+   "values": {
+    "gpg": 0.5412719891745602,
+    "gpc": 0.4264705882352941,
+    "goals": 458,
+    "games": 875,
+    "seasons": 22
+   },
+   "sim": 0.8241559728019145,
+   "match": [
+    "gpc",
+    "goals",
+    "games"
+   ],
+   "gap": [
+    "seasons"
+   ]
+  }
+ ],
+ "source": "Data: Wikipedia career statistics (club + international, official matches), as of Nov 2026. Similarity: standardized distance on the five metrics. Photos: Wikimedia Commons (see description).",
+ "audio": "music_henry.wav"
+}

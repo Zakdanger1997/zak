@@ -6,7 +6,7 @@ Metrics (all from data/players.json, Wikipedia career tables):
 Each metric is z-scored over the pool (totals in log scale so a 900-goal career does not dominate), then the
 Euclidean distance between careers is turned into a 0-100 % similarity index (1 - d / (2 * median pair distance)).
 'The match' = the 3 metrics with the smallest standardized gap, 'the gap' = the largest.
-Usage: python3 tools/twins.py   -> data/story_ronaldo.json, data/story_messi.json
+Usage: python3 tools/twins.py [slug ...]   -> data/story_<slug>.json (slugs in HEROES; default all)
 """
 import json
 import math
@@ -47,6 +47,11 @@ pairs = [dist(a, b) for i, a in enumerate(pool) for b in pool[i + 1:]]
 D = 2 * st.median(pairs)
 
 
+def face(p):  # face-centred square crop from tools/crop_faces.py when present
+    c = p["photo_file"].replace("assets/faces/", "assets/faces_c/")
+    return c if os.path.exists(os.path.join(ROOT, c)) else p["photo_file"]
+
+
 def lower_title(name):
     return name.lower() + "."
 
@@ -67,11 +72,11 @@ def story(hero_name, slug):
     for r, p in enumerate(others, 1):
         diffs = sorted(METRICS, key=lambda m: abs(z(hero, m) - z(p, m)))
         twins.append({"rank": r, "name": p["name"], "title": lower_title(p.get("display", p["name"])), "short": short(p["name"]), "years": years(p),
-                      "photo": p["photo_file"], "values": p["values"], "sim": max(0.0, 1 - dist(hero, p) / D),
+                      "photo": face(p), "values": p["values"], "sim": max(0.0, 1 - dist(hero, p) / D),
                       "match": [m["key"] for m in diffs[:3]], "gap": [diffs[-1]["key"]]})
     t1 = twins[0]; m0 = next(m for m in METRICS if m["key"] == t1["match"][0])
     t1["line"] = f"closest on {m0['label']} · biggest gap: {next(m for m in METRICS if m['key'] == t1['gap'][0])['label']}"
-    s = {"hero": {"name": hero["name"], "title": lower_title(hero.get("display", hero["name"])), "short": short(hero["name"]), "photo": hero["photo_file"],
+    s = {"hero": {"name": hero["name"], "title": lower_title(hero.get("display", hero["name"])), "short": short(hero["name"]), "photo": face(hero),
                   "values": hero["values"]},
          "metrics": [{k: m[k] for k in ("key", "label", "long", "fmt")} for m in METRICS], "pool": len(pool) - 1, "twins": twins,
          "source": "Data: Wikipedia career statistics (club + international, official matches), as of Nov 2026. "
@@ -82,5 +87,9 @@ def story(hero_name, slug):
     return s
 
 
-story("Cristiano Ronaldo", "ronaldo")
-story("Lionel Messi", "messi")
+HEROES = {"ronaldo": "Cristiano Ronaldo", "messi": "Lionel Messi", "neymar": "Neymar", "mbappe": "Kylian Mbappé",
+          "haaland": "Erling Haaland", "kane": "Harry Kane", "salah": "Mohamed Salah", "lewandowski": "Robert Lewandowski",
+          "r9": "Ronaldo Nazário", "henry": "Thierry Henry", "zlatan": "Zlatan Ibrahimović", "ronaldinho": "Ronaldinho"}
+import sys  # noqa: E402
+for slug in (sys.argv[1:] or HEROES):
+    story(HEROES[slug], slug)
