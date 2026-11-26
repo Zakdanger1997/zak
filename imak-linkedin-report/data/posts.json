@@ -1,0 +1,506 @@
+[
+  {
+    "url": "https://tr.linkedin.com/posts/miborgtr_finlandiyan%C4%B1n-helsinki-%C5%9Fehrinde-ger%C3%A7ekle%C5%9Ftirilen-activity-7512040082950881280-itHl",
+    "activity_id": "7512078520341147648",
+    "original_activity_id": "7512040082950881280",
+    "date_utc": "2026-10-03T09:18:06Z",
+    "date": "2026-10-03",
+    "year": 2026,
+    "month": "2026-10",
+    "weekday": "Saturday",
+    "hour_utc": 9,
+    "original_date_utc": "2026-10-03T06:45:22Z",
+    "author": "Makina İmalatçıları Birliği (Turkish Machinery Manufacturers Association); reposted by I-MAK without comment",
+    "is_repost": true,
+    "post_type": "repost",
+    "original_post_type": "single image",
+    "image_count": 1,
+    "video_seconds": null,
+    "language": "tr",
+    "topic": "other",
+    "event": "EUROTRANS board meeting, Helsinki (I-MAK Deputy GM Salim Haffar represented MIB)",
+    "text_300": "Finlandiya’nın Helsinki şehrinde gerçekleştirilen EUROTRANS Yönetim Kurulu Toplantısına Makina İmalatçıları Birliği'ni temsilen üyemiz I-MAK REDUKTOR - Gearboxes and drives Genel Müdür Yardımcısı Sayın Salim Haffar katılmıştır.",
+    "text_length": 227,
+    "hashtags": [],
+    "mentions": [
+      {
+        "name": "I-MAK REDUKTOR - Gearboxes and drives",
+        "kind": "company/showcase",
+        "url": "https://tr.linkedin.com/company/i-mak---gearboxes"
+      }
+    ],
+    "tags_partners_or_people": false,
+    "tagged_people": [],
+    "tagged_companies": [],
+    "reactions": 44,
+    "comments": 1,
+    "reposts": null,
+    "reactions_note": "Reactions/comments belong to the original MIB post, not to I-MAK's repost",
+    "metrics_fetched": "2026-11-26",
+    "source": "public company page (\"I-MAK REDUKTOR reposted this\") + original post page; repost activity id 7512078520341147648 from company page HTML",
+    "note": "Repost date derived from the repost activity id; original post date 2026-10-03 06:45 UTC"
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_imak-france-mining-activity-7513948665166745600-Ct10",
+    "activity_id": "7513948665166745600",
+    "date_utc": "2026-10-08T13:09:24Z",
+    "date": "2026-10-08",
+    "year": 2026,
+    "month": "2026-10",
+    "weekday": "Thursday",
+    "hour_utc": 13,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "multi-image",
+    "image_count": 2,
+    "video_seconds": null,
+    "language": "en",
+    "topic": "expo-during",
+    "event": "SIM 2026, Châlons-en-Champagne, France (7-9 Oct 2026)",
+    "text_300": "[France] 🇫🇷 İ-MAK at SIM 2026 in Châlons-en-Champagne!\n\nGreat energy on our stand, surrounded by friends, partners, customers and industry professionals. 🤝\n\nThank you to everyone who visited the I-MAK REDUKTOR - Gearboxes and drives stand. We look forward to continuing the conversations and building",
+    "text_length": 390,
+    "hashtags": [
+      "imak",
+      "france",
+      "mining"
+    ],
+    "mentions": [
+      {
+        "name": "I-MAK REDUKTOR - Gearboxes and drives",
+        "kind": "company/showcase",
+        "url": "https://tr.linkedin.com/company/i-mak---gearboxes"
+      }
+    ],
+    "tags_partners_or_people": false,
+    "tagged_people": [],
+    "tagged_companies": [],
+    "reactions": 78,
+    "comments": 2,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_final-countdown-before-the-pack-expo-show-activity-7516131938114670592-gGG5",
+    "activity_id": "7516131938114670592",
+    "date_utc": "2026-10-14T13:44:57Z",
+    "date": "2026-10-14",
+    "year": 2026,
+    "month": "2026-10",
+    "weekday": "Wednesday",
+    "hour_utc": 13,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "video",
+    "image_count": null,
+    "video_seconds": 19,
+    "language": "en",
+    "topic": "expo-before",
+    "event": "PACK EXPO International, Chicago, USA (18-21 Oct 2026)",
+    "text_300": "Final countdown before the PACK EXPO Show in Chicago, Illinois! Come and meet us on stand LL 9404 ! \n\nMore on www.imakreduktor.com\n\nI-MAK USA / SIPCO IMAK \nPMMI: The Association for Packaging and Processing Technologies",
+    "text_length": 219,
+    "hashtags": [],
+    "mentions": [
+      {
+        "name": "PACK EXPO",
+        "kind": "company/showcase",
+        "url": "https://www.linkedin.com/company/packexpo"
+      },
+      {
+        "name": "I-MAK USA",
+        "kind": "company/showcase",
+        "url": "https://www.linkedin.com/company/imak-usa"
+      },
+      {
+        "name": "SIPCO IMAK",
+        "kind": "company/showcase",
+        "url": "https://www.linkedin.com/company/sipcoimak"
+      },
+      {
+        "name": "PMMI: The Association for Packaging and Processing Technologies",
+        "kind": "company/showcase",
+        "url": "https://www.linkedin.com/company/pmmi"
+      }
+    ],
+    "tags_partners_or_people": true,
+    "tagged_people": [],
+    "tagged_companies": [
+      "PACK EXPO",
+      "I-MAK USA",
+      "SIPCO IMAK",
+      "PMMI: The Association for Packaging and Processing Technologies"
+    ],
+    "reactions": 40,
+    "comments": 1,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_powertransmission-gearboxes-packagingindustry-activity-7517966581864312832-Tetk",
+    "activity_id": "7517966581864312832",
+    "date_utc": "2026-10-19T15:15:10Z",
+    "date": "2026-10-19",
+    "year": 2026,
+    "month": "2026-10",
+    "weekday": "Monday",
+    "hour_utc": 15,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "video",
+    "image_count": null,
+    "video_seconds": 19,
+    "language": "en",
+    "topic": "expo-before",
+    "event": "Propak Cape 2026, Cape Town, South Africa (27-29 Oct 2026 per imakreduktor.com; post says 26-29 Oct)",
+    "text_300": "Final countdown for the Propak Cape exhibition ! Come and meet our team of experts in Cape Town from the 26th to 29th October.\n\n📍 PROPACK Cape Town, South Africa\nMore on www.imakreduktor.com \n\nBearings International \n#PowerTransmission #Gearboxes #PackagingIndustry #IndustrialSolutions #SouthAfrica ",
+    "text_length": 307,
+    "hashtags": [
+      "powertransmission",
+      "gearboxes",
+      "packagingindustry",
+      "industrialsolutions",
+      "southafrica",
+      "africa"
+    ],
+    "mentions": [
+      {
+        "name": "Propak Cape",
+        "kind": "company/showcase",
+        "url": "https://za.linkedin.com/company/propak-cape"
+      },
+      {
+        "name": "Bearings International",
+        "kind": "company/showcase",
+        "url": "https://za.linkedin.com/company/bearingsinternational"
+      }
+    ],
+    "tags_partners_or_people": true,
+    "tagged_people": [],
+    "tagged_companies": [
+      "Propak Cape",
+      "Bearings International"
+    ],
+    "reactions": 34,
+    "comments": 3,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_great-energy-on-the-pack-expo-show-in-chicago-activity-7518558329238016000-_bR2",
+    "activity_id": "7518558329238016000",
+    "date_utc": "2026-10-21T06:26:33Z",
+    "date": "2026-10-21",
+    "year": 2026,
+    "month": "2026-10",
+    "weekday": "Wednesday",
+    "hour_utc": 6,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "multi-image",
+    "image_count": 3,
+    "video_seconds": null,
+    "language": "en",
+    "topic": "expo-after",
+    "event": "PACK EXPO International, Chicago, USA (18-21 Oct 2026)",
+    "text_300": "Great energy on the PACK EXPO show in Chicago, Illinois!\n\nEnd of a very productive week with meetings and exchange with key players of the packaging industry! \n\nMore on www.imakreduktor.com\n\nSIPCO IMAK / I-MAK REDUKTOR - Gearboxes and drives",
+    "text_length": 241,
+    "hashtags": [],
+    "mentions": [
+      {
+        "name": "PACK EXPO",
+        "kind": "company/showcase",
+        "url": "https://www.linkedin.com/company/packexpo"
+      },
+      {
+        "name": "SIPCO IMAK",
+        "kind": "company/showcase",
+        "url": "https://www.linkedin.com/company/sipcoimak"
+      },
+      {
+        "name": "I-MAK REDUKTOR - Gearboxes and drives",
+        "kind": "company/showcase",
+        "url": "https://tr.linkedin.com/company/i-mak---gearboxes"
+      }
+    ],
+    "tags_partners_or_people": true,
+    "tagged_people": [],
+    "tagged_companies": [
+      "PACK EXPO",
+      "SIPCO IMAK"
+    ],
+    "reactions": 63,
+    "comments": 4,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": "Wrap-up (\"End of a very productive week\") posted on the final show day"
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_packaging-gearboxes-powertransmission-activity-7520878178400096257-wIzz",
+    "activity_id": "7520878178400096257",
+    "date_utc": "2026-10-27T16:04:48Z",
+    "date": "2026-10-27",
+    "year": 2026,
+    "month": "2026-10",
+    "weekday": "Tuesday",
+    "hour_utc": 16,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "multi-image",
+    "image_count": 3,
+    "video_seconds": null,
+    "language": "en",
+    "topic": "expo-during",
+    "event": "Propak Cape 2026, Cape Town, South Africa",
+    "text_300": "Day 1 at Propak Cape show in Cape Town, South Africa! \n\nGreat energy on the show with hundreds of exchanges with key players of this major industry !\n\nLooking forward for the next two days ! More on www.imakreduktor.com\n\nI-MAK REDUKTOR - Gearboxes and mechanical variators / Bearings International \n\n",
+    "text_length": 340,
+    "hashtags": [
+      "packaging",
+      "gearboxes",
+      "powertransmission"
+    ],
+    "mentions": [
+      {
+        "name": "Propak Cape",
+        "kind": "company/showcase",
+        "url": "https://za.linkedin.com/company/propak-cape"
+      },
+      {
+        "name": "I-MAK REDUKTOR - Gearboxes and mechanical variators",
+        "kind": "company/showcase",
+        "url": "https://tr.linkedin.com/showcase/i-mak-reduktor---gearbox-and-drive-systems/"
+      },
+      {
+        "name": "Bearings International",
+        "kind": "company/showcase",
+        "url": "https://za.linkedin.com/company/bearingsinternational"
+      }
+    ],
+    "tags_partners_or_people": true,
+    "tagged_people": [],
+    "tagged_companies": [
+      "Propak Cape",
+      "I-MAK REDUKTOR - Gearboxes and mechanical variators",
+      "Bearings International"
+    ],
+    "reactions": 87,
+    "comments": 4,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_powertransmission-gearboxes-warsawindustryweek-activity-7521854607992516609-bEiP",
+    "activity_id": "7521854607992516609",
+    "date_utc": "2026-10-30T08:44:47Z",
+    "date": "2026-10-30",
+    "year": 2026,
+    "month": "2026-10",
+    "weekday": "Friday",
+    "hour_utc": 8,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "video",
+    "image_count": null,
+    "video_seconds": 34,
+    "language": "en",
+    "topic": "expo-before",
+    "event": "Warsaw Industry Week 2026, Ptak Warsaw Expo, Poland (3-5 Nov 2026)",
+    "text_300": "Final countdown for the Warsaw Industry Week exhibition! Come and meet our team of experts in Warsaw from the 3rd to 5th of November.\n\n📍 Warsaw Industry Week 2026 Ptak Warsaw Expo, Poland\n 🗓️ 3–5 November 2026\n 🔹 Stand F3.09\n\nMore on www.imakreduktor.com\n#PowerTransmission #Gearboxes #WarsawIndustry",
+    "text_length": 363,
+    "hashtags": [
+      "powertransmission",
+      "gearboxes",
+      "warsawindustryweek",
+      "industrialautomation",
+      "industrialsolutions",
+      "poland",
+      "europe"
+    ],
+    "mentions": [
+      {
+        "name": "Warsaw Industry Week",
+        "kind": "company/showcase",
+        "url": "https://pl.linkedin.com/company/warsaw-industry-week"
+      }
+    ],
+    "tags_partners_or_people": true,
+    "tagged_people": [],
+    "tagged_companies": [
+      "Warsaw Industry Week"
+    ],
+    "reactions": 44,
+    "comments": 1,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_adipec2026-powertransmission-gearboxes-activity-7523339456553263104-ydZ4",
+    "activity_id": "7523339456553263104",
+    "date_utc": "2026-11-03T11:05:03Z",
+    "date": "2026-11-03",
+    "year": 2026,
+    "month": "2026-11",
+    "weekday": "Tuesday",
+    "hour_utc": 11,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "video",
+    "image_count": null,
+    "video_seconds": 20,
+    "language": "en",
+    "topic": "expo-during",
+    "event": "ADIPEC 2026, Abu Dhabi, UAE (2-5 Nov 2026), via partner Standard Group",
+    "text_300": "Day 2 at ADIPEC Exhibition and Conference 2026 – and I-MAK REDUKTOR - Gearboxes and drives is in Abu Dhabi!\n\nOur partner Standard Group - Pumps, Air Compressors, Engineered Skids is showcasing I-MAK gearboxes and geared motors alongside their range of engineered pumps, systems and compressed air sol",
+    "text_length": 595,
+    "hashtags": [
+      "adipec2026",
+      "powertransmission",
+      "gearboxes",
+      "oilandgas",
+      "energy",
+      "abudhabi",
+      "uae",
+      "middleeast"
+    ],
+    "mentions": [
+      {
+        "name": "ADIPEC Exhibition and Conference",
+        "kind": "company/showcase",
+        "url": "https://ae.linkedin.com/showcase/adipecofficial/"
+      },
+      {
+        "name": "I-MAK REDUKTOR - Gearboxes and drives",
+        "kind": "company/showcase",
+        "url": "https://tr.linkedin.com/company/i-mak---gearboxes"
+      },
+      {
+        "name": "Standard Group - Pumps, Air Compressors, Engineered Skids",
+        "kind": "company/showcase",
+        "url": "https://ae.linkedin.com/company/pumpsglobal"
+      }
+    ],
+    "tags_partners_or_people": true,
+    "tagged_people": [],
+    "tagged_companies": [
+      "ADIPEC Exhibition and Conference",
+      "Standard Group - Pumps, Air Compressors, Engineered Skids"
+    ],
+    "reactions": 24,
+    "comments": 1,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_industry-asia-imakreduktor-activity-7524841752663453697-myjq",
+    "activity_id": "7524841752663453697",
+    "date_utc": "2026-11-07T14:34:38Z",
+    "date": "2026-11-07",
+    "year": 2026,
+    "month": "2026-11",
+    "weekday": "Saturday",
+    "hour_utc": 14,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "multi-image",
+    "image_count": 3,
+    "video_seconds": null,
+    "language": "en",
+    "topic": "expo-after",
+    "event": "PTC Asia, Shanghai, China (3-6 Nov 2026)",
+    "text_300": "[China] End of a great week in Shanghai, China. Impressive to witness the growing success of the biggest power transmission tradeshow in Asia!\n\nThank you all for stopping by! \n\n#industry #asia #imakreduktor",
+    "text_length": 206,
+    "hashtags": [
+      "industry",
+      "asia",
+      "imakreduktor"
+    ],
+    "mentions": [],
+    "tags_partners_or_people": false,
+    "tagged_people": [],
+    "tagged_companies": [],
+    "reactions": 118,
+    "comments": 1,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  },
+  {
+    "url": "https://www.linkedin.com/posts/i-mak---gearboxes_mining-abidan-africa-activity-7528000046102056960-YrHx",
+    "activity_id": "7528000046102056960",
+    "date_utc": "2026-11-16T07:44:34Z",
+    "date": "2026-11-16",
+    "year": 2026,
+    "month": "2026-11",
+    "weekday": "Monday",
+    "hour_utc": 7,
+    "author": "I-MAK REDUKTOR - Gearboxes and drives",
+    "is_repost": false,
+    "post_type": "video",
+    "image_count": null,
+    "video_seconds": 19,
+    "language": "en",
+    "topic": "expo-before",
+    "event": "SIREXE 2026, Abidjan, Ivory Coast (18-22 Nov 2026)",
+    "text_300": "[Ivory Coast] Final countdown before the opening of SIREXE Abidjan ! Proud to take part in the biggest mining and construction event in West Africa! \n\nCome and meet our experts from the 18th to 22th November in Abidjan, Ivory Coast. 🇨🇮\n\n #mining #abidan #africa #event #imak\nRamzi Faour / ZAKARIA IBR",
+    "text_length": 304,
+    "hashtags": [
+      "mining",
+      "abidan",
+      "africa",
+      "event",
+      "imak"
+    ],
+    "mentions": [
+      {
+        "name": "SIREXE",
+        "kind": "company/showcase",
+        "url": "https://www.linkedin.com/company/sirexe-expo"
+      },
+      {
+        "name": "Ramzi Faour",
+        "kind": "person",
+        "url": "https://ci.linkedin.com/in/ramzi-faour-4462b6132"
+      },
+      {
+        "name": "ZAKARIA IBRAHIM",
+        "kind": "person",
+        "url": "https://tr.linkedin.com/in/zakaria-ibrahim-63037499"
+      }
+    ],
+    "tags_partners_or_people": true,
+    "tagged_people": [
+      "Ramzi Faour",
+      "ZAKARIA IBRAHIM"
+    ],
+    "tagged_companies": [
+      "SIREXE"
+    ],
+    "reactions": 33,
+    "comments": 1,
+    "reposts": null,
+    "reposts_note": "Repost count not shown on logged-out post pages",
+    "metrics_fetched": "2026-11-26",
+    "source": "public post page (curl), schema.org JSON-LD + og:title; listed on public company page",
+    "note": null
+  }
+]
