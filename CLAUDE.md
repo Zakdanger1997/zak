@@ -77,6 +77,7 @@ salesably-marketplace/
 ├── imak-mamk-video/         # Stand-alone video project: MA/MK conveyor drives in mines/steel, 9:16 (same pipeline; tools/mamk_scene.py + scenekit.py)
 ├── imak-story-video/        # Stand-alone video: i.Mak company story in a paper-collage style, 16:9 (story.html recorded by tools/compose.js)
 ├── imak-bakery-video/       # Stand-alone video: "Solutions for baking process", clay-style 3D line with i.Mak drives, 16:9
+├── imak-s130-s63-demo/      # Stand-alone video (not a plugin): Turkish customer demo, S 130 + S 63 needs output shaft + flange (three.js on real STEP meshes)
 ├── imak-reduktor-secim/     # Stand-alone web app (not a plugin): i.Mak gearbox selector
 │   ├── index.html           # Single-page app, TR/EN, no dependencies
 │   ├── data/                # Generated: catalog.js (performance tables), applications.js
