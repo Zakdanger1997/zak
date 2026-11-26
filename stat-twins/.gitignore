@@ -1,3 +1,5 @@
 audio/*.wav
 audio/vo_*/
 video/voices/
+assets/v2_people/
+data/v2test/

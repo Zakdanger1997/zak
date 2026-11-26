@@ -4,12 +4,16 @@ model face_detection_yunet_2023mar.onnx from huggingface.co/opencv/face_detectio
 the face fills ~42% of the crop, a bit above centre). Falls back to a top-weighted square crop when no face is found."""
 import glob
 import os
+import sys
 
 import cv2
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 MODEL = os.environ.get("YUNET", "/tmp/claude-0/models/yunet.onnx")
-for f in sorted(glob.glob(os.path.join(ROOT, "assets", "faces", "*.jpg"))):
+SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "assets", "faces")
+DST = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "assets", "faces_c")
+os.makedirs(DST, exist_ok=True)
+for f in sorted(glob.glob(os.path.join(SRC, "*.jpg"))):
     im = cv2.imread(f); h, w = im.shape[:2]
     det = cv2.FaceDetectorYN.create(MODEL, "", (w, h), 0.7)
     faces = det.detect(im)[1]
@@ -21,5 +25,5 @@ for f in sorted(glob.glob(os.path.join(ROOT, "assets", "faces", "*.jpg"))):
         side = min(w, h); cx, cy = w / 2, side / 2
     x0 = int(min(max(cx - side / 2, 0), w - side)); y0 = int(min(max(cy - side / 2, 0), h - side))
     out = cv2.resize(im[y0:y0 + side, x0:x0 + side], (600, 600), interpolation=cv2.INTER_LANCZOS4)
-    cv2.imwrite(os.path.join(ROOT, "assets", "faces_c", os.path.basename(f)), out, [cv2.IMWRITE_JPEG_QUALITY, 92])
+    cv2.imwrite(os.path.join(DST, os.path.basename(f)), out, [cv2.IMWRITE_JPEG_QUALITY, 92])
     print(f"{os.path.basename(f):26s} {'face' if len(faces) else 'NO FACE'} side={side}")

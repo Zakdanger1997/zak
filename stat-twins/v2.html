@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<!-- "Football countdown" series (1080x1920 @30): countdown (No.5 -> No.1) and versus (head-to-head) shorts.
+     Data: data/v2/<slug>.json (schema in tools/v2_prep.py). Driven by tools/compose.js --page v2.html:
+     window.setup(story) -> duration, window.renderAt(t). Timings are mirrored in tools/v2_voice.py (timeline()). -->
+<style>
+@font-face { font-family: Play; font-style: italic; font-weight: 800; src: url(fonts/playfair-display-latin-800-italic.woff2); }
+@font-face { font-family: Play; font-style: italic; font-weight: 800; src: url(fonts/playfair-display-latin-ext-800-italic.woff2); unicode-range: U+0100-024F; }
+@font-face { font-family: Play; font-style: italic; font-weight: 900; src: url(fonts/playfair-display-latin-900-italic.woff2); }
+@font-face { font-family: Osw; font-weight: 500; src: url(fonts/oswald-latin-500-normal.woff2); }
+@font-face { font-family: Osw; font-weight: 500; src: url(fonts/oswald-latin-ext-500-normal.woff2); unicode-range: U+0100-024F; }
+@font-face { font-family: Osw; font-weight: 600; src: url(fonts/oswald-latin-600-normal.woff2); }
+@font-face { font-family: Mono; font-weight: 400; src: url(fonts/ibm-plex-mono-latin-400-normal.woff2); }
+@font-face { font-family: Mono; font-weight: 400; src: url(fonts/ibm-plex-mono-latin-ext-400-normal.woff2); unicode-range: U+0100-024F; }
+@font-face { font-family: Mono; font-weight: 500; src: url(fonts/ibm-plex-mono-latin-500-normal.woff2); }
+html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0c2f24; }
+#p { position: absolute; inset: 0; overflow: hidden;
+     background: radial-gradient(ellipse 80% 60% at 50% 38%, #17503d 0%, #0f3a2c 55%, #0a271e 100%); }
+.stripe { position: absolute; left: 0; right: 0; height: 160px; background: rgba(255,255,255,.025); }
+#lines { position: absolute; inset: 0; }
+#grain { position: absolute; inset: 0; opacity: .22; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>"); }
+#c { position: absolute; inset: 0; }
+.mono { font-family: Mono; letter-spacing: 5px; color: rgba(255,255,255,.62); text-transform: uppercase; }
+.ttl { font-family: Play; font-style: italic; font-weight: 900; color: #fff; letter-spacing: -1px; }
+.num { font-family: Osw; font-weight: 500; }
+.gold { color: #f2c14e; }
+.c { position: absolute; left: 0; right: 0; text-align: center; }
+.disc { position: absolute; border-radius: 50%; overflow: hidden; background: #0a271e;
+        box-shadow: 0 0 0 8px #fff, 0 0 0 14px var(--ring, #f2c14e), 0 30px 60px rgba(0,0,0,.45); }
+.disc img { width: 100%; height: 100%; object-fit: cover; }
+.rect { position: absolute; border-radius: 26px; overflow: hidden; box-shadow: 0 0 0 6px #fff, 0 30px 60px rgba(0,0,0,.45); }
+.rect img { width: 100%; height: 100%; object-fit: cover; }
+.kit { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+       font-family: Osw; font-weight: 600; color: #fff; letter-spacing: 2px; text-shadow: 0 3px 10px rgba(0,0,0,.35);
+       box-shadow: 0 0 0 8px #fff, 0 30px 60px rgba(0,0,0,.45); }
+.ladder { position: absolute; left: 90px; right: 90px; }
+.lrow { position: absolute; left: 0; right: 0; height: 120px; display: flex; align-items: center; }
+.lrow .rk { width: 92px; font-family: Osw; font-weight: 600; font-size: 62px; color: rgba(255,255,255,.45); }
+.lrow .fl { width: 84px; height: 84px; border-radius: 50%; overflow: hidden; margin-right: 22px; box-shadow: 0 0 0 3px #fff; flex: none; }
+.lrow .fl img { width: 100%; height: 100%; object-fit: cover; }
+.lrow .nm { flex: 1; font-family: Osw; font-weight: 500; font-size: 48px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lrow .vl { font-family: Osw; font-weight: 600; font-size: 58px; color: #f2c14e; margin-left: 20px; }
+.lrow .bar { position: absolute; left: 92px; bottom: 6px; height: 6px; background: #f2c14e; border-radius: 3px; }
+.stamp { position: absolute; left: 50%; border: 7px solid #f2c14e; color: #f2c14e; border-radius: 16px; padding: 8px 40px;
+         font-family: Osw; font-weight: 600; font-size: 76px; letter-spacing: 3px; white-space: nowrap; }
+.row2 { position: absolute; left: 0; right: 0; height: 150px; }
+.row2 .lab { position: absolute; left: 0; right: 0; top: 0; text-align: center; font-family: Mono; font-size: 28px; letter-spacing: 4px; color: rgba(255,255,255,.75); text-transform: uppercase; }
+.row2 .bl, .row2 .br { position: absolute; top: 52px; height: 40px; }
+.row2 .vl, .row2 .vr { position: absolute; top: 34px; font-family: Osw; font-weight: 600; font-size: 72px; white-space: nowrap; }
+</style></head>
+<body><div id="p">
+  <div class="stripe" style="top:0"></div><div class="stripe" style="top:320px"></div><div class="stripe" style="top:640px"></div>
+  <div class="stripe" style="top:960px"></div><div class="stripe" style="top:1280px"></div><div class="stripe" style="top:1600px"></div>
+  <svg id="lines" viewBox="0 0 1080 1920"><g fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5">
+    <rect x="60" y="60" width="960" height="1800"/><line x1="60" y1="960" x2="1020" y2="960"/><circle cx="540" cy="960" r="190"/>
+    <rect x="260" y="60" width="560" height="290"/><rect x="260" y="1570" width="560" height="290"/></g></svg>
+  <div id="c"></div><div id="grain"></div>
+</div>
+<script>
+let S, T;
+const cl = (x) => Math.max(0, Math.min(1, x));
+const E = (t, a, b) => cl((t - a) / (b - a));
+const oc = (x) => 1 - Math.pow(1 - x, 3);
+const ob = (x) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const up = (t, a, d = .45, dist = 40) => { const k = oc(E(t, a, a + d)); return `opacity:${k};transform:translateY(${(1 - k) * dist}px)`; };
+const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+
+function timeline(s) {
+  const t = { intro: [0, 4.5] }; let x = 4.5;
+  if (s.mode === 'versus') {
+    t.rows = s.rows.map(() => { const r = [x, x + 3.6]; x += 3.6; return r; });
+    t.verdict = [x, x + 5.5]; x += 5.5; t.fact = [x, x + 5]; x += 5;
+  } else {
+    t.items = s.items.slice(0, 4).map(() => { const r = [x, x + 6.5]; x += 6.5; return r; });
+    t.drum = [x, x + 2.6]; x += 2.6; t.one = [x, x + 8]; x += 8;
+    t.recap = [x, x + 6]; x += 6; t.ending = [x, x + 5]; x += 5;
+  }
+  t.outro = [x, x + 4.5]; x += 4.5; t.total = x; return t;
+}
+window.setup = (story) => { S = story; T = timeline(story); return T.total; };
+
+function fmtVal(it, k) { // count-up for plain numbers, otherwise the label as given
+  const lab = String(it.value_label ?? it.value);
+  if (k >= 1 || !/^[\d,.]+$/.test(lab)) return lab;
+  const dec = (lab.split('.')[1] || '').length, v = it.value * k;
+  return dec ? v.toFixed(dec) : Math.round(v).toLocaleString('en-US');
+}
+function flagSrc(code) { return code ? `assets/flags/${code}.svg` : null; }
+function initials(name) { return name.split(/\s+/).filter((w) => w.length > 2 || /^[A-Z]/.test(w)).slice(0, 3).map((w) => w[0]).join('').toUpperCase(); }
+// the visual for an item: person photo disc, stadium rectangle, club kit disc, or country flag disc
+function visual(it, cx, cy, d, extra = '', ring = '#f2c14e') {
+  if (it.kind === 'stadium' && it.photo) {
+    const w = d * 1.55, h = d;
+    return `<div class="rect" style="left:${cx - w / 2}px;top:${cy - h / 2}px;width:${w}px;height:${h}px;${extra}"><img src="${it.photo}"></div>`;
+  }
+  if (it.photo) return `<div class="disc" style="left:${cx - d / 2}px;top:${cy - d / 2}px;width:${d}px;height:${d}px;--ring:${ring};${extra}"><img src="${it.photo}"></div>`;
+  if (it.kind === 'club' && it.colors) {
+    const [a, b] = it.colors;
+    const lab = it.short || initials(it.name);
+    return `<div class="kit" style="left:${cx - d / 2}px;top:${cy - d / 2}px;width:${d}px;height:${d}px;font-size:${d * Math.min(.26, 1.25 / Math.max(lab.length, 1))}px;background:linear-gradient(135deg, ${a} 0 50%, ${b || a} 50% 100%);${extra}">${esc(lab)}</div>`;
+  }
+  const f = flagSrc(it.flag);
+  if (f) return `<div class="disc" style="left:${cx - d / 2}px;top:${cy - d / 2}px;width:${d}px;height:${d}px;--ring:${ring};${extra}"><img src="${f}"></div>`;
+  return `<div class="kit" style="left:${cx - d / 2}px;top:${cy - d / 2}px;width:${d}px;height:${d}px;font-size:${d * .26}px;background:#1d6b50;${extra}">${esc(initials(it.name))}</div>`;
+}
+function smallFlag(it) {
+  const f = it.kind === 'country' || !it.photo ? flagSrc(it.flag) : it.photo;
+  if (it.kind === 'club' && it.colors && !it.photo) return `<div class="fl" style="background:linear-gradient(135deg, ${it.colors[0]} 0 50%, ${it.colors[1] || it.colors[0]} 50% 100%)"></div>`;
+  return `<div class="fl">${f ? `<img src="${f}">` : ''}</div>`;
+}
+function header(t, a, small) {
+  const kick = `<div class="c mono" style="top:${small ? 130 : 520}px;font-size:${small ? 26 : 34}px;${up(t, a)}">${esc(S.kicker)}</div>`;
+  const ttl = `<div class="c ttl" style="top:${small ? 170 : 580}px;font-size:${small ? 64 : (S.title.length > 20 ? 118 : 140)}px;line-height:1.05;padding:0 60px;${up(t, a + .12)}">${esc(S.title)}</div>`;
+  return kick + ttl;
+}
+function scale(items) { // bar lengths: share of the best value (inverted when lower is better)
+  const vs = items.map((i) => i.value), best = S.lower_is_better ? Math.min(...vs) : Math.max(...vs);
+  return (v) => S.lower_is_better ? best / v : v / best;
+}
+function ladder(t, a, upto, y0, gold) { // rows for ranks already revealed, best at the top
+  const shown = S.items.filter((it) => it.rank >= upto).slice().sort((p, q) => p.rank - q.rank);
+  const sc = scale(S.items);
+  let h = `<div class="ladder" style="top:${y0}px">`;
+  shown.forEach((it, i) => {
+    const isOne = it.rank === 1 && gold;
+    h += `<div class="lrow" style="top:${i * 170}px;${up(t, a + i * .12, .4, 24)}"><div class="rk"${isOne ? ' style="color:#f2c14e"' : ''}>${it.rank}</div>${smallFlag(it)}<div class="nm">${esc(it.name)}</div><div class="vl">${esc(it.value_label ?? it.value)}</div>
+      <div class="bar" style="width:${Math.max(4, 700 * sc(it.value) * oc(E(t, a + .2 + i * .12, a + 1 + i * .12)))}px;opacity:${isOne ? 1 : .55}"></div></div>`;
+  });
+  return h + '</div>';
+}
+function itemCard(t, a, it, isOne) {
+  let h = header(t, a, true);
+  h += `<div class="c num" style="top:330px;font-size:${isOne ? 60 : 48}px;letter-spacing:6px;color:${isOne ? '#f2c14e' : 'rgba(255,255,255,.7)'};${up(t, a + .15)}">NO. ${it.rank}</div>`;
+  const k = ob(E(t, a + .25, a + .9));
+  h += visual(it, 540, 760, 500 * (.75 + .25 * k), `opacity:${E(t, a + .25, a + .5)}`, isOne ? '#f2c14e' : '#ffffff');
+  h += `<div class="c ttl" style="top:1080px;font-size:${it.name.length > 18 ? 84 : 104}px;line-height:1.05;padding:0 50px;${up(t, a + .5)}">${esc(it.name)}</div>`;
+  h += `<div class="c mono" style="top:${it.name.length > 22 ? 1300 : 1210}px;font-size:30px;${up(t, a + .65)}">${esc(it.sub || '')}</div>`;
+  const kv = oc(E(t, a + .8, a + 2.0));
+  h += `<div class="c num gold" style="top:1290px;font-size:${isOne ? 240 : 210}px;line-height:1;${up(t, a + .8)}">${esc(fmtVal(it, kv))}<span style="font-size:60px;color:rgba(255,255,255,.75);margin-left:18px">${esc(S.metric || '')}</span></div>`;
+  if (it.tie) h += `<div class="c mono" style="top:1535px;font-size:24px;${up(t, a + 1.2)}">TIED ON THIS NUMBER</div>`;
+  h += `<div class="c" style="top:1580px;padding:0 100px;font-family:Osw;font-weight:500;font-size:44px;line-height:1.3;color:rgba(255,255,255,.9);${up(t, a + 2.6)}">${esc(it.fact || '')}</div>`;
+  if (isOne) { const sk = ob(E(t, a + 1.6, a + 2.1)); h += `<div class="stamp" style="top:1745px;transform:translateX(-50%) rotate(-4deg) scale(${sk});opacity:${E(t, a + 1.6, a + 1.75)}">NO. 1</div>`; }
+  return h;
+}
+
+function renderCountdown(t) {
+  let h = '';
+  if (t < T.intro[1]) {
+    const [a, b] = T.intro, o = 1 - E(t, b - .35, b);
+    h += `<div style="opacity:${o}">${header(t, .1, false)}`;
+    h += `<div class="c" style="top:930px;padding:0 120px;font-family:Osw;font-weight:500;font-size:46px;line-height:1.3;color:rgba(255,255,255,.88);${up(t, .9)}">${esc(S.question)}</div>`;
+    for (let i = 0; i < 5; i++) h += `<div class="num" style="position:absolute;left:${130 + i * 170}px;top:1210px;width:140px;height:140px;border-radius:50%;border:4px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:64px;color:${i === 4 ? '#f2c14e' : 'rgba(255,255,255,.6)'};${up(t, 1.4 + i * .15)}">${5 - i}</div>`;
+    h += `</div>`;
+  } else if (t < T.items[3][1]) {
+    const i = T.items.findIndex(([a, b]) => t >= a && t < b), [a, b] = T.items[i], it = S.items[i];
+    h += `<div style="opacity:${1 - E(t, b - .3, b)}">${itemCard(t, a, it, false)}</div>`;
+  } else if (t < T.drum[1]) {
+    const [a, b] = T.drum, k = ob(E(t, a + .1, a + .9)), o = 1 - E(t, b - .3, b);
+    h += `<div class="c mono" style="top:700px;font-size:34px;opacity:${o * E(t, a, a + .4)}">AND NUMBER ONE</div>`;
+    h += `<div class="c num gold" style="top:780px;font-size:${420 * (.6 + .4 * k)}px;line-height:1;opacity:${o * E(t, a + .1, a + .4)}">1</div>`;
+  } else if (t < T.one[1]) {
+    const [a, b] = T.one;
+    h += `<div style="opacity:${1 - E(t, b - .35, b)}">${itemCard(t, a, S.items[4], true)}</div>`;
+  } else if (t < T.recap[1]) {
+    const [a, b] = T.recap;
+    h += `<div style="opacity:${1 - E(t, b - .35, b)}">${header(t, a, true)}`;
+    h += `<div class="c mono" style="top:340px;font-size:30px;${up(t, a + .1)}">THE FULL TOP FIVE</div>`;
+    h += ladder(t, a + .3, 1, 560, true) + `</div>`;
+  } else if (t < T.ending[1]) {
+    const [a, b] = T.ending;
+    h += `<div style="opacity:${1 - E(t, b - .35, b)}"><div class="c mono" style="top:640px;font-size:30px;${up(t, a)}">ONE MORE THING</div>`;
+    h += `<div class="c ttl" style="top:720px;padding:0 90px;font-size:82px;line-height:1.15;${up(t, a + .25)}">${esc(S.ending || '')}</div></div>`;
+  } else h += outro(t);
+  return h;
+}
+
+function renderVersus(t) {
+  const L = S.left, R = S.right; let h = '';
+  const side = (o, cx, cy, d, extra) => visual({ ...o, kind: 'club' }, cx, cy, d, extra);
+  if (t < T.intro[1]) {
+    const [a, b] = T.intro, o = 1 - E(t, b - .35, b), k1 = ob(E(t, .3, 1.0)), k2 = ob(E(t, .55, 1.25));
+    h += `<div style="opacity:${o}">${header(t, .1, true)}`;
+    h += side(L, 265, 760, 300 * k1, `opacity:${E(t, .3, .5)}`) + side(R, 815, 760, 300 * k2, `opacity:${E(t, .55, .75)}`);
+    h += `<div class="c num gold" style="top:690px;font-size:120px;${up(t, 1.2)}">VS</div>`;
+    h += `<div class="c ttl" style="top:990px;font-size:64px;line-height:1.1;padding:0 60px;${up(t, 1.3)}"><span>${esc(L.name)}</span><br><span style="font-size:44px;color:rgba(255,255,255,.6)">vs</span><br><span>${esc(R.name)}</span></div>`;
+    h += `<div class="c" style="top:1400px;padding:0 120px;font-family:Osw;font-weight:500;font-size:46px;line-height:1.3;color:rgba(255,255,255,.88);${up(t, 1.8)}">${esc(S.question)}</div></div>`;
+  } else if (t < T.verdict[0]) {
+    const a0 = T.rows[0][0];
+    h += header(t, a0 - 1, true);
+    h += side(L, 210, 420, 170, up(t, a0)) + side(R, 870, 420, 170, up(t, a0));
+    S.rows.forEach((r, i) => {
+      const [a] = T.rows[i]; if (t < a) return;
+      const mx = Math.max(r.left, r.right) || 1, k = oc(E(t, a + .2, a + 1.1)), W = 330;
+      const wl = W * r.left / mx * k, wr = W * r.right / mx * k, lw = r.left > r.right, rw = r.right > r.left;
+      const fm = (v) => (r.fmt === 'int' || Number.isInteger(v)) ? Math.round(v * (k >= 1 ? 1 : k)).toLocaleString('en-US') : (v * k).toFixed(1);
+      h += `<div class="row2" style="top:${640 + i * 170}px;${up(t, a, .4, 24)}"><div class="lab">${esc(r.label)}</div>
+        <div class="bl" style="left:${540 - 6 - wl}px;width:${wl}px;background:${L.colors[0]};opacity:${lw || r.left === r.right ? 1 : .55}"></div>
+        <div class="br" style="left:546px;width:${wr}px;background:${R.colors[0]};opacity:${rw || r.left === r.right ? 1 : .55}"></div>
+        <div class="vl" style="right:${540 + 26 + W}px;color:${lw ? '#f2c14e' : '#fff'}">${fm(r.left)}</div>
+        <div class="vr" style="left:${540 + 26 + W}px;color:${rw ? '#f2c14e' : '#fff'}">${fm(r.right)}</div></div>`;
+    });
+  } else if (t < T.verdict[1]) {
+    const [a, b] = T.verdict;
+    h += `<div style="opacity:${1 - E(t, b - .35, b)}"><div class="c mono" style="top:600px;font-size:30px;${up(t, a)}">THE VERDICT</div>`;
+    h += `<div class="c ttl" style="top:690px;padding:0 90px;font-size:88px;line-height:1.15;${up(t, a + .25)}">${esc(S.verdict)}</div></div>`;
+  } else if (t < T.fact[1]) {
+    const [a, b] = T.fact;
+    h += `<div style="opacity:${1 - E(t, b - .35, b)}"><div class="c mono" style="top:640px;font-size:30px;${up(t, a)}">DID YOU KNOW</div>`;
+    h += `<div class="c ttl" style="top:720px;padding:0 90px;font-size:78px;line-height:1.15;${up(t, a + .25)}">${esc(S.fact)}</div></div>`;
+  } else h += outro(t);
+  return h;
+}
+function outro(t) {
+  const [a] = T.outro;
+  let h = `<div class="c ttl" style="top:700px;font-size:${S.mode === 'versus' ? 130 : 120}px;line-height:1.05;${up(t, a + .1)}">${S.mode === 'versus' ? 'who wins?' : "who's missing?"}</div>`;
+  h += `<div class="c ttl gold" style="top:880px;font-size:62px;${up(t, a + .5)}">tell us in the comments ↓</div>`;
+  const src = S.source ? `Source: ${S.source.title} (as of ${S.source.as_of || 'Nov 2026'}).` : '';
+  const cred = S.credits && S.credits.length ? ' Photos: Wikimedia Commons (see description). Flags: flag-icons (MIT).' : ' Flags: flag-icons (MIT).';
+  h += `<div class="c mono" style="top:1600px;padding:0 100px;font-size:20px;letter-spacing:1px;line-height:1.7;${up(t, a + .9)}">${esc(src + cred)}</div>`;
+  return h;
+}
+
+window.renderAt = async (t) => {
+  document.getElementById('c').innerHTML = S.mode === 'versus' ? renderVersus(t) : renderCountdown(t);
+  const imgs = [...document.images];
+  await Promise.all(imgs.map((i) => (i.complete && i.naturalWidth) ? null : new Promise((r) => { i.onload = i.onerror = r; })));
+  await Promise.all(imgs.map((i) => i.decode ? i.decode().catch(() => {}) : null));
+};
+</script></body></html>

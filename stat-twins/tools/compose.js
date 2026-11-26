@@ -1,9 +1,9 @@
-// Record one stat-twin short: node tools/compose.js data/story_ronaldo.json video/out.mp4 [--stills 1,5,30]
+// Record one short: node tools/compose.js data/story_ronaldo.json video/out.mp4 [--stills 1,5,30] [--page v2.html]
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const http = require('http'); const path = require('path'); const fs = require('fs');
 const ROOT = path.join(__dirname, '..');
-const types = { '.html': 'text/html', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.woff2': 'font/woff2', '.json': 'application/json' };
+const types = { '.html': 'text/html', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.woff2': 'font/woff2', '.json': 'application/json', '.svg': 'image/svg+xml' };
 const srv = http.createServer((req, res) => {
   const f = path.join(ROOT, decodeURIComponent(req.url.split('?')[0]));
   fs.readFile(f, (e, d) => { if (e) { res.writeHead(404); res.end(); return; } res.writeHead(200, { 'Content-Type': types[path.extname(f).toLowerCase()] || 'application/octet-stream' }); res.end(d); });
@@ -17,7 +17,8 @@ const srv = http.createServer((req, res) => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
   page.on('pageerror', (e) => console.log('pageerror', e.message));
-  await page.goto(`http://localhost:${srv.address().port}/compose.html`);
+  const pageFile = a.includes('--page') ? a[a.indexOf('--page') + 1] : 'compose.html';
+  await page.goto(`http://localhost:${srv.address().port}/${pageFile}`);
   await page.evaluate(() => document.fonts.ready);
   const total = await page.evaluate((s) => window.setup(s), story);
   const fps = 30, n = Math.round(total * fps);
