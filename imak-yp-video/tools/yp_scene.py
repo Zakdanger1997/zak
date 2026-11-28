@@ -248,12 +248,16 @@ def build():
         s.location = (x, y, 0)
         part(s, (0, 25, 860 if z > 0 else -520), (0.6, 0.0, 0), order=0.75, spin=0.4)
     # bolts round the split flange
-    BOLTS = [(-150, 100), (150, 100), (-158, -40), (158, -40), (-150, -330), (150, -330), (0, 118), (0, -372)]
-    for i, (x, y) in enumerate(BOLTS):
-        b = bolt(40, 12, M, f"bolt{i}")
-        b.location = (x, y, S_SPLIT + 60)
+    # bolts: they end in the 8 holes on PCD 180 round the hollow output (measured on the STEP, front face z=235). Their
+    # floating positions are kept from the first layout (FLOAT), so the exploded frames did not change.
+    FLOAT = [(-150, 100), (150, 100), (-158, -40), (158, -40), (-150, -330), (150, -330), (0, 118), (0, -372)]
+    HOLES = [(90 * math.cos(math.radians(a)), -240 + 90 * math.sin(math.radians(a))) for a in (135, 45, 180, 0, 225, 315, 90, 270)]
+    for i, ((fx, fy), (x, y)) in enumerate(zip(FLOAT, HOLES)):
+        b = bolt(40, 10, M, f"bolt{i}")
+        b.location = (x, y, 235)
         r = 1.0 + 0.15 * (i % 3)
-        part(b, (x * 0.6 * r, y * 0.25 + 40, 980 + 50 * (i % 4)), (1.2 * (i % 2 * 2 - 1), 0.6, 0), order=1.0, spin=2.0)
+        old = Vector((fx, fy, S_SPLIT + 60)) + Vector((fx * 0.6 * r, fy * 0.25 + 40, 980 + 50 * (i % 4)))
+        part(b, old - Vector(b.location), (1.2 * (i % 2 * 2 - 1), 0.6, 0), order=1.0, spin=2.0)
     return M
 
 

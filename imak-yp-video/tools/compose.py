@@ -38,16 +38,20 @@ for i, f in enumerate(frames if step == 1 else [f for f, n in zip(frames, nums) 
     out.convert("RGB").save(os.path.join(tmp, f"{i:04d}.png"))
 
 main = P("render", "main.mp4")
+import sys  # noqa: E402
+SKIP = "--edit-only" in sys.argv and os.path.exists(main)
 vf = f"minterpolate=fps={FPS}:mi_mode=mci:mc_mode=aobmc:vsbmc=1," if step == 2 else ""
 vf += "scale=1080:1920:flags=lanczos,unsharp=5:5:0.4"
-subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(FPS // step), "-i", os.path.join(tmp, "%04d.png"),
+if not SKIP:
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(FPS // step), "-i", os.path.join(tmp, "%04d.png"),
                 "-vf", vf, "-t", str(MAIN), "-c:v", "libx264", "-crf", "16", "-preset", "slow", "-pix_fmt", "yuv420p", main], check=True)
 os.makedirs(P("video"), exist_ok=True)
 out = P("video", "imak-yp-9x16.mp4")
-fc = (f"[0:v]tpad=stop_mode=clone:stop_duration=1,setpts=PTS-STARTPTS[a];"
-      f"[1:v]loop=loop=-1:size=1:start=0,trim=duration={END + 1},fps={FPS},format=yuv420p,setpts=PTS-STARTPTS[b];"
+fc = (f"[0:v]tpad=stop_mode=clone:stop_duration=1,fps={FPS},format=yuv420p,setsar=1,settb=AVTB,setpts=PTS-STARTPTS[a];"
+      f"[1:v]fps={FPS},format=yuv420p,setsar=1,settb=AVTB,setpts=PTS-STARTPTS[b];"
       f"[a][b]xfade=transition=fade:duration=0.8:offset={MAIN - 0.4}[v]")
-subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", main, "-i", P("assets", "endcard.png"), "-i", P("audio", "soundtrack.wav"),
+subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", main, "-loop", "1", "-framerate", str(FPS), "-t", str(END + 1),
+                "-i", P("assets", "endcard.png"), "-i", P("audio", "soundtrack.wav"),
                 "-filter_complex", fc, "-map", "[v]", "-map", "2:a", "-t", str(MAIN + END), "-c:v", "libx264", "-crf", "17",
                 "-preset", "slow", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out], check=True)
 print("->", out)
