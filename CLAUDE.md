@@ -49,9 +49,10 @@ salesably-marketplace/
 │   ├── README.md
 │   └── skills/
 │       └── reverse-engineer-anything/   # SKILL.md + references/ copied from upstream
-├── ai-video-studio/         # Video plugin (1 skill + freevid pipeline: edge-tts, Pollinations, ffmpeg)
+├── ai-video-studio/         # Video plugin (2 skills: make-ai-video, yt-dlp; freevid pipeline: edge-tts, Pollinations, ffmpeg)
 │   ├── .claude-plugin/plugin.json
 │   ├── skills/make-ai-video/SKILL.md
+│   ├── skills/yt-dlp/SKILL.md   # Download video/audio/subs from YouTube & 1,000+ sites
 │   ├── tools/               # freevid.py, styles.json, requirements.txt
 │   ├── fonts/               # Cairo-Bold.ttf for Arabic captions
 │   └── examples/

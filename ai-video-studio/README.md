@@ -52,6 +52,12 @@ Stages can be run separately (`narrate`, `images`, `preview`, `assemble`) and ar
 
 `style` is a card from `tools/styles.json` (stickman, paper-cutout, editorial, watercolor, clay, 3d-cartoon, whiteboard, isometric, pixel, storybook, photoreal) or your own prompt prefix. `music` points to your own licensed audio file (optional).
 
+## Downloading reference videos (`yt-dlp` skill)
+
+The `yt-dlp` skill lets Claude download from YouTube and 1,000+ other sites with [yt-dlp](https://github.com/yt-dlp/yt-dlp): best-quality MP4, MP3 audio, a clip of part of a video, subtitles or a clean transcript, thumbnails, whole playlists or channels. Ask: *"download this as MP3"*, *"get me the transcript of this video"*, *"save 1:15–2:30 of this"*, or *"pull this short so we can remake it"*.
+
+Needs `pip install -U yt-dlp` and ffmpeg. YouTube often blocks downloads from cloud servers, so run it on your own computer for YouTube. Only download what you own, what is openly licensed, or what you use for personal viewing or reference; yt-dlp does not get around DRM.
+
 ## What it is not
 
 - It does not generate video clips with moving characters; each scene is a still picture with camera motion (the "picture story" format). That is what keeps it free and fast.
