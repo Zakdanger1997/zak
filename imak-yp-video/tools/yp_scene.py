@@ -39,15 +39,56 @@ def srgb(c):
 
 # ------------------------------------------------------------------ materials
 def mats():
+    """Materials for parts modelled in millimetres (texture scales are per mm)."""
+    def nodes(name):
+        m = bpy.data.materials.new(name); m.use_nodes = True
+        nt = m.node_tree
+        return m, nt, nt.nodes["Principled BSDF"], nt.nodes.new, nt.links.new
+
+    def paint(name, rgb):
+        m, nt, p, N, L = nodes(name)
+        tc = N("ShaderNodeTexCoord")
+        cast = N("ShaderNodeTexNoise"); cast.inputs["Scale"].default_value = 0.08; cast.inputs["Detail"].default_value = 10
+        peel = N("ShaderNodeTexNoise"); peel.inputs["Scale"].default_value = 1.6; peel.inputs["Detail"].default_value = 3
+        tone = N("ShaderNodeTexNoise"); tone.inputs["Scale"].default_value = 0.01
+        for n in (cast, peel, tone):
+            L(tc.outputs["Object"], n.inputs["Vector"])
+        b1 = N("ShaderNodeBump"); b1.inputs["Strength"].default_value = 0.22
+        b2 = N("ShaderNodeBump"); b2.inputs["Strength"].default_value = 0.035
+        L(cast.outputs["Fac"], b1.inputs["Height"]); L(peel.outputs["Fac"], b2.inputs["Height"])
+        L(b1.outputs["Normal"], p.inputs["Normal"]); L(b2.outputs["Normal"], p.inputs["Coat Normal"])
+        ramp = N("ShaderNodeValToRGB"); c = srgb(rgb)
+        ramp.color_ramp.elements[0].color = (*[v * 0.85 for v in c], 1)
+        ramp.color_ramp.elements[1].color = (*[min(1, v * 1.08) for v in c], 1)
+        L(tone.outputs["Fac"], ramp.inputs["Fac"]); L(ramp.outputs["Color"], p.inputs["Base Color"])
+        p.inputs["Roughness"].default_value = 0.42
+        p.inputs["Coat Weight"].default_value = 1.0
+        p.inputs["Coat Roughness"].default_value = 0.035
+        return m
+
+    def metal(name, rgb, rough, aniso=0.0, streak=60, var=0.05):
+        m, nt, p, N, L = nodes(name)
+        p.inputs["Base Color"].default_value = (*srgb(rgb), 1)
+        p.inputs["Metallic"].default_value = 1.0
+        tc = N("ShaderNodeTexCoord"); mp = N("ShaderNodeMapping")
+        mp.inputs["Scale"].default_value = (1, 1, streak)       # machining marks run round the Z axis
+        n = N("ShaderNodeTexNoise"); n.inputs["Scale"].default_value = 0.6; n.inputs["Detail"].default_value = 6
+        L(tc.outputs["Object"], mp.inputs["Vector"]); L(mp.outputs["Vector"], n.inputs["Vector"])
+        r = N("ShaderNodeMapRange"); r.inputs["To Min"].default_value = rough - var; r.inputs["To Max"].default_value = rough + var
+        L(n.outputs["Fac"], r.inputs["Value"]); L(r.outputs["Result"], p.inputs["Roughness"])
+        if aniso:
+            p.inputs["Anisotropic"].default_value = aniso
+        return m
+
     M = {}
-    M["paint"] = K.paint_mat("i.Mak red", (176, 18, 22), rough=0.24, coat=1.0, cast=0.25, peel=0.2)
-    M["bore"] = K.metal_mat("machined", (160, 162, 165), 0.3, scratch=0.05)
-    M["gear"] = K.metal_mat("case-hardened gear", (128, 130, 134), 0.28, scratch=0.06)
-    M["flank"] = K.metal_mat("ground flank", (190, 193, 198), 0.16, aniso=0.3, scratch=0.04)
-    M["steel"] = K.metal_mat("bright steel", (222, 224, 228), 0.1, aniso=0.4, scratch=0.03)
-    M["race"] = K.metal_mat("bearing race", (210, 212, 216), 0.08, scratch=0.02)
-    M["rubber"] = K.plain("seal rubber", (22, 22, 24), 0.55)
-    M["zinc"] = K.metal_mat("zinc bolt", (178, 180, 176), 0.3, scratch=0.05)
+    M["paint"] = paint("i.Mak red enamel", (158, 8, 12))
+    M["bore"] = metal("machined bore", (168, 170, 172), 0.32)
+    M["gear"] = metal("case-hardened gear", (128, 130, 134), 0.3, var=0.08)
+    M["flank"] = metal("ground pinion", (172, 175, 180), 0.2, aniso=0.5)
+    M["steel"] = metal("ground shaft", (205, 208, 212), 0.14, aniso=0.6)
+    M["race"] = metal("bearing race", (215, 217, 220), 0.1, aniso=0.3)
+    M["rubber"] = K.plain("seal rubber", (20, 20, 22), 0.6)
+    M["zinc"] = metal("zinc-plated bolt", (170, 172, 168), 0.3, streak=1, var=0.08)
     return M
 
 
@@ -189,6 +230,9 @@ PARTS = []   # (object, assembled location (mm), exploded offset (mm), exploded 
 
 def part(o, off, rot=(0, 0, 0), order=0.5, spin=0.0):
     o.parent = ROOTO
+    if not o.name.startswith("housing") and o.name != "input_shaft":   # soften machined edges (mm)
+        bv = o.modifiers.new("bevel", "BEVEL"); bv.width = 0.5; bv.segments = 2
+        bv.limit_method = "ANGLE"; bv.angle_limit = math.radians(35); bv.harden_normals = True
     PARTS.append(dict(o=o, loc=Vector(o.location), off=Vector(off), rot=Vector(rot), base=Vector(o.rotation_euler), order=order, spin=spin))
 
 
@@ -286,7 +330,7 @@ def pose(f):
     # then a slow turn for the hero view
     up = ease((f - 8.5 * FPS) / (6.5 * FPS))
     k = ease((f - 14.0 * FPS) / (6.0 * FPS))
-    ROOTO.rotation_euler = (math.radians(18 + 72 * up), 0, math.radians(-25 + 25 * up - 35 * k))
+    ROOTO.rotation_euler = (math.radians(18 + 72 * up), 0, math.radians(-25 + 25 * up + 42 * k))
     bpy.context.view_layer.update()
 
 
@@ -297,7 +341,7 @@ def cam_path(f):
           (int(4 * FPS), (-0.62, -0.88, 0.14), (0, -120, 340)),
           (int(8.5 * FPS), (-0.90, -1.38, 0.24), (0, -120, 260)),
           (int(14 * FPS), (-0.82, -1.28, 0.30), (0, -140, 30)),
-          (END, (-0.55, -0.92, 0.22), (0, -140, 30))]
+          (END, (-0.66, -1.08, 0.24), (0, -150, 30))]
     for (f0, o0, t0), (f1, o1, t1) in zip(K_, K_[1:]):
         if f <= f1:
             k = ease((f - f0) / (f1 - f0))
@@ -312,17 +356,44 @@ def main():
     sc = bpy.context.scene
     sc.render.film_transparent = True
     build()
-    # bright studio: soft key from top-left, big fill, rim from behind; grey world for reflections
-    w = bpy.data.worlds.new("w"); sc.world = w; w.use_nodes = True
-    w.node_tree.nodes["Background"].inputs[0].default_value = (*srgb((200, 202, 206)), 1)
-    w.node_tree.nodes["Background"].inputs[1].default_value = 0.55
-    K.area((-1.6, -1.2, 2.0), (0, 0, 0), 520, 2.2)
-    K.area((1.8, -1.6, 0.6), (0, 0, 0), 200, 3.0)
-    K.area((0.6, 1.8, 1.4), (0, 0, 0), 450, 1.5)
-    K.area((0.0, -2.5, -1.2), (0, 0, 0), 120, 3.0)
-    cam, tgt = K.camera((0, -1, 0), (0, 0, 0), lens=50, fstop=4.0)
+    # real photo-studio HDRI (Poly Haven, CC0) for light and reflections, plus a big soft key and a rim
+    K.HDRI = os.environ.get("HDRI", "/tmp/claude-0/yp/hdri")
+    K.world(os.environ.get("HDRI_FILE", "studio_small_09.hdr"), strength=0.3, rot=math.radians(140))
+    sc.render.film_transparent = True
+    # product-photo lighting: big soft key from the left, long strip light overhead for the white highlights,
+    # weak fill on the right so the sides fall into shadow, and two rims that draw the outline
+    K.area((-1.7, -1.0, 1.0), (0, 0, -0.1), 700, 1.6)
+    strip = K.area((0.2, -0.6, 2.0), (0, 0, -0.1), 420, 1.0); strip.data.shape = "RECTANGLE"; strip.data.size, strip.data.size_y = 2.6, 0.25
+    K.area((1.8, -1.2, 0.2), (0, 0, -0.1), 90, 2.5)
+    K.area((1.0, 1.6, 0.8), (0, 0, -0.1), 520, 0.8)
+    K.area((-1.2, 1.4, -0.4), (0, 0, -0.1), 300, 0.8)
+    cam, tgt = K.camera((0, -1, 0), (0, 0, 0), lens=50, fstop=3.2)
     K.render_setup()
-    sc.view_settings.exposure = -0.35
+    sc.cycles.adaptive_threshold = 0.012
+    sc.view_settings.view_transform = os.environ.get("VIEW", "Standard")   # Standard keeps the i.Mak red saturated (AgX bleaches it)
+    sc.view_settings.look = "None"
+    sc.view_settings.exposure = float(os.environ.get("EXPOSURE", "-1.7"))   # deep red, no clipping to pink
+    print("view", sc.view_settings.view_transform, sc.view_settings.exposure, flush=True)
+    sc.render.use_motion_blur = True
+    sc.render.motion_blur_shutter = 0.5
+    # bake the whole move as keyframes so Cycles can render true motion blur
+    for f in range(0, END + 1):
+        pose(f)
+        loc, t = cam_path(f)
+        cam.location, tgt.location = loc, t
+        cam.data.dof.focus_distance = (loc - t).length
+        for p in PARTS:
+            p["o"].keyframe_insert("location", frame=f); p["o"].keyframe_insert("rotation_euler", frame=f)
+        ROOTO.keyframe_insert("rotation_euler", frame=f)
+    # once the housing is closed the gear train is inside it: hide it (it would show through the envelope model)
+    CLOSED = int(13.6 * FPS)
+    for p in PARTS:
+        n = p["o"].name
+        if n.startswith(("Z", "shaft", "brg", "hollow")):
+            for fr, hid in ((CLOSED - 1, False), (CLOSED, True)):
+                p["o"].hide_render = hid; p["o"].keyframe_insert("hide_render", frame=fr)
+        cam.keyframe_insert("location", frame=f); tgt.keyframe_insert("location", frame=f)
+        cam.data.dof.keyframe_insert("focus_distance", frame=f)
     out = os.path.join(ROOT, "render", "yp")
     os.makedirs(out, exist_ok=True)
     if "--still" in A:
@@ -334,10 +405,7 @@ def main():
         path = os.path.join(out, f"{f:04d}.png")
         if os.path.exists(path) and "--still" not in A:
             continue
-        pose(f)
-        loc, t = cam_path(f)
-        cam.location, tgt.location = loc, t
-        cam.data.dof.focus_distance = (loc - t).length
+        sc.frame_set(f)
         sc.render.filepath = path
         bpy.ops.render.render(write_still=True)
         print("frame", f, flush=True)
